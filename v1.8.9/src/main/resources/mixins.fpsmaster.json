@@ -1,0 +1,38 @@
+{
+  "package": "top.fpsmaster.forge.mixin",
+  "refmap": "mixins.${modid}.refmap.json",
+  "minVersion": "0.7",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinEntityLivingBase",
+    "MixinEntityPlayer",
+    "MixinNetworkManager",
+    "MixinParticleManager",
+    "MixinSplashScreen"
+  ],
+  "client": [
+    "MixinAbstractClientPlayer",
+    "MixinChatLine",
+    "MixinEntityPlayerSP",
+    "MixinEntityRenderer",
+    "MixinFontRender",
+    "MixinGuiContainer",
+    "MixinGuiIngame",
+    "MixinGuiIngameForge",
+    "MixinGuiNewChat",
+    "MixinGuiPlayerOverlay",
+    "MixinGuiScreen",
+    "MixinInventoryEffectRenderer",
+    "MixinItemRenderer",
+    "MixinKeybinding",
+    "MixinLayerArmorBase",
+    "MixinMainMenu",
+    "MixinMinecraft",
+    "MixinNetworkPlayerInfo",
+    "MixinRender",
+    "MixinRenderEntityItem",
+    "MixinRenderLivingBase",
+    "MixinRenderManager",
+    "MixinRenderTNTPrimed"
+  ]
+}

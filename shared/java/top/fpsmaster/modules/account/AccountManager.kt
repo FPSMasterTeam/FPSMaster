@@ -1,0 +1,68 @@
+package top.fpsmaster.modules.account
+
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import top.fpsmaster.FPSMaster
+import top.fpsmaster.modules.logger.Logger
+import top.fpsmaster.utils.os.FileUtils
+import top.fpsmaster.utils.os.HttpRequest
+
+class AccountManager {
+    var token: String = ""
+    var username: String = ""
+    var itemsHeld = arrayOf<String>()
+
+    init {
+        try {
+            token = FileUtils.readTempValue("token").trim()
+            username = FPSMaster.INSTANCE.configManager.configure.getOrCreate("username", "offline").trim()
+            if (token.isNotEmpty() && username.isNotEmpty()) {
+                if (attemptLogin(username, token)) {
+                    Logger.info("自动登录成功！  $username")
+                    FPSMaster.INSTANCE.loggedIn = true
+                    getItems(username, token)
+                } else {
+                    Logger.info("$username  $token")
+                    Logger.error("自动登录失败！")
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Logger.error("尝试自动登录失败！${e.message}")
+        }
+    }
+
+    private fun attemptLogin(username: String, token: String): Boolean {
+        if (username.isEmpty() || token.isEmpty())
+            return false
+        val s = HttpRequest["${FPSMaster.SERVICE_API}/checkToken?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
+        val json = parser.parse(s).getAsJsonObject()
+        if (json["code"].asInt != 200) {
+            this.token = ""
+            FileUtils.saveTempValue("token", "")
+            return false
+        }
+        this.username = username
+        this.token = token
+        return true
+    }
+
+    fun getItems(username: String?, token: String?) {
+        val s = HttpRequest["${FPSMaster.SERVICE_API}/getWebUser?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
+        val json = parser.parse(s).getAsJsonObject()
+        if (json["code"].asInt == 200) {
+            val items = json["data"].getAsJsonObject()["items"].asString
+            itemsHeld = items.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+        }
+    }
+
+    companion object {
+        var parser = JsonParser()
+        var cape = ""
+        var skin = ""
+        fun login(username: String, password: String): JsonObject {
+            val s = HttpRequest["${FPSMaster.SERVICE_API}/login?username=$username&password=$password&timestamp=${System.currentTimeMillis()}"]
+            return parser.parse(s).getAsJsonObject()
+        }
+    }
+}
