@@ -43,11 +43,11 @@ public class BlurBuffer {
 		}
 	}
 
-	private static void setShaderConfigs(float intensity, float blurWidth, float blurHeight) {
-		((IShaderGroup) blurShader).getListShaders().get(0).getShaderManager().getShaderUniform("Radius").set(intensity);
-		((IShaderGroup) blurShader).getListShaders().get(1).getShaderManager().getShaderUniform("Radius").set(intensity);
-		((IShaderGroup) blurShader).getListShaders().get(0).getShaderManager().getShaderUniform("BlurDir").set(blurWidth, blurHeight);
-		((IShaderGroup) blurShader).getListShaders().get(1).getShaderManager().getShaderUniform("BlurDir").set(blurHeight, blurWidth);
+	private static void setShaderConfigs() {
+		((IShaderGroup) blurShader).getListShaders().get(0).getShaderManager().getShaderUniform("Radius").set((float) 25);
+		((IShaderGroup) blurShader).getListShaders().get(1).getShaderManager().getShaderUniform("Radius").set((float) 25);
+		((IShaderGroup) blurShader).getListShaders().get(0).getShaderManager().getShaderUniform("BlurDir").set((float) 0.0, (float) 1.0);
+		((IShaderGroup) blurShader).getListShaders().get(1).getShaderManager().getShaderUniform("BlurDir").set((float) 1.0, (float) 0.0);
 	}
 
 	public static void blurArea(float x, float y, float width, float height, boolean setupOverlay) {
@@ -145,7 +145,7 @@ public class BlurBuffer {
 		if (updateTimer.delay((long) (1000 / 60f)) && blurShader != null) {
 			mc.getFramebuffer().unbindFramebuffer();
 
-			setShaderConfigs(25, 0f, 1f);
+			setShaderConfigs();
 			buffer.bindFramebuffer(true);
 
 			mc.getFramebuffer().framebufferRenderExt(mc.displayWidth, mc.displayHeight, true);

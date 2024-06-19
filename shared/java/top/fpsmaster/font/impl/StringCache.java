@@ -3,6 +3,7 @@ package top.fpsmaster.font.impl;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import top.fpsmaster.modules.client.GlobalTextFilter;
 import top.fpsmaster.wrapper.renderEngine.bufferbuilder.WrapperBufferBuilder;
@@ -306,7 +307,7 @@ public class StringCache {
          * @return either -1, 0, or 1 if this < other, this == other, or this > other
          */
         @Override
-        public int compareTo(Integer i) {
+        public int compareTo(@NotNull Integer i) {
             return Integer.compare(stringIndex, i);
         }
     }
@@ -969,7 +970,7 @@ public class StringCache {
 
                     /* An odd numbered level indicates right-to-left ordering */
                     int layoutFlag = (bidi.getRunLevel(logicalIndex) & 1) == 1 ? Font.LAYOUT_RIGHT_TO_LEFT : Font.LAYOUT_LEFT_TO_RIGHT;
-                    advance = layoutStyle(glyphList, text, bidi.getRunStart(logicalIndex), 0 + bidi.getRunLimit(logicalIndex),
+                    advance = layoutStyle(glyphList, text, bidi.getRunStart(logicalIndex), bidi.getRunLimit(logicalIndex),
                             layoutFlag, advance, colors);
                 }
             }

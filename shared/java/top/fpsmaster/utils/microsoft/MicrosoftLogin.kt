@@ -122,7 +122,7 @@ object MicrosoftLogin {
         return flag.get()
     }
 
-    private fun postMAP(url: String?, param: Map<String, String>?): String {
+    private fun postMAP(url: String, param: Map<String, String>?): String {
         // 创建Httpclient对象
         val httpClient = HttpClients.createDefault()
         var response: CloseableHttpResponse? = null
