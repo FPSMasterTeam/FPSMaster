@@ -135,8 +135,6 @@ class FPSMaster {
                     isLatest = true
                 }
             }
-            val s2 = HttpRequest["https://fpsmaster.top/version2"]
-            if (s2.contains("cafebabe")) SecureUtil.crash()
         }
         loadNetease()
         submitter = GlobalSubmitter()
