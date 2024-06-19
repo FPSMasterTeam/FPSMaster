@@ -1,8 +1,5 @@
 package top.fpsmaster.wrapper;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.gui.GuiOptions;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSelectWorld;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,21 +9,10 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.Project;
-import top.fpsmaster.FPSMaster;
 import top.fpsmaster.interfaces.gui.IGuiMainMenuProvider;
-import top.fpsmaster.ui.screens.account.GuiWaiting;
-import top.fpsmaster.ui.screens.mainmenu.GuiButton;
-import top.fpsmaster.ui.screens.oobe.GuiLogin;
-import top.fpsmaster.utils.render.Render2DUtils;
-
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
-
-import static top.fpsmaster.utils.Utility.isHovered;
 import static top.fpsmaster.utils.Utility.mc;
 
 public class GuiMainMenuProvider implements IGuiMainMenuProvider {
@@ -98,9 +84,7 @@ public class GuiMainMenuProvider implements IGuiMainMenuProvider {
                     GlStateManager.rotate(-90.0F, 1.0F, 0.0F, 0.0F);
                 }
 
-                ResourceLocation[] aresourcelocation = TITLE_PANORAMA_PATHS;
-
-                mc.getTextureManager().bindTexture(aresourcelocation[l]);
+                mc.getTextureManager().bindTexture(TITLE_PANORAMA_PATHS[l]);
                 bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
                 int i1 = 255 / (k + 1);
                 bufferbuilder.pos(-1.0D, -1.0D, 1.0D).tex(0.0D, 0.0D).color(255, 255, 255, i1).endVertex();
@@ -145,13 +129,11 @@ public class GuiMainMenuProvider implements IGuiMainMenuProvider {
 
         for (int k = 0; k < j; ++k) {
             float f = 1.0F / (float) (k + 1);
-            int l = width;
-            int i1 = height;
             float f1 = (float) (k - 1) / 256.0F;
-            bufferbuilder.pos(l, i1, zLevel).tex(0.0F + f1, 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-            bufferbuilder.pos(l, 0.0D, zLevel).tex(1.0F + f1, 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
+            bufferbuilder.pos(width, height, zLevel).tex(0.0F + f1, 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
+            bufferbuilder.pos(width, 0.0D, zLevel).tex(1.0F + f1, 1.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
             bufferbuilder.pos(0.0D, 0.0D, zLevel).tex(1.0F + f1, 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
-            bufferbuilder.pos(0.0D, i1, zLevel).tex(0.0F + f1, 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
+            bufferbuilder.pos(0.0D, height, zLevel).tex(0.0F + f1, 0.0D).color(1.0F, 1.0F, 1.0F, f).endVertex();
         }
 
         tessellator.draw();
@@ -179,14 +161,12 @@ public class GuiMainMenuProvider implements IGuiMainMenuProvider {
         float f2 = 120.0F / (float) (Math.max(width, height));
         float f = (float) height * f2 / 256.0F;
         float f1 = (float) width * f2 / 256.0F;
-        int k = width;
-        int l = height;
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer bufferbuilder = tessellator.getWorldRenderer();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
-        bufferbuilder.pos(0.0D, l, zLevel).tex(0.5F - f, 0.5F + f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-        bufferbuilder.pos(k, l, zLevel).tex(0.5F - f, 0.5F - f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
-        bufferbuilder.pos(k, 0.0D, zLevel).tex(0.5F + f, 0.5F - f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        bufferbuilder.pos(0.0D, height, zLevel).tex(0.5F - f, 0.5F + f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        bufferbuilder.pos(width, height, zLevel).tex(0.5F - f, 0.5F - f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
+        bufferbuilder.pos(width, 0.0D, zLevel).tex(0.5F + f, 0.5F - f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
         bufferbuilder.pos(0.0D, 0.0D, zLevel).tex(0.5F + f, 0.5F + f1).color(1.0F, 1.0F, 1.0F, 1.0F).endVertex();
         tessellator.draw();
     }
@@ -197,7 +177,7 @@ public class GuiMainMenuProvider implements IGuiMainMenuProvider {
     }
 
     @Override
-    public void showSinglePlayer(GuiScreen screen) {
+    public void showSinglePlayer(@NotNull GuiScreen screen) {
         mc.displayGuiScreen(new GuiSelectWorld(screen));
     }
 }

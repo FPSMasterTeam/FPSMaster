@@ -12,7 +12,6 @@ import top.fpsmaster.utils.math.animation.ColorAnimation
 import top.fpsmaster.utils.math.animation.Type
 import top.fpsmaster.utils.os.FileUtils.saveTempValue
 import top.fpsmaster.utils.render.Render2DUtils
-import top.fpsmaster.wrapper.GuiMainMenuProvider
 import java.awt.Color
 import java.awt.Desktop
 import java.net.URI

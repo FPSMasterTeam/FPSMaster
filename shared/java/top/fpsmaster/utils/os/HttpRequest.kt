@@ -8,7 +8,6 @@ import top.fpsmaster.modules.logger.Logger.info
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
 object HttpRequest {
@@ -60,7 +59,7 @@ object HttpRequest {
             val file = File(filepath)
             val fileout = FileOutputStream(file)
             val buffer = ByteArray(10 * 1024)
-            var ch = 0
+            var ch: Int
             while (`is`.read(buffer).also { ch = it } != -1) {
                 fileout.write(buffer, 0, ch)
                 progress += ch.toLong()

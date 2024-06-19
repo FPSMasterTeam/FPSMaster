@@ -32,7 +32,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
     private var dragX = 0f
     private var dragY = 0f
     private var curType = Category.OPTIMIZE
-    var categories = LinkedList<CategoryComponent>()
+    private var categories = LinkedList<CategoryComponent>()
     private val leftWidth = 110f
     private var modsWheel = 0f
     private var wheel_temp = 0f
@@ -41,23 +41,24 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
     private var sizeDragY = 0f
 
     // window animation
-    var scaleAnimation = Animation()
+    private var scaleAnimation = Animation()
 
     // selection
-    var selection = 0f
+    private var selection = 0f
 
     // color animation
-    var sizeDragBorder = ColorAnimation(255, 255, 255, 0)
+    private var sizeDragBorder = ColorAnimation(255, 255, 255, 0)
     private var close = false
 
     // module list animation
-    var moduleListAlpha = 0f
+    private var moduleListAlpha = 0f
     private val mods = LinkedList<ModuleRenderer>()
-    var modeColor = ColorAnimation(FPSMaster.theme.getTypeSelectionBackground())
-    var backgroundColor = ColorAnimation(FPSMaster.theme.getBackground())
-    var modHeight = 0f
+    private var modeColor = ColorAnimation(FPSMaster.theme.getTypeSelectionBackground())
+    private var modHeight = 0f
+    private val modsContainer = ScrollContainer()
 
-    val modsContainer = ScrollContainer()
+    var backgroundColor = ColorAnimation(FPSMaster.theme.getBackground())
+
     override fun doesGuiPauseGame(): Boolean {
         return doesGuiPauseGame
     }
@@ -89,9 +90,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             Companion.height = h
         }
         Companion.width = max(min(Companion.width, sr.scaledWidth - 10f), 400f)
-            .toFloat()
         Companion.height = max(min(Companion.height, sr.scaledHeight - 10f), 220f)
-            .toFloat()
         if (close) {
             if (scaleAnimation.value <= 0.5) {
                 mc.displayGuiScreen(null)

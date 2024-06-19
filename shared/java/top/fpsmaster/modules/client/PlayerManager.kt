@@ -3,7 +3,6 @@ package top.fpsmaster.modules.client
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import net.minecraft.client.Minecraft
-import net.minecraft.util.ResourceLocation
 import top.fpsmaster.FPSMaster
 import top.fpsmaster.modules.account.AccountManager
 import top.fpsmaster.event.EventDispatcher
@@ -54,9 +53,9 @@ class PlayerManager {
         }
     }
 
-    private var gifNumber = 0;
+    private var gifNumber = 0
     private var gifData: MutableList<GifUtil.FrameData>? = null
-    private var gifCount = 0;
+    private var gifCount = 0
     private var gif = false
     private val gifTimer = MathTimer()
 
@@ -166,7 +165,7 @@ class PlayerManager {
     ) {
         FPSMaster.async.runnable {
             if (ProviderManager.mcProvider.getPlayer() != null && token.isNotEmpty()) {
-                var serverAddress = ProviderManager.mcProvider.getServerAddress()
+                val serverAddress = ProviderManager.mcProvider.getServerAddress()
                 val url = "${FPSMaster.SERVICE_API}/update?api=v2&name=" + gameId +
                         "&username=" + username +
                         "&token=" + token.trim { it <= ' ' } +

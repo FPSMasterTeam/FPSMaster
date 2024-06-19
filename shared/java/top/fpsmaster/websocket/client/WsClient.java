@@ -6,9 +6,7 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import top.fpsmaster.FPSMaster;
 import top.fpsmaster.interfaces.ProviderManager;
-import top.fpsmaster.modules.client.PlayerManager;
 import top.fpsmaster.utils.Utility;
-import top.fpsmaster.websocket.data.WsUtilKt;
 import top.fpsmaster.websocket.data.message.Packet;
 import top.fpsmaster.websocket.data.message.client.*;
 import top.fpsmaster.websocket.data.message.server.SDataPacket;
@@ -16,7 +14,6 @@ import top.fpsmaster.websocket.data.message.server.SMessagePacket;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Scanner;
 
 public class WsClient extends WebSocketClient {
 

@@ -188,12 +188,8 @@ public class BlurBuffer {
 			return false;
 
 		if (OpenGlHelper.shadersSupported) {
-			if(ProviderManager.mcProvider.getWorld() != null && !(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer)) {
-				return false;
-			}
-
-			return true;
-		}
+            return ProviderManager.mcProvider.getWorld() == null || Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer;
+        }
 		return false;
 	}
 }

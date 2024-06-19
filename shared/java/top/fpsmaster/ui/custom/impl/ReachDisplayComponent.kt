@@ -3,7 +3,6 @@ package top.fpsmaster.ui.custom.impl
 import top.fpsmaster.FPSMaster
 import top.fpsmaster.features.impl.interfaces.ReachDisplay
 import top.fpsmaster.ui.custom.Component
-import top.fpsmaster.utils.shader.BlurBuffer
 
 class ReachDisplayComponent : Component(ReachDisplay::class.java) {
     override fun draw(x: Float, y: Float) {

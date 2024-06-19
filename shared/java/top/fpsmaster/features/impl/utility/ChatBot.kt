@@ -18,7 +18,6 @@ import top.fpsmaster.utils.math.MathTimer
 import top.fpsmaster.utils.openai.OpenAi
 import top.fpsmaster.utils.openai.requestClientAI
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.packets.SPacketChatProvider
 import java.util.regex.Pattern
 import kotlin.math.min
 
@@ -35,10 +34,10 @@ class ChatBot : Module("ChatBot", Category.Utility) {
     private var cooldown = NumberSetting("cooldown", 500, 0, 10000, 100)
     private var lastMsg: String = ""
     private var ignoreSelf = BooleanSetting("ignoreself", true)
-    var model = TextSetting("model", "gpt3.5-turbo")
-    var regex = TextSetting("regex", "<[^>]+> .*|[^>]+: .*")
-    var delay = NumberSetting("responddelay", 500, 0, 5000, 10)
-    var timer = MathTimer()
+    private var model = TextSetting("model", "gpt3.5-turbo")
+    private var regex = TextSetting("regex", "<[^>]+> .*|[^>]+: .*")
+    private var delay = NumberSetting("responddelay", 500, 0, 5000, 10)
+    private var timer = MathTimer()
 
     private val filterPrompt: String =
         "你扮演一个Minecraft的聊天机器人，这是一条聊天栏消息，如果你觉得它来自玩家，就返回true，如果是系统消息或者其他的，就返回false"
@@ -70,7 +69,7 @@ class ChatBot : Module("ChatBot", Category.Utility) {
                 if (matcher.find()) {
                     val openAi: OpenAi
                     addNotification("ChatGPT", formattedText, 1f)
-                    var s = ""
+                    val s: String
                     val userRole = JsonObject()
                     userRole.addProperty("role", "user")
                     userRole.addProperty("content", formattedText)

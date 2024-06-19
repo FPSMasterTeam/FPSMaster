@@ -22,7 +22,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
         position = Position.CT
     }
 
-    fun fromTimeTick(timeTick: String?): Long {
+    private fun fromTimeTick(timeTick: String?): Long {
         return timeTick!!.split(":".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()[0].toLong() * 60 * 1000 + timeTick.split(":".toRegex()).dropLastWhile { it.isEmpty() }
             .toTypedArray()[1].split("\\.".toRegex())
@@ -58,7 +58,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                         nextTime = fromTimeTick(current.lyrics!!.lines[i + 1].timeTick)
                     }
                 }
-                if (duration > time && duration < nextTime) {
+                if (duration in (time + 1)..<nextTime) {
                     curLine = i
                 } else if (duration > time) {
                     curLine = i

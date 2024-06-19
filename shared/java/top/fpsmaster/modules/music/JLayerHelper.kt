@@ -3,7 +3,6 @@ package top.fpsmaster.modules.music
 import javazoom.jl.converter.Converter
 import javazoom.jl.decoder.JavaLayerException
 import java.io.File
-import java.io.IOException
 import javax.sound.sampled.*
 
 object JLayerHelper {

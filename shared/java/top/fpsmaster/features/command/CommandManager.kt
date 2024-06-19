@@ -11,7 +11,7 @@ import top.fpsmaster.features.impl.utility.ClientCommand
 import top.fpsmaster.utils.Utility
 
 class CommandManager {
-    val commands = mutableListOf<Command>()
+    private val commands = mutableListOf<Command>()
 
     init {
         // add commands

@@ -6,7 +6,7 @@ public class Preset
 {
     public int[][] coords;
     public boolean[][] types;
-    private String name;
+    private final String name;
     
     public Preset(final String name, final int[][] coords, final boolean[][] types) {
         this.coords = coords;
@@ -16,6 +16,6 @@ public class Preset
     }
     
     public String getName() {
-        return I18n.format(this.name, new Object[0]);
+        return I18n.format(this.name);
     }
 }

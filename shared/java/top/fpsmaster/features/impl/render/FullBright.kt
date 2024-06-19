@@ -4,7 +4,7 @@ import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 
 class FullBright : Module("FullBright", Category.RENDER) {
-    var oldGamma = 0f
+    private var oldGamma = 0f
     override fun onEnable() {
         super.onEnable()
         oldGamma = mc.gameSettings.gammaSetting

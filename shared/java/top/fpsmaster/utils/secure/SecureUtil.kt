@@ -1,6 +1,5 @@
 package top.fpsmaster.utils.secure
 
-import net.minecraft.client.Minecraft
 import kotlin.system.exitProcess
 
 object SecureUtil {

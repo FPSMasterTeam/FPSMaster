@@ -1,4 +1,3 @@
 package top.fpsmaster.interfaces
 
-interface IProvider {
-}
+interface IProvider

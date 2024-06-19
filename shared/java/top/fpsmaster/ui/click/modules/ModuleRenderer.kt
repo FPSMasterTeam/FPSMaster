@@ -19,12 +19,10 @@ import java.util.function.Consumer
 class ModuleRenderer(override var mod: Module) : ValueRender() {
     private var settingsRenderers = ArrayList<SettingRender<*>>()
     private var settingHeight = 0f
-    var border = 0f
-    var expand = false
-
-    // animations
+    private var border = 0f
+    private var expand = false
+    private var background = ColorAnimation()
     var content = ColorAnimation(FPSMaster.theme.getModuleDisabled())
-    var background = ColorAnimation()
 
     init {
         content =

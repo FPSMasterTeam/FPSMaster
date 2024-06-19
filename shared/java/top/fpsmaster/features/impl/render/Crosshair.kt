@@ -18,17 +18,18 @@ import top.fpsmaster.interfaces.ProviderManager
 import java.awt.Color
 
 class Crosshair : Module("Crosshair", Category.RENDER) {
-    var dynamic = NumberSetting("Dynamic", 4, 0, 10, 0.1)
-    var outline = BooleanSetting("Outline", true)
-    var outlineWidth = NumberSetting("OutlineWidth", 1, 0, 10, 0.1){outline.value}
-    var dot = BooleanSetting("Dot", true)
-    var gap = NumberSetting("Gap", 6, 0, 10, 0.1)
-    var width = NumberSetting("Width", 0.6, 0, 10, 0.1)
-    var length = NumberSetting("Length", 3.5, 0, 10, 0.1)
-    var color = ColorSetting("Color", Color(255, 255, 255))
-    var outlineColor = ColorSetting("OutlineColor", Color(161, 161, 161)){outline.value}
-    var enemyColor = ColorSetting("Enemy", Color(255, 55, 50))
-    var friendColor = ColorSetting("Friend", Color(20, 255, 55))
+    private var dynamic = NumberSetting("Dynamic", 4, 0, 10, 0.1)
+    private var outline = BooleanSetting("Outline", true)
+    private var outlineWidth = NumberSetting("OutlineWidth", 1, 0, 10, 0.1) { outline.value }
+    private var dot = BooleanSetting("Dot", true)
+    private var gap = NumberSetting("Gap", 6, 0, 10, 0.1)
+    private var width = NumberSetting("Width", 0.6, 0, 10, 0.1)
+    private var length = NumberSetting("Length", 3.5, 0, 10, 0.1)
+    private var color = ColorSetting("Color", Color(255, 255, 255))
+    private var outlineColor = ColorSetting("OutlineColor", Color(161, 161, 161)) { outline.value }
+    private var enemyColor = ColorSetting("Enemy", Color(255, 55, 50))
+    private var friendColor = ColorSetting("Friend", Color(20, 255, 55))
+
     override fun onEnable() {
         super.onEnable()
         using = true
@@ -39,14 +40,14 @@ class Crosshair : Module("Crosshair", Category.RENDER) {
         using = false
     }
 
-    var dyna = 0f
+    private var dyna = 0f
 
     init {
         addSettings(dynamic, outline, outlineColor, outlineWidth, gap, width, length, color, enemyColor, friendColor)
     }
 
     @Subscribe
-    fun onRender(e: EventRender2D?) {
+    fun onRender(e: EventRender2D) {
         val sr = ScaledResolution(mc)
         val gap = gap.value.toFloat() + dyna
         val lineWidth = width.value.toFloat()

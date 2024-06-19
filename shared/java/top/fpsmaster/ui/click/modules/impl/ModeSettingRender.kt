@@ -6,15 +6,14 @@ import top.fpsmaster.FPSMaster
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.ui.click.modules.SettingRender
-import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.render.Render2DUtils
 import java.util.*
 
 class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeSetting>(setting) {
-    var expand = false
-    var expandH = 0f
+    private var expand = false
+    private var expandH = 0f
 
     init {
         this.mod = mod
@@ -107,6 +106,4 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             }
         }
     }
-
-    override fun keyTyped(typedChar: Char, keyCode: Int) {}
 }

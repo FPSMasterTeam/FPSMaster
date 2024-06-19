@@ -109,18 +109,15 @@ public class InterfaceHandler {
                 final Minimap minimap = InterfaceHandler.minimap;
                 final int minimapWidth = InterfaceHandler.minimap.getMinimapWidth();
                 minimap.minimapWidth = minimapWidth;
-                final int mapW = minimapWidth;
                 final Minimap minimap2 = InterfaceHandler.minimap;
-                final int minimapHeight = mapW;
-                minimap2.minimapHeight = minimapHeight;
-                final int mapH = minimapHeight;
+                minimap2.minimapHeight = (minimapWidth);
                 Minimap.frameUpdatePartialTicks = partial;
                 InterfaceHandler.minimap.updateZoom();
                 RenderHelper.disableStandardItemLighting();
                 GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float sizeFix = 512.0f;
 
-                InterfaceHandler.minimap.renderFrameToFBO(bufferSize, mapW, sizeFix, partial, true);
+                InterfaceHandler.minimap.renderFrameToFBO(bufferSize, minimapWidth, sizeFix, partial, true);
                 Minecraft.getMinecraft().getFramebuffer().bindFramebuffer(true);
                 Minimap.rotationFrameBuffer.bindFramebufferTexture();
                 sizeFix = 1f;
@@ -130,7 +127,7 @@ public class InterfaceHandler {
                 GlStateManager.blendFunc(770, 771);
 
                 Component component = FPSMaster.INSTANCE.componentsManager.getComponent(MiniMap.class);
-                InterfaceHandler.mc.ingameGUI.drawTexturedModalRect(((int) component.getRealPosition()[0]), ((int) component.getRealPosition()[1]), 0, 0, (int) ((mapW / 2 + 1) / sizeFix), (int) ((mapH / 2 + 1) / sizeFix));
+                InterfaceHandler.mc.ingameGUI.drawTexturedModalRect(((int) component.getRealPosition()[0]), ((int) component.getRealPosition()[1]), 0, 0, (int) ((minimapWidth / 2f + 1) / sizeFix), (int) ((minimapWidth / 2 + 1) / sizeFix));
                 super.drawInterface(width, height, scale, partial);
             }
         });
@@ -180,8 +177,8 @@ public class InterfaceHandler {
 
     static {
         InterfaceHandler.actionTimer = 0;
-        InterfaceHandler.presets = new ArrayList<Preset>();
-        InterfaceHandler.list = new ArrayList<Interface>();
+        InterfaceHandler.presets = new ArrayList<>();
+        InterfaceHandler.list = new ArrayList<>();
         invtextures = new ResourceLocation("textures/gui/container/inventory.png");
         InterfaceHandler.mc = XaeroMinimap.mc;
         InterfaceHandler.selectedId = -1;

@@ -5,7 +5,7 @@ import top.fpsmaster.features.manager.Module
 import top.fpsmaster.utils.rawinput.RawInputMod
 
 class RawInput : Module("RawInput", Category.Utility) {
-    var rawInputMod = RawInputMod()
+    private var rawInputMod = RawInputMod()
     override fun onEnable() {
         super.onEnable()
         rawInputMod.start()

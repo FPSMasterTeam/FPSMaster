@@ -15,7 +15,7 @@ class MathTimer {
         return false
     }
 
-    fun reset() {
+    private fun reset() {
         start = System.currentTimeMillis()
     }
 }

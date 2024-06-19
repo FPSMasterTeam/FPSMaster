@@ -14,7 +14,6 @@ import top.fpsmaster.features.impl.utility.*
 import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.ui.click.MainPanel
 import top.fpsmaster.utils.Utility
-import top.fpsmaster.wrapper.Constants
 import java.util.*
 
 class ModuleManager {

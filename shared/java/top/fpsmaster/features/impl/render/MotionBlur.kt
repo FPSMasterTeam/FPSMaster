@@ -8,31 +8,21 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.GL11
-import top.fpsmaster.FPSMaster
 import top.fpsmaster.event.Subscribe
 import top.fpsmaster.event.events.EventMotionBlur
 import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.utils.Utility
 import top.fpsmaster.wrapper.renderEngine.bufferbuilder.WrapperBufferBuilder
 
 class MotionBlur : Module("MotionBlur", Category.RENDER) {
-    var blurBufferMain: Framebuffer? = null
-    var blurBufferInto: Framebuffer? = null
-    var multiplier = NumberSetting("Multiplier", 2, 0, 10, 0.5)
+    private var blurBufferMain: Framebuffer? = null
+    private var blurBufferInto: Framebuffer? = null
+    private var multiplier = NumberSetting("Multiplier", 2, 0, 10, 0.5)
 
     init {
         addSettings(multiplier)
-    }
-
-    override fun onEnable() {
-        super.onEnable()
-//        if (ProviderManager.mcProvider.getPlayer() != null && Minecraft.getMinecraft().gameSettings.ofFastRender) {
-//            Utility.sendClientMessage(FPSMaster.INSTANCE.i18n.get("motionblur.fastrender"));
-//            Minecraft.getMinecraft().gameSettings.ofFastRender = false;
-//        }
     }
 
     private fun checkFramebufferSizes(framebuffer: Framebuffer?, width: Int, height: Int): Framebuffer {

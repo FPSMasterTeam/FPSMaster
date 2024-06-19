@@ -1,8 +1,6 @@
 package top.fpsmaster.modules.plugin.api;
 
 import top.fpsmaster.event.EventDispatcher;
-import top.fpsmaster.event.Subscribe;
-import top.fpsmaster.event.events.EventJoinServer;
 import top.fpsmaster.modules.logger.Logger;
 
 public class Plugin {

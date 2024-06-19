@@ -19,7 +19,7 @@ class MusicComponent : Component(MusicOverlay::class.java) {
         position = Position.RT
     }
 
-    fun drawSong(x: Float, y: Float, width: Float, height: Float) {
+    private fun drawSong(x: Float, y: Float, width: Float, height: Float) {
         val current = MusicPlayer.playList.getCurrent() as Music?
         drawRect(x, y, width, height, mod.backgroundColor.color)
         drawRect(x, y, songProgress, height, MusicOverlay.progressColor.color)

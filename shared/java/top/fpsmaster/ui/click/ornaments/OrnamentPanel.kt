@@ -13,15 +13,12 @@ import top.fpsmaster.utils.os.HttpRequest
 import top.fpsmaster.utils.render.Render2DUtils
 import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.ui.click.component.ScrollContainer
-import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.math.max
-import kotlin.math.min
 
 class OrnamentPanel {
-    val container = ScrollContainer()
+    private val container = ScrollContainer()
 
-    val capes: CopyOnWriteArrayList<Item>
+    private val capes: CopyOnWriteArrayList<Item>
         get() {
             val msg = HttpRequest["${FPSMaster.SERVICE_API}/getItems?timestamp=${System.currentTimeMillis()}"]
             val newItems = CopyOnWriteArrayList<Item>()
@@ -65,7 +62,6 @@ class OrnamentPanel {
     }
 
     fun drawScreen(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val sr = ScaledResolution(Minecraft.getMinecraft())
         this.x = x
         this.y = y
         this.width = width
@@ -162,7 +158,7 @@ class OrnamentPanel {
     }
 
     companion object {
-        var items: MutableList<Item> = CopyOnWriteArrayList<Item>()
+        var items: MutableList<Item> = CopyOnWriteArrayList()
         var timer = MathTimer()
     }
 }

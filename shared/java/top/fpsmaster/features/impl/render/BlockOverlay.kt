@@ -17,12 +17,12 @@ import top.fpsmaster.wrapper.util.WrapperAxisAlignedBB
 import java.awt.Color
 
 class BlockOverlay : Module("BlockOverlay", Category.RENDER) {
-    var fill = BooleanSetting("Fill", true)
-    var outline = BooleanSetting("Outline", true)
-    var throughBlock = BooleanSetting("ThroughBlock", false)
-    var width = NumberSetting("Width", 1, 0.1, 10, 0.1){outline.value}
-    var color1 = ColorSetting("FillColor", Color(255, 255, 255, 50)){fill.value}
-    var color2 = ColorSetting("OutlineColor", Color(255, 255, 255, 255)){outline.value}
+    private var fill = BooleanSetting("Fill", true)
+    private var outline = BooleanSetting("Outline", true)
+    private var throughBlock = BooleanSetting("ThroughBlock", false)
+    private var width = NumberSetting("Width", 1, 0.1, 10, 0.1) { outline.value }
+    private var color1 = ColorSetting("FillColor", Color(255, 255, 255, 50)) { fill.value }
+    private var color2 = ColorSetting("OutlineColor", Color(255, 255, 255, 255)) { outline.value }
 
     init {
         addSettings(fill, color1, outline, width, color2, throughBlock)
@@ -39,12 +39,12 @@ class BlockOverlay : Module("BlockOverlay", Category.RENDER) {
     }
 
     @Subscribe
-    fun onRender3D(e: EventRender3D?) {
+    fun onRender3D(e: EventRender3D) {
         if (mc.objectMouseOver != null) {
             if (ProviderManager.mcProvider.isHoveringOverBlock()) {
                 val pos = WrapperBlockPos(mc.objectMouseOver.blockPos)
                 val state = ProviderManager.worldClientProvider.getBlockState(pos)
-                val block =  ProviderManager.worldClientProvider.getBlock(pos)
+                val block = ProviderManager.worldClientProvider.getBlock(pos)
                 val x = pos.x - mc.renderManager.viewerPosX
                 val y = pos.y - mc.renderManager.viewerPosY
                 val z = pos.z - mc.renderManager.viewerPosZ
@@ -58,7 +58,7 @@ class BlockOverlay : Module("BlockOverlay", Category.RENDER) {
                     GL11.glDisable(2929)
                 }
                 GL11.glDepthMask(false)
-                val blockBoundingBox =  ProviderManager.worldClientProvider.getBlockBoundingBox(pos, state)
+                val blockBoundingBox = ProviderManager.worldClientProvider.getBlockBoundingBox(pos, state)
                 val minX: Double = if (block is BlockStairs) 0.0 else blockBoundingBox.minX()
                 val minY: Double = if (block is BlockStairs) 0.0 else blockBoundingBox.minY()
                 val minZ: Double = if (block is BlockStairs) 0.0 else blockBoundingBox.minZ()

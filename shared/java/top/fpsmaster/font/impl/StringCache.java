@@ -307,7 +307,7 @@ public class StringCache {
          */
         @Override
         public int compareTo(Integer i) {
-            return Integer.compare(stringIndex, i.intValue());
+            return Integer.compare(stringIndex, i);
         }
     }
 
@@ -392,9 +392,9 @@ public class StringCache {
         /* Need to cache each font style combination; the digitGlyphsReady = false disabled the normal glyph substitution mechanism */
         digitGlyphsReady = false;
         digitGlyphs[Font.PLAIN] = cacheString("0123456789").glyphs;
-        digitGlyphs[Font.BOLD] = cacheString("\u00A7l0123456789").glyphs;
-        digitGlyphs[Font.ITALIC] = cacheString("\u00A7o0123456789").glyphs;
-        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("\u00A7l\u00A7o0123456789").glyphs;
+        digitGlyphs[Font.BOLD] = cacheString("§l0123456789").glyphs;
+        digitGlyphs[Font.ITALIC] = cacheString("§o0123456789").glyphs;
+        digitGlyphs[Font.BOLD | Font.ITALIC] = cacheString("§l§o0123456789").glyphs;
         digitGlyphsReady = true;
     }
 
@@ -764,7 +764,7 @@ public class StringCache {
 
             /* Layout the entire string, splitting it up by color codes and the Unicode bidirectional algorithm */
             List<Glyph> glyphList = new ArrayList<>();
-            entry.advance = layoutBidiString(glyphList, text, 0, length, entry.colors);
+            entry.advance = layoutBidiString(glyphList, text, length, entry.colors);
 
             /* Convert the accumulated Glyph list to an array for efficient storage */
             entry.glyphs = new Glyph[glyphList.size()];
@@ -839,7 +839,7 @@ public class StringCache {
      * @return the length of the new stripped string in text[]; actual text.length will not change because the array is not reallocated
      */
     private int stripColorCodes(Entry cacheEntry, String str, char[] text) {
-        List<ColorCode> colorList = new ArrayList();
+        List<ColorCode> colorList = new ArrayList<>();
         int start = 0, shift = 0, next;
 
         byte fontStyle = Font.PLAIN;
@@ -847,7 +847,7 @@ public class StringCache {
         byte colorCode = -1;
 
         /* Search for section mark characters indicating the start of a color code (but only if followed by at least one character) */
-        while ((next = str.indexOf('\u00A7', start)) != -1 && next + 1 < str.length()) {
+        while ((next = str.indexOf('§', start)) != -1 && next + 1 < str.length()) {
             /*
              * Remove the two char color code from text[] by shifting the remaining data in the array over on top of it.
              * The "start" and "next" variables all contain offsets into the original unmodified "str" string. The "shift"
@@ -894,7 +894,7 @@ public class StringCache {
 
                 /* Otherwise, must be a color code or some other unsupported code */
                 default:
-                    if (code >= 0 && code <= 15) {
+                    if (code >= 0) {
                         colorCode = (byte) code;
                         fontStyle = Font.PLAIN; // This may be a bug in Minecraft's original FontRenderer
                         renderStyle = 0; // This may be a bug in Minecraft's original FontRenderer
@@ -930,21 +930,20 @@ public class StringCache {
      *
      * @param glyphList will hold all new Glyph objects allocated by layoutFont()
      * @param text      the string to lay out
-     * @param start     the offset into text at which to start the layout
      * @param limit     the (offset + length) at which to stop performing the layout
      * @return the total advance (horizontal distance) of this string
      */
-    private int layoutBidiString(List<Glyph> glyphList, char[] text, int start, int limit, ColorCode[] colors) {
+    private int layoutBidiString(List<Glyph> glyphList, char[] text, int limit, ColorCode[] colors) {
         int advance = 0;
 
         /* Avoid performing full bidirectional analysis if text has no "strong" right-to-left characters */
-        if (Bidi.requiresBidi(text, start, limit)) {
+        if (Bidi.requiresBidi(text, 0, limit)) {
             /* Note that while requiresBidi() uses start/limit the Bidi constructor uses start/length */
-            Bidi bidi = new Bidi(text, start, null, 0, limit - start, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
+            Bidi bidi = new Bidi(text, 0, null, 0, limit - 0, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
 
             /* If text is entirely right-to-left, then insert an EntryText node for the entire string */
             if (bidi.isRightToLeft()) {
-                return layoutStyle(glyphList, text, start, limit, Font.LAYOUT_RIGHT_TO_LEFT, advance, colors);
+                return layoutStyle(glyphList, text, 0, limit, Font.LAYOUT_RIGHT_TO_LEFT, advance, colors);
             }
 
             /* Otherwise text has a mixture of LTR and RLT, and it requires full bidirectional analysis */
@@ -970,7 +969,7 @@ public class StringCache {
 
                     /* An odd numbered level indicates right-to-left ordering */
                     int layoutFlag = (bidi.getRunLevel(logicalIndex) & 1) == 1 ? Font.LAYOUT_RIGHT_TO_LEFT : Font.LAYOUT_LEFT_TO_RIGHT;
-                    advance = layoutStyle(glyphList, text, start + bidi.getRunStart(logicalIndex), start + bidi.getRunLimit(logicalIndex),
+                    advance = layoutStyle(glyphList, text, bidi.getRunStart(logicalIndex), 0 + bidi.getRunLimit(logicalIndex),
                             layoutFlag, advance, colors);
                 }
             }
@@ -980,7 +979,7 @@ public class StringCache {
 
         /* If text is entirely left-to-right, then insert an EntryText node for the entire string */
         else {
-            return layoutStyle(glyphList, text, start, limit, Font.LAYOUT_LEFT_TO_RIGHT, advance, colors);
+            return layoutStyle(glyphList, text, 0, limit, Font.LAYOUT_LEFT_TO_RIGHT, advance, colors);
         }
     }
 
@@ -1068,12 +1067,12 @@ public class StringCache {
         Font font = glyphCache.lookupFont(text, start, limit, style);
         while (start < limit) {
             Font font2 = glyphCache.lookupFont(text, start, limit, style);
+            int next;
             if (font != font2) {
-                int next = start + 1;
+                next = start + 1;
                 advance = layoutFont(glyphList, text, start, next, layoutFlags, advance, font2);
-                start = next;
             } else {
-                int next = font.canDisplayUpTo(text, start, limit);
+                next = font.canDisplayUpTo(text, start, limit);
 
                 /* canDisplayUpTo returns -1 if the entire string range is supported by this font */
                 if (next == -1) {
@@ -1090,8 +1089,8 @@ public class StringCache {
                 }
 
                 advance = layoutFont(glyphList, text, start, next, layoutFlags, advance, font);
-                start = next;
             }
+            start = next;
         }
 
         return advance;

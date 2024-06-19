@@ -14,7 +14,6 @@ import top.fpsmaster.ui.notification.addNotification
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
 import top.fpsmaster.utils.os.HttpRequest
-import top.fpsmaster.wrapper.packets.SPacketChatProvider
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,7 +31,9 @@ class CheatersDetector : Module("CheatersDetector", Category.Utility) {
         }
         super.onEnable()
     }
-    val timer = MathTimer()
+
+    private val timer = MathTimer()
+
     @Subscribe
     fun onTick(e: EventTick) {
         if (ProviderManager.mcProvider.getPlayer() == null)
@@ -72,7 +73,7 @@ class CheatersDetector : Module("CheatersDetector", Category.Utility) {
             val input = ProviderManager.packetChat.getUnformattedText(e.packet)
             val pattern = "<([^>]*)>".toRegex()
             var matchResult = pattern.find(input)
-            if (matchResult == null){
+            if (matchResult == null) {
                 val pattern2 = ">([^>]*):".toRegex()
                 matchResult = pattern2.find(input) ?: return
             }

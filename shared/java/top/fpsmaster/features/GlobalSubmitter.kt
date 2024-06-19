@@ -17,6 +17,7 @@ import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.modules.music.MusicPlayer
 import top.fpsmaster.ui.notification.addNotification
 import top.fpsmaster.ui.notification.drawNotifications
+import top.fpsmaster.ui.screens.mainmenu.MainMenu
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
 import top.fpsmaster.utils.openai.OpenAi
@@ -24,7 +25,6 @@ import top.fpsmaster.utils.openai.requestClientAI
 import top.fpsmaster.utils.shader.BlurBuffer
 import top.fpsmaster.wrapper.GuiMainMenuProvider
 import top.fpsmaster.wrapper.TextFormattingProvider
-import top.fpsmaster.wrapper.packets.SPacketChatProvider
 
 class GlobalSubmitter {
 
@@ -54,10 +54,10 @@ class GlobalSubmitter {
                 addNotification(FPSMaster.INSTANCE.i18n["translator"], message, 2f)
                 FPSMaster.async.runnable {
                     val msgs = JsonArray()
-                    val msg = JsonObject()
-                    msg.addProperty("role", "user")
-                    msg.addProperty("content", message)
-                    msgs.add(msg)
+                    val msgJson = JsonObject()
+                    msgJson.addProperty("role", "user")
+                    msgJson.addProperty("content", message)
+                    msgs.add(msgJson)
                     val result = requestClientAI(
                         "You are a translator now, You need to translate following sentence to Chinese, you may use concepts in Minecraft",
                         "gpt-3.5-turbo",
@@ -96,7 +96,7 @@ class GlobalSubmitter {
     @Subscribe
     fun onTick(e: EventTick) {
         if (time.delay(500)) {
-            if (Minecraft.getMinecraft().currentScreen is GuiMainMenuProvider) {
+            if (Minecraft.getMinecraft().currentScreen is MainMenu) {
                 if (!MusicPlayer.playList.musics.isEmpty()) {
                     if (MusicPlayer.isPlaying) {
                         MusicPlayer.playList.pause()

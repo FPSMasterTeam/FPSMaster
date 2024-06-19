@@ -1,7 +1,6 @@
 package top.fpsmaster.ui.minimap.interfaces;
 
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import org.lwjgl.opengl.GL11;
 
 public abstract class Interface

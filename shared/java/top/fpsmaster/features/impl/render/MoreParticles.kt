@@ -12,14 +12,12 @@ import top.fpsmaster.features.settings.impl.BooleanSetting
 import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.WorldClientProvider
 import top.fpsmaster.wrapper.WrapperEntityLightningBolt
-import top.fpsmaster.wrapper.UtilityProvider
 import top.fpsmaster.wrapper.sound.SoundProvider
 
 class MoreParticles : Module("MoreParticles", Category.RENDER) {
     private var target: Entity? = null
-    var lastEffect: Entity? = null
+    private var lastEffect: Entity? = null
 
     init {
         addSettings(sharpness, alwaysSharpness, crit, alwaysCrit, special, killEffect)
@@ -42,11 +40,25 @@ class MoreParticles : Module("MoreParticles", Category.RENDER) {
                         false
                     )
                 )
-                SoundProvider.playLightning(entityLivingBase.posX, entityLivingBase.posY, entityLivingBase.posZ, 1, 1.0f, false)
+                SoundProvider.playLightning(
+                    entityLivingBase.posX,
+                    entityLivingBase.posY,
+                    entityLivingBase.posZ,
+                    1,
+                    1.0f,
+                    false
+                )
             } else if (killEffect.value == 2) {
                 // explosion
                 mc.effectRenderer.emitParticleAtEntity(target, EnumParticleTypes.EXPLOSION_LARGE)
-                SoundProvider.playExplosion(entityLivingBase.posX, entityLivingBase.posY, entityLivingBase.posZ, 1, 1.0f, false)
+                SoundProvider.playExplosion(
+                    entityLivingBase.posX,
+                    entityLivingBase.posY,
+                    entityLivingBase.posZ,
+                    1,
+                    1.0f,
+                    false
+                )
             }
             lastEffect = target
             target = null

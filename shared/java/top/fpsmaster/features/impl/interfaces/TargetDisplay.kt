@@ -12,15 +12,13 @@ import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.settings.impl.ColorSetting
 import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.RenderManagerProvider
-import top.fpsmaster.wrapper.TimerProvider
 import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
 class TargetDisplay : InterfaceModule("TargetDisplay", Category.Interface) {
-    var targetESP = ModeSetting("TargetESP", 0, "glow", "none")
-    var espColor = ColorSetting("EspColor", Color(255, 255, 255, 255)) { !targetESP.isMode("none") }
+    private var targetESP = ModeSetting("TargetESP", 0, "glow", "none")
+    private var espColor = ColorSetting("EspColor", Color(255, 255, 255, 255)) { !targetESP.isMode("none") }
 
     init {
         addSettings(targetESP, targetHUD, espColor)

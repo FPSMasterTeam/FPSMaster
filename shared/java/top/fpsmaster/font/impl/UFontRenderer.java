@@ -7,7 +7,6 @@ import top.fpsmaster.interfaces.ProviderManager;
 import top.fpsmaster.modules.client.GlobalTextFilter;
 import top.fpsmaster.font.FontManager;
 import top.fpsmaster.modules.logger.Logger;
-import top.fpsmaster.wrapper.UtilityProvider;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -18,7 +17,6 @@ import static top.fpsmaster.utils.render.Render2DUtils.intToColor;
 public class UFontRenderer extends FontRenderer {
     private final int FONT_HEIGHT = 8;
     private StringCache stringCache;
-    private final int[] colorCode = new int[32];
 
     public UFontRenderer(String name, int size) {
         super(
@@ -39,6 +37,7 @@ public class UFontRenderer extends FontRenderer {
         }
 
         ResourceLocation res = new ResourceLocation("textures/font/ascii.png");
+        int[] colorCode = new int[32];
         for (int i = 0; i <= 31; i++) {
             int j = (i >> 3 & 1) * 85;
             int k = (i >> 2 & 1) * 170 + j;
@@ -60,7 +59,7 @@ public class UFontRenderer extends FontRenderer {
                 l /= 4;
                 i1 /= 4;
             }
-            this.colorCode[i] = (k & 255) << 16 | (l & 255) << 8 | (i1 & 255);
+            colorCode[i] = (k & 255) << 16 | (l & 255) << 8 | (i1 & 255);
         }
 
         if (ProviderManager.utilityProvider.getResourcePath(res).equalsIgnoreCase("textures/font/ascii.png")) {

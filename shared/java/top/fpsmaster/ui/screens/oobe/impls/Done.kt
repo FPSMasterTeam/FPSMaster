@@ -7,17 +7,12 @@ import top.fpsmaster.ui.screens.oobe.Scene
 import top.fpsmaster.ui.common.GuiButton
 import top.fpsmaster.ui.screens.mainmenu.MainMenu
 import top.fpsmaster.utils.render.Render2DUtils
-import top.fpsmaster.wrapper.GuiMainMenuProvider
 import java.awt.Color
 
 class Done : Scene() {
-    var btn: GuiButton
-
-    init {
-        btn = GuiButton(FPSMaster.INSTANCE.i18n["oobe.done.start"]) {
-            FPSMaster.INSTANCE.configManager.configure["firstStart"] = "false"
-            Minecraft.getMinecraft().displayGuiScreen(MainMenu())
-        }
+    var btn: GuiButton = GuiButton(FPSMaster.INSTANCE.i18n["oobe.done.start"]) {
+        FPSMaster.INSTANCE.configManager.configure["firstStart"] = "false"
+        Minecraft.getMinecraft().displayGuiScreen(MainMenu())
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

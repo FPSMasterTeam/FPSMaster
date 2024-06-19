@@ -15,7 +15,6 @@ import top.fpsmaster.ui.screens.mainmenu.MainMenu;
 import top.fpsmaster.utils.PluginGui;
 import top.fpsmaster.utils.Utility;
 import top.fpsmaster.utils.render.Render2DUtils;
-import top.fpsmaster.wrapper.GuiMainMenuProvider;
 
 import java.util.HashMap;
 

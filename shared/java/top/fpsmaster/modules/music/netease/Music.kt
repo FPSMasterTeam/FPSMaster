@@ -18,14 +18,12 @@ import top.fpsmaster.wrapper.WorldClientProvider
 import java.io.File
 
 class Music(id: Long, name: String?, artists: String?, picUrl: String) : AbstractMusic() {
-    var imgURL: String
+    private var imgURL: String
     var isLoadedImage = false
-    var musicURL: String? = null
-    @JvmField
-    var id: String
+    private var musicURL: String? = null
+    var id: String = id.toString()
 
     init {
-        this.id = id.toString()
         this.name = name
         author = artists
         imgURL = picUrl
@@ -54,8 +52,8 @@ class Music(id: Long, name: String?, artists: String?, picUrl: String) : Abstrac
     }
 
     override fun play() {
-        val flac: File = File(music, fixName("$name($id).flac"))
-        val mp3: File = File(music, fixName("$name($id).mp3"))
+        val flac = File(music, fixName("$name($id).flac"))
+        val mp3 = File(music, fixName("$name($id).mp3"))
         if (flac.exists() || mp3.exists()) {
             Thread {
                 if (flac.exists()) {

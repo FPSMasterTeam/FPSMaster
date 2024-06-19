@@ -1,6 +1,5 @@
 package top.fpsmaster.features.impl.utility
 
-import net.minecraft.client.Minecraft
 import top.fpsmaster.FPSMaster
 import top.fpsmaster.event.Subscribe
 import top.fpsmaster.event.events.EventTick
@@ -22,7 +21,7 @@ class IRC : Module("IRC", Category.Utility) {
         using = true
     }
 
-    val timer = MathTimer()
+    private val timer = MathTimer()
 
     @Subscribe
     fun onTick(e: EventTick) {

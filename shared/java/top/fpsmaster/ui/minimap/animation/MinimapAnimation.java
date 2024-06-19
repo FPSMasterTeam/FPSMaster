@@ -2,8 +2,8 @@ package top.fpsmaster.ui.minimap.animation;
 
 public class MinimapAnimation
 {
-    public static long lastTick = System.currentTimeMillis();;
-    
+    public static long lastTick = System.currentTimeMillis();
+
     public static void tick() {
         MinimapAnimation.lastTick = System.currentTimeMillis();
     }

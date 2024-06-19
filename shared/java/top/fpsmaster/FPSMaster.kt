@@ -22,7 +22,6 @@ import top.fpsmaster.ui.screens.oobe.OOBEScreen
 import top.fpsmaster.utils.GitInfo
 import top.fpsmaster.utils.os.FileUtils
 import top.fpsmaster.utils.os.HttpRequest
-import top.fpsmaster.utils.secure.SecureUtil
 import top.fpsmaster.utils.system.config.ConfigManager
 import top.fpsmaster.utils.system.i18n.Language
 import top.fpsmaster.websocket.client.WsClient
@@ -129,11 +128,7 @@ class FPSMaster {
             val newVersion = s.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
             if (s.isNotEmpty()) {
                 latest = s
-                if (version < newVersion) {
-                    isLatest = false
-                } else {
-                    isLatest = true
-                }
+                isLatest = version >= newVersion
             }
         }
         loadNetease()

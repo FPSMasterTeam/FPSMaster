@@ -11,7 +11,7 @@ import java.util.*
 import kotlin.math.min
 
 class TextSettingRender(mod: Module, setting: TextSetting) : SettingRender<TextSetting>(setting) {
-    var inputBox: TextField
+    private var inputBox: TextField
 
     init {
         this.mod = mod

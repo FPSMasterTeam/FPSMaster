@@ -13,7 +13,7 @@ import java.io.File
 import javax.imageio.ImageIO
 
 object RoundUtil {
-    var generated: ArrayList<Int> = ArrayList()
+    private var generated: ArrayList<Int> = ArrayList()
 
     @JvmStatic
     fun generateRound(radius: Int) {
@@ -83,7 +83,7 @@ object RoundUtil {
         }
     }
 
-    fun loadToTexture(radius: Int, pos: String) {
+    private fun loadToTexture(radius: Int, pos: String) {
         val textureManager = Minecraft.getMinecraft().textureManager
         val textureLocation = ResourceLocation("fpsmaster/rounded/$radius/$pos")
         val cacheFileIn = File(FileUtils.round, radius.toString() + "_" + pos)

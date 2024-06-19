@@ -1,6 +1,5 @@
 package top.fpsmaster.features.impl.interfaces
 
-import com.google.common.base.Predicate
 import com.google.common.base.Predicates
 import net.minecraft.entity.Entity
 import net.minecraft.util.EntitySelectors
@@ -10,7 +9,6 @@ import top.fpsmaster.features.impl.InterfaceModule
 import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.settings.impl.ColorSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.TimerProvider
 import top.fpsmaster.wrapper.util.WrapperAxisAlignedBB
 import top.fpsmaster.wrapper.util.WrapperVec3
 import java.awt.Color
@@ -53,8 +51,8 @@ class ReachDisplay : InterfaceModule("ReachDisplay", Category.Interface) {
                 entity,
                 WrapperAxisAlignedBB(entity.entityBoundingBox).addCoord(vec3d1.x() * d0, vec3d1.y() * d0, vec3d1.z() * d0)
                     .expand(1.0, 1.0, 1.0).axisAlignedBB,
-                Predicates.and(EntitySelectors.NOT_SPECTATING,
-                    Predicate { entity1 -> entity1 != null && entity1.canBeCollidedWith() })
+                Predicates.and(EntitySelectors.NOT_SPECTATING
+                ) { entity1 -> entity1 != null && entity1.canBeCollidedWith() }
             )
             var d2 = d1
             for (j in list.indices) {

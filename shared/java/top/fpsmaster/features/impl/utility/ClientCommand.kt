@@ -8,6 +8,7 @@ class ClientCommand : Module("ClientCommand", Category.Utility) {
     init {
         addSettings(prefix)
     }
+
     override fun onEnable() {
         using = true
         super.onEnable()
@@ -18,8 +19,8 @@ class ClientCommand : Module("ClientCommand", Category.Utility) {
         super.onDisable()
     }
 
-    companion object{
+    companion object {
         var using = false
-        val prefix = TextSetting("prefix","#")
+        val prefix = TextSetting("prefix", "#")
     }
 }

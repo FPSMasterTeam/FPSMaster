@@ -9,7 +9,7 @@ import top.fpsmaster.utils.math.animation.ColorAnimation
 import java.awt.Color
 
 class KeystrokesComponent : Component(Keystrokes::class.java) {
-    var keys = ArrayList<Key>()
+    private var keys = ArrayList<Key>()
 
     init {
         keys.add(Key("W", Keyboard.KEY_W, 20, 0))

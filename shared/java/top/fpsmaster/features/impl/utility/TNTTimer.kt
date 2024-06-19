@@ -7,8 +7,6 @@ import org.lwjgl.opengl.GL11
 import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.RenderManagerProvider
-import top.fpsmaster.wrapper.TimerProvider
 import top.fpsmaster.wrapper.entities.EntityTNTPrimedUtil
 import java.awt.Color
 import java.text.DecimalFormat
@@ -52,7 +50,7 @@ class TNTTimer : Module("TNTTimer", Category.Utility) {
             )
             GL11.glNormal3f(0.0f, 1.0f, 0.0f)
             GlStateManager.rotate(-mc.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-            GL11.glScalef(-2.0f.let { scale /= it; scale }, -scale, -scale)
+            GL11.glScalef((-2.0f).let { scale /= it; scale }, -scale, -scale)
             val xLeft = -10.0
             val xRight = 10.0
             val yUp = -20.0

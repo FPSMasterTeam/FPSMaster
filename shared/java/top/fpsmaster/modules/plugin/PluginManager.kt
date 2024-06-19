@@ -12,7 +12,6 @@ import java.net.URL
 import java.net.URLClassLoader
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
-import javax.swing.JOptionPane
 
 class PluginManager {
     fun init() {

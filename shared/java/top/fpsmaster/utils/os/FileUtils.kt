@@ -10,11 +10,12 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 
 object FileUtils {
+    private var fpsmasterCache: File
+    private var netease: File
+
     var dir: File
     var plugins: File
     var cache: File
-    var fpsmasterCache: File
-    var netease: File
     var music: File
     var artists: File
     var omaments: File

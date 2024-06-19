@@ -3,8 +3,6 @@ package top.fpsmaster.font.impl;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
-import top.fpsmaster.font.FontManager;
-
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
@@ -129,7 +127,7 @@ public class GlyphCache {
      * have multiple entries for the various styles (i.e. bold, italic, etc.) of a font. This list starts with Java's "SansSerif" logical
      * font.
      */
-    private final List<Font> usedFonts = new ArrayList();
+    private final List<Font> usedFonts = new ArrayList<>();
 
 
     /**
@@ -142,14 +140,14 @@ public class GlyphCache {
      * increasing) which forms the upper 32 bits of the key into the glyphCache map. This font cache can include different styles
      * of the same font family like bold or italic.
      */
-    private final LinkedHashMap<Font, Integer> fontCache = new LinkedHashMap();
+    private final LinkedHashMap<Font, Integer> fontCache = new LinkedHashMap<>();
 
     /**
      * A cache of pre-rendered glyphs mapping each glyph by its glyphcode to the position of its pre-rendered image within
      * the cache texture. The key is a 64 bit number such that the lower 32 bits are the glyphcode and the upper 32 are the
      * index of the font in the fontCache. This makes for a single globally unique number to identify any glyph from any font.
      */
-    private final LinkedHashMap<Long, Entry> glyphCache = new LinkedHashMap();
+    private final LinkedHashMap<Long, Entry> glyphCache = new LinkedHashMap<>();
 
 
     /**

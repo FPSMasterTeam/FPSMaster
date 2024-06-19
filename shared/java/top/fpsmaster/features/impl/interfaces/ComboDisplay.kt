@@ -18,7 +18,7 @@ class ComboDisplay : InterfaceModule("ComboDisplay", Category.Interface) {
     }
 
     @Subscribe
-    fun onTick(e: EventTick?) {
+    fun onTick(e: EventTick) {
         if (ProviderManager.mcProvider.getPlayer() == null) return
         if (ProviderManager.mcProvider.getPlayer()!!.hurtTime == 1 || target != null && ProviderManager.utilityProvider.getDistanceToEntity(
                 ProviderManager.mcProvider.getPlayer(),

@@ -8,11 +8,7 @@ class ModeSetting(name: String, value: Int, vararg modes: String) : Setting<Int>
         this.visible = visible
     }
 
-    var modes: Array<String>
-
-    init {
-        this.modes = modes as Array<String>
-    }
+    private var modes: Array<String> = modes as Array<String>
 
     fun cycle() {
         value = (value + 1) % modes.size

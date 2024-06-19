@@ -1,7 +1,6 @@
 package top.fpsmaster.modules.plugin.api.client;
 
 import top.fpsmaster.FPSMaster;
-import top.fpsmaster.font.impl.UFontRenderer;
 import top.fpsmaster.ui.common.TextField;
 
 public class PluginTextField {

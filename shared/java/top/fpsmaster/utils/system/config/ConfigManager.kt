@@ -3,15 +3,12 @@ package top.fpsmaster.utils.system.config
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import top.fpsmaster.FPSMaster
-import top.fpsmaster.features.impl.interfaces.LyricsDisplay
 import top.fpsmaster.features.impl.optimizes.OldAnimations
 import top.fpsmaster.features.impl.optimizes.Performance
-import top.fpsmaster.features.impl.render.FullBright
 import top.fpsmaster.features.impl.render.ItemPhysics
 import top.fpsmaster.features.impl.utility.ClientCommand
 import top.fpsmaster.features.impl.utility.IRC
 import top.fpsmaster.features.settings.impl.*
-import top.fpsmaster.modules.music.MusicPlayer
 import top.fpsmaster.ui.custom.Component
 import top.fpsmaster.ui.custom.Position
 import top.fpsmaster.utils.os.FileUtils

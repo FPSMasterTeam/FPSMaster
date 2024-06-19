@@ -7,8 +7,6 @@ import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.WorldClientProvider
-import top.fpsmaster.wrapper.packets.SPacketTimeUpdateProvider
 
 class TimeChanger : Module("TimeChanger", Category.Utility) {
     var time = NumberSetting("Time", 0, 0, 24000, 1)

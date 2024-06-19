@@ -7,7 +7,6 @@ import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.ColorSetting
 import top.fpsmaster.ui.click.MainPanel
 import top.fpsmaster.ui.click.modules.SettingRender
-import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.render.GradientUtils
@@ -18,8 +17,8 @@ import kotlin.math.max
 import kotlin.math.min
 
 class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<ColorSetting>(setting) {
-    var aHeight = 0f
-    var expand = false
+    private var aHeight = 0f
+    private var expand = false
 
     init {
         this.mod = mod
@@ -79,8 +78,8 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
                     MainPanel.dragLock = mod.name + setting.name + 1
                 }
                 if (MainPanel.dragLock == mod.name + setting.name + 1) {
-                    saturation = max(min((mouseX - (x + tW + 26)) / 80, 1f), 0f).toFloat()
-                    brightness = max(min(1 - (mouseY - (y + 15)) / 80, 1f), 0f).toFloat()
+                    saturation = max(min((mouseX - (x + tW + 26)) / 80, 1f), 0f)
+                    brightness = max(min(1 - (mouseY - (y + 15)) / 80, 1f), 0f)
                 }
             }
 
@@ -120,7 +119,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
                     MainPanel.dragLock = mod.name + setting.name + 2
                 }
                 if (MainPanel.dragLock == mod.name + setting.name + 2) {
-                    hue = max(min((mouseY - (y + 15)) / aHeight, 1f), 0f).toFloat()
+                    hue = max(min((mouseY - (y + 15)) / aHeight, 1f), 0f)
                 }
             }
 
@@ -194,6 +193,4 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
             expand = !expand
         }
     }
-
-    override fun keyTyped(typedChar: Char, keyCode: Int) {}
 }

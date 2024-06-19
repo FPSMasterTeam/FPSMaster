@@ -1,8 +1,6 @@
 package top.fpsmaster.modules.plugin.api.client;
 
 
-import net.minecraft.client.gui.GuiScreen;
-
 import java.io.IOException;
 
 public class PluginScreen {

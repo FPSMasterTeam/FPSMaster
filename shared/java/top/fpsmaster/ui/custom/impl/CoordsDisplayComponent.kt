@@ -19,12 +19,12 @@ class CoordsDisplayComponent : Component(CoordsDisplay::class.java) {
                 (mod as CoordsDisplay).limitDisplayY.value.toInt() - ProviderManager.mcProvider.getPlayer()!!.posY.toInt()
             var yStr = ""
             // color
-            if (restHeight < 5) {
-                yStr = "${TextFormattingProvider.getRed()}$restHeight${TextFormattingProvider.getReset()}"
+            yStr = if (restHeight < 5) {
+                "${TextFormattingProvider.getRed()}$restHeight${TextFormattingProvider.getReset()}"
             } else if (restHeight < 10) {
-                yStr = "${TextFormattingProvider.getYellow()}$restHeight${TextFormattingProvider.getReset()}"
+                "${TextFormattingProvider.getYellow()}$restHeight${TextFormattingProvider.getReset()}"
             } else {
-                yStr = "${TextFormattingProvider.getGreen()}$restHeight${TextFormattingProvider.getReset()}"
+                "${TextFormattingProvider.getGreen()}$restHeight${TextFormattingProvider.getReset()}"
             }
 
             s =

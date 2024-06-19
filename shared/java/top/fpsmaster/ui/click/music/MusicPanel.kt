@@ -14,7 +14,6 @@ import top.fpsmaster.modules.music.netease.NeteaseApi
 import top.fpsmaster.modules.music.netease.deserialize.MusicWrapper
 import top.fpsmaster.ui.click.component.ScrollContainer
 import top.fpsmaster.utils.Utility.isHovered
-import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.os.FileUtils
 import top.fpsmaster.utils.os.FileUtils.saveFileBytes
 import top.fpsmaster.utils.os.FileUtils.saveTempValue
@@ -22,18 +21,13 @@ import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 import java.io.File
 import java.util.*
-import kotlin.math.max
-import kotlin.math.min
 
 object MusicPanel {
     private var displayList: PlayList = PlayList()
     private var recommendList: PlayList = PlayList()
     private var searchList = PlayList()
     private var searchThread: Thread? = null
-    var x = 0f
-    var y = 0f
-    var width = 0f
-    var height = 0f
+
     private var playProgress = 0f
     private var inputBox = SearchBox(
         FPSMaster.INSTANCE.i18n["music.search"]
@@ -41,15 +35,19 @@ object MusicPanel {
         searchThread = Thread { run() }
         searchThread!!.start()
     }
-    var pages = arrayOf("music.name", "music.list")
+    private var pages = arrayOf("music.name", "music.list")
     private var curSearch = 0
     private var isWaitingLogin = false
-    var code = 801
     private var key: String? = null
     private var loginThread: Thread? = null
-    var nickname: String = "Unknown"
-    val container = ScrollContainer()
+    private val container = ScrollContainer()
 
+    var code = 801
+    var nickname: String = "Unknown"
+    var x = 0f
+    var y = 0f
+    var width = 0f
+    var height = 0f
 
     @JvmStatic
     fun mouseClicked(mouseX: Int, mouseY: Int, btn: Int) {

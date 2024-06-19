@@ -12,7 +12,7 @@ import top.fpsmaster.utils.render.Render2DUtils
 import java.util.*
 
 class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<BindSetting>(setting) {
-    var colorAnimation = ColorAnimation()
+    private var colorAnimation = ColorAnimation()
 
     init {
         mod = module

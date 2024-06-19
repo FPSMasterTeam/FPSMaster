@@ -12,13 +12,13 @@ import java.util.*
 
 open class Module {
     var name: String
-    var description: String? = null
+    private var description: String = ""
     var category: Category
     var settings = LinkedList<Setting<*>>()
     var isEnabled = false
     var key = 0
 
-    constructor(name: String, description: String?, category: Category) {
+    constructor(name: String, description: String, category: Category) {
         this.name = name
         this.description = description
         this.category = category

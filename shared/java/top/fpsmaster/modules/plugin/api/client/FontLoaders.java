@@ -1,7 +1,6 @@
 package top.fpsmaster.modules.plugin.api.client;
 
 import top.fpsmaster.FPSMaster;
-import top.fpsmaster.font.impl.UFontRenderer;
 
 public class FontLoaders {
     public static void drawString(int size, String text, float x, float y, int color, boolean shadow) {

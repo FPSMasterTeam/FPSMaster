@@ -9,14 +9,19 @@ class HytApi {
     fun getRank(id: String): String {
         try {
             var json: String? = null
-            if (LevelTag.levelMode.mode == 1) {
-                json = HttpRequest.get("https://mc-api.16163.com/search/bedwars.html?uid=$id")
-            } else if (LevelTag.levelMode.mode == 2) {
-                json = HttpRequest.get("https://mc-api.16163.com/search/bedwarsxp.html?uid=$id")
-            } else if (LevelTag.levelMode.mode == 3) {
-                json = HttpRequest.get("https://mc-api.16163.com/search/skywars.html?uid=$id")
-            } else if (LevelTag.levelMode.mode == 4) {
-                json = HttpRequest.get("https://mc-api.16163.com/search/kitbattle.html?uid=$id")
+            when (LevelTag.levelMode.mode) {
+                1 -> {
+                    json = HttpRequest["https://mc-api.16163.com/search/bedwars.html?uid=$id"]
+                }
+                2 -> {
+                    json = HttpRequest["https://mc-api.16163.com/search/bedwarsxp.html?uid=$id"]
+                }
+                3 -> {
+                    json = HttpRequest["https://mc-api.16163.com/search/skywars.html?uid=$id"]
+                }
+                4 -> {
+                    json = HttpRequest["https://mc-api.16163.com/search/kitbattle.html?uid=$id"]
+                }
             }
             return try {
                 val data = Gson().fromJson(json, JsonObject::class.java)

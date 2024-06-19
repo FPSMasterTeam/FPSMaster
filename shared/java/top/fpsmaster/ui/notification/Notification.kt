@@ -7,7 +7,6 @@ import top.fpsmaster.utils.math.animation.AnimationUtils
 import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 import kotlin.math.max
-import kotlin.time.Duration
 
 class Notification(val title: String, val desc: String, val type: Type, val time: Float) {
 

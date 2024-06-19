@@ -5,7 +5,6 @@ import top.fpsmaster.features.impl.interfaces.PlayerDisplay
 import top.fpsmaster.ui.custom.Component
 import top.fpsmaster.utils.render.Render2DUtils
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.WorldClientProvider
 import java.awt.Color
 
 class PlayerDisplayComponent : Component(PlayerDisplay::class.java) {
@@ -30,8 +29,7 @@ class PlayerDisplayComponent : Component(PlayerDisplay::class.java) {
                 if (width < 10 + hX + nX) width = 10 + hX + nX
                 val health = entity.health
                 val maxHealth = entity.maxHealth
-                var color: Color
-                color = if (health >= maxHealth * 0.8) {
+                val color: Color = if (health >= maxHealth * 0.8) {
                     Color(50, 255, 55)
                 } else if (health > maxHealth * 0.5) {
                     Color(255, 255, 55)

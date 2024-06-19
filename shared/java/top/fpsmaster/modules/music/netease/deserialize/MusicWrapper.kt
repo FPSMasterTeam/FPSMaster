@@ -53,14 +53,13 @@ object MusicWrapper {
 
     fun loginAnonimous() {
         val jsonObject = gson.fromJson(anonmous, JsonObject::class.java)
-        NeteaseApi.cookies = jsonObject["cookie"].asString
+        cookies = jsonObject["cookie"].asString
     }
 
     private fun getSongsFromList(id: String?): PlayList {
         val playList = PlayList()
         try {
-            val jsonObject: JsonObject
-            jsonObject = gson.fromJson(getPlayList(id!!), JsonObject::class.java)
+            val jsonObject: JsonObject = gson.fromJson(getPlayList(id!!), JsonObject::class.java)
             val songs = jsonObject.getAsJsonArray("songs")
             for (song in songs) {
                 val songObject = song.getAsJsonObject()
@@ -183,7 +182,7 @@ object MusicWrapper {
                 val content = split[1]
                 val words = content.split("\\(".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
                 for (word in words) {
-                    if (word.length > 0) {
+                    if (word.isNotEmpty()) {
                         val split1 = word.split("\\)".toRegex()).dropLastWhile { it.isEmpty() }
                             .toTypedArray()
                         val split2 = split1[0].split(",".toRegex()).dropLastWhile { it.isEmpty() }

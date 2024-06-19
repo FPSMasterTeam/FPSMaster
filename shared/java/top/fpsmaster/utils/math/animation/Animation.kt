@@ -27,8 +27,7 @@ class Animation {
 
     fun update() {
         if (!isStarted) return
-        val result: Double
-        result = when (type) {
+        val result: Double = when (type) {
             Type.LINEAR -> AnimationUtils.linear(startTime, duration, start, end)
             Type.EASE_IN_QUAD -> AnimationUtils.easeInQuad(
                 startTime,

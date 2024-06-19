@@ -1,7 +1,6 @@
 package top.fpsmaster.event
 
 import top.fpsmaster.modules.logger.Logger
-import java.lang.reflect.InvocationTargetException
 import java.util.concurrent.CopyOnWriteArrayList
 
 object EventDispatcher {

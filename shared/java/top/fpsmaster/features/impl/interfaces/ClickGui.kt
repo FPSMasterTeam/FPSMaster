@@ -15,9 +15,6 @@ class ClickGui : InterfaceModule("ClickGui", Category.Interface) {
         this.set(false)
     }
 
-    override fun onDisable() {
-        super.onDisable()
-    }
 
     companion object {
         var keyBind = BindSetting("Key", Keyboard.KEY_RSHIFT)

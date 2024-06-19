@@ -23,7 +23,7 @@ class NameProtect : Module("NameProtect", Category.Utility) {
     }
 
     @Subscribe
-    fun onTick(e: EventTick?) {
+    fun onTick(e: EventTick) {
         if (ProviderManager.mcProvider.getPlayer() != null) {
             playerName = ProviderManager.mcProvider.getPlayer()!!.name
             replacement = Companion.name.value.replace("&".toRegex(), "§")

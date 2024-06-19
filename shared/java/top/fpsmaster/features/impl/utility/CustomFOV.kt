@@ -22,10 +22,13 @@ class CustomFOV : Module("CustomFov", Category.Utility) {
     companion object {
         @JvmField
         var noSpeedFov = BooleanSetting("NoSpeedFov", false)
+
         @JvmField
         var noFlyFov = BooleanSetting("NoFlyFov", false)
+
         @JvmField
         var noBowFov = BooleanSetting("NoBowFov", false)
+
         @JvmField
         var using = false
     }

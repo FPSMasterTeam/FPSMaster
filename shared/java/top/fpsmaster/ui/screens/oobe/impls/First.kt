@@ -12,21 +12,17 @@ import java.awt.Desktop
 import java.net.URI
 
 class First : Scene() {
-    var btn: GuiButton
-
-    init {
-        btn = GuiButton(FPSMaster.INSTANCE.i18n["oobe.first.next"]) {
-            val url = "https://fpsmaster.top/tutorial"
-            if (Desktop.isDesktopSupported()) {
-                val desktop = Desktop.getDesktop()
-                try {
-                    desktop.browse(URI(url))
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
+    var btn: GuiButton = GuiButton(FPSMaster.INSTANCE.i18n["oobe.first.next"]) {
+        val url = "https://fpsmaster.top/tutorial"
+        if (Desktop.isDesktopSupported()) {
+            val desktop = Desktop.getDesktop()
+            try {
+                desktop.browse(URI(url))
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            FPSMaster.INSTANCE.oobeScreen.nextScene()
         }
+        FPSMaster.INSTANCE.oobeScreen.nextScene()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

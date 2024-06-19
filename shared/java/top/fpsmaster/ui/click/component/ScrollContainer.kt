@@ -1,21 +1,10 @@
 package top.fpsmaster.ui.click.component
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Mouse
-import top.fpsmaster.FPSMaster
-import top.fpsmaster.ui.click.MainPanel
-import top.fpsmaster.ui.click.MainPanel.Companion
 import top.fpsmaster.ui.click.MainPanel.Companion.dragLock
-import top.fpsmaster.ui.click.MainPanel.Companion.x
-import top.fpsmaster.ui.click.MainPanel.Companion.y
-import top.fpsmaster.utils.math.animation.AnimationUtils
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
-import kotlin.math.max
-import kotlin.math.min
 
 class ScrollContainer {
     private var wheel = 0f

@@ -8,11 +8,10 @@ import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.TextSetting
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.wrapper.SkinProvider
 
 class SkinChanger : Module("SkinChanger", Category.Utility) {
-    var skinName = TextSetting("Skin", "")
-    var updateThread = Thread {
+    private var skinName = TextSetting("Skin", "")
+    private var updateThread = Thread {
         while (true) {
             update()
             try {

@@ -7,7 +7,6 @@ import top.fpsmaster.event.events.EventSendChatMessage
 import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.BooleanSetting
-import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.modules.logger.Logger.info
 import top.fpsmaster.wrapper.HYTProvider
 

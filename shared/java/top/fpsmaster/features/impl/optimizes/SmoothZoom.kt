@@ -10,8 +10,8 @@ import top.fpsmaster.features.settings.impl.BooleanSetting
 import top.fpsmaster.features.settings.impl.NumberSetting
 
 class SmoothZoom : Module("SmoothZoom", Category.OPTIMIZE) {
-    var zoomBind = BindSetting("ZoomBind", Keyboard.KEY_C)
-    var smoothMouse = BooleanSetting("SmoothMouse", false)
+    private var zoomBind = BindSetting("ZoomBind", Keyboard.KEY_C)
+    private var smoothMouse = BooleanSetting("SmoothMouse", false)
 
     init {
         addSettings(smoothCamera, speed, zoomBind, smoothMouse)
@@ -46,8 +46,10 @@ class SmoothZoom : Module("SmoothZoom", Category.OPTIMIZE) {
 
         @JvmField
         var zoom = false
+
         @JvmField
         var smoothCamera = BooleanSetting("smoothZoom", false)
+
         @JvmField
         val speed = NumberSetting("Speed", 4.0, 0.1, 10.0, 0.1) { smoothCamera.value }
     }

@@ -122,7 +122,7 @@ class GuiPlugins : GuiScreen() {
         }
     }
 
-    var plugins = ArrayList<OnlinePlugin>()
+    private var plugins = ArrayList<OnlinePlugin>()
 
     init {
         val list = HttpRequest["${FPSMaster.FILE_API}/plugins/list.json"]

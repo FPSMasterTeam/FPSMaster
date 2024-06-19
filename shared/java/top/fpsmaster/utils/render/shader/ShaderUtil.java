@@ -1,12 +1,10 @@
 package top.fpsmaster.utils.render.shader;
 
-import net.minecraft.client.gui.ScaledResolution;
 import top.fpsmaster.modules.logger.Logger;
 import top.fpsmaster.utils.Utility;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL20.*;
-import static org.lwjgl.opengl.GL20.GL_LINK_STATUS;
 
 public class ShaderUtil extends Utility {
     private final int programID;

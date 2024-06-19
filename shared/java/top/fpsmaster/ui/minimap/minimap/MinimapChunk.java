@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class MinimapChunk
 {
-    public static Random rand = new Random();;
+    public static Random rand = new Random();
     public int[][] colors;
     public boolean chunkGrid;
     public int[] lastHeights;

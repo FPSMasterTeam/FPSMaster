@@ -13,7 +13,7 @@ import java.awt.Color
 class TargetHUDComponent : Component(TargetDisplay::class.java) {
     var animation = 0f
     private var healthWidth = 0f
-    var colorAnimation = ColorAnimation()
+    private var colorAnimation = ColorAnimation()
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
         if (TargetDisplay.targetHUD.mode != 0) return

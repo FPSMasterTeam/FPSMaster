@@ -13,8 +13,8 @@ import java.util.*
 
 class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<NumberSetting>(setting) {
     // animation
-    var aWidth = 0f
-    var dragging = false
+    private var aWidth = 0f
+    private var dragging = false
 
     init {
         this.mod = mod
@@ -72,6 +72,4 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
             }
         }
     }
-
-    override fun keyTyped(typedChar: Char, keyCode: Int) {}
 }

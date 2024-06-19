@@ -45,10 +45,10 @@ class ModsListComponent : Component(ModsList::class.java) {
             if ((mod as ModsList).english.value)
                 name = module.name
             var width = 0f
-            if ((mod as ModsList).betterFont.value) {
-                width = font.getStringWidth(name).toFloat()
+            width = if ((mod as ModsList).betterFont.value) {
+                font.getStringWidth(name).toFloat()
             } else {
-                width = ProviderManager.mcProvider.getFontRenderer().getStringWidth(name).toFloat()
+                ProviderManager.mcProvider.getFontRenderer().getStringWidth(name).toFloat()
             }
 
             if (width2 < width)

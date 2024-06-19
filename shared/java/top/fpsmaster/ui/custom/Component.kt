@@ -18,8 +18,12 @@ import kotlin.math.max
 import kotlin.math.min
 
 open class Component(clazz: Class<*>?) {
+
+    private var dragX = 0f
+    private var dragY = 0f
+
     @JvmField
-    var mod: InterfaceModule
+    var mod: InterfaceModule = FPSMaster.INSTANCE.moduleManager!!.getModule(clazz!!) as InterfaceModule
     var position = Position.LT
 
     @JvmField
@@ -33,20 +37,15 @@ open class Component(clazz: Class<*>?) {
 
     @JvmField
     var height = 0f
-    var dragX = 0f
-    var dragY = 0f
+
     open fun draw(x: Float, y: Float) {}
     var alpha = 0f
-
-    init {
-        mod = FPSMaster.INSTANCE.moduleManager!!.getModule(clazz!!) as InterfaceModule
-    }
 
     fun shouldDisplay(): Boolean {
         return mod.isEnabled
     }
 
-    fun getRealPosition():FloatArray{
+    fun getRealPosition(): FloatArray {
         val sr = ScaledResolution(Minecraft.getMinecraft())
         var rX = 0f
         var rY = 0f
@@ -166,7 +165,7 @@ open class Component(clazz: Class<*>?) {
     }
 
     fun drawRect(x: Float, y: Float, width: Float, height: Float, color: Color?) {
-        BlurBuffer.blurArea(x, y, width, height,true)
+        BlurBuffer.blurArea(x, y, width, height, true)
         if (mod.bg.value)
             if (mod.rounded.value) {
                 Render2DUtils.drawOptimizedRoundedRect(x, y, width, height, mod.roundRadius.value.toInt(), color!!.rgb)

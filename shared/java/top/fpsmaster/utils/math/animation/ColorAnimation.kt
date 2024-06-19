@@ -4,10 +4,10 @@ import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 
 class ColorAnimation {
-    var r = Animation()
-    var g = Animation()
-    var b = Animation()
-    var a = Animation()
+    private var r = Animation()
+    private var g = Animation()
+    private var b = Animation()
+    private var a = Animation()
     private var first = true
     private var end: Color? = null
 

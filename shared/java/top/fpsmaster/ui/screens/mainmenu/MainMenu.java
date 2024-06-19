@@ -21,19 +21,11 @@ import java.net.URI;
 import static top.fpsmaster.utils.Utility.isHovered;
 
 public class MainMenu extends GuiScreen {
-    GuiButton singlePlayer = new GuiButton("mainmenu.single", () -> {
-        ProviderManager.mainmenuProvider.showSinglePlayer(this);
-    });
-    GuiButton multiPlayer = new GuiButton("mainmenu.multi", () -> {
-        mc.displayGuiScreen(new GuiMultiplayer(this));
-    });
-    GuiButton options = new GuiButton("mainmenu.settings", () -> {
-        mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings));
-    });
+    GuiButton singlePlayer = new GuiButton("mainmenu.single", () -> ProviderManager.mainmenuProvider.showSinglePlayer(this));
+    GuiButton multiPlayer = new GuiButton("mainmenu.multi", () -> mc.displayGuiScreen(new GuiMultiplayer(this)));
+    GuiButton options = new GuiButton("mainmenu.settings", () -> mc.displayGuiScreen(new GuiOptions(this, mc.gameSettings)));
 
-    GuiButton exit = new GuiButton("X", () -> {
-        mc.shutdown();
-    });
+    GuiButton exit = new GuiButton("X", () -> mc.shutdown());
 
     String latest = "获取版本更新失败";
     String welcome = "获取版本更新失败";
@@ -58,6 +50,7 @@ public class MainMenu extends GuiScreen {
 
         Render2DUtils.drawRect(0, 0, this.width, this.height, new Color(26, 59, 109, 60));
 
+        assert FPSMaster.INSTANCE.fontManager != null;
         int stringWidth = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(mc.getSession().getUsername());
         if (isHovered(10, 10, 80, 20, mouseX, mouseY)) {
             Render2DUtils.drawOptimizedRoundedRect(10, 10, 30 + stringWidth, 20, new Color(0, 0, 0, 100));
@@ -122,6 +115,7 @@ public class MainMenu extends GuiScreen {
         multiPlayer.mouseClick(mouseX, mouseY, mouseButton);
         options.mouseClick(mouseX, mouseY, mouseButton);
         exit.mouseClick(mouseX, mouseY, mouseButton);
+        assert FPSMaster.INSTANCE.fontManager != null;
         float uw = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(latest);
         float nw = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(latest);
 

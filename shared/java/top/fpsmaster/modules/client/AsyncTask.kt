@@ -3,11 +3,7 @@ package top.fpsmaster.modules.client
 import java.util.concurrent.*
 
 class AsyncTask(threadCount: Int) {
-    private val executorService: ExecutorService
-
-    init {
-        executorService = Executors.newFixedThreadPool(threadCount)
-    }
+    private val executorService: ExecutorService = Executors.newFixedThreadPool(threadCount)
 
     fun <T> execute(task: Callable<T>): Future<T> {
         return executorService.submit(task)

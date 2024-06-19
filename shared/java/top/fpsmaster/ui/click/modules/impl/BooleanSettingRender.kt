@@ -13,7 +13,7 @@ import java.util.*
 
 class BooleanSettingRender(mod: Module, setting: BooleanSetting) : SettingRender<BooleanSetting>(setting) {
     // animation
-    var box = ColorAnimation(Color(255, 255, 255, 0))
+    private var box = ColorAnimation(Color(255, 255, 255, 0))
 
     init {
         this.mod = mod
@@ -48,6 +48,4 @@ class BooleanSettingRender(mod: Module, setting: BooleanSetting) : SettingRender
             setting.toggle()
         }
     }
-
-    override fun keyTyped(typedChar: Char, keyCode: Int) {}
 }
