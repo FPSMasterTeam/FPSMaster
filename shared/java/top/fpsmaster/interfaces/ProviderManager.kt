@@ -2,6 +2,7 @@ package top.fpsmaster.interfaces
 
 import top.fpsmaster.interfaces.client.IConstantsProvider
 import top.fpsmaster.interfaces.game.*
+import top.fpsmaster.interfaces.gui.IGuiIngameProvider
 import top.fpsmaster.interfaces.gui.IGuiMainMenuProvider
 import top.fpsmaster.interfaces.packets.IPacketChat
 import top.fpsmaster.interfaces.packets.IPacketPlayerList
@@ -39,5 +40,7 @@ object ProviderManager {
     val packetPlayerList: IPacketPlayerList = SPacketPlayerListProvider()
     @JvmField
     val packetTimeUpdate: IPacketTimeUpdate = SPacketTimeUpdateProvider()
+    @JvmField
+    val guiIngameProvider: IGuiIngameProvider = GuiIngameProvider()
 
 }

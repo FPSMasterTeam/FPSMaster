@@ -1,19 +1,10 @@
 package top.fpsmaster.forge.mixin;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityArmorStand;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.potion.Potion;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
@@ -22,12 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import top.fpsmaster.features.impl.optimizes.Performance;
 import top.fpsmaster.features.impl.utility.LevelTag;
-import top.fpsmaster.utils.render.PlayerUtils;
-
-import java.util.Random;
-
-import static net.minecraft.client.gui.Gui.icons;
-import static top.fpsmaster.utils.Utility.mc;
+import top.fpsmaster.interfaces.ProviderManager;
 
 @Mixin(Render.class)
 public abstract class MixinRender {
@@ -68,7 +54,7 @@ public abstract class MixinRender {
                 GlStateManager.disableDepth();
                 GlStateManager.enableBlend();
                 GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                PlayerUtils.drawHealth(entityIn);
+                ProviderManager.guiIngameProvider.drawHealth(entityIn);
                 GlStateManager.disableTexture2D();
                 GlStateManager.enableTexture2D();
                 GlStateManager.enableLighting();

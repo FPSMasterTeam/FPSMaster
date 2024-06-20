@@ -1,42 +1,40 @@
-package top.fpsmaster.utils.render;
+package top.fpsmaster.wrapper;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.WorldRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.MobEffects;
 import net.minecraft.potion.Potion;
-import net.minecraft.util.FoodStats;
-import net.minecraft.util.MathHelper;
-import org.spongepowered.asm.mixin.Unique;
+import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.NotNull;
+import top.fpsmaster.interfaces.gui.IGuiIngameProvider;
 
 import java.util.Random;
 
-import static net.minecraft.client.gui.Gui.icons;
+import static net.minecraft.client.gui.Gui.ICONS;
 import static top.fpsmaster.utils.Utility.mc;
 
-public class PlayerUtils {
-    @Unique
+public class GuiIngameProvider implements IGuiIngameProvider {
     protected static final Random rand = new Random();
     protected static int playerHealth = 0;
     protected static int lastPlayerHealth = 0;
     protected static long lastSystemTime = 0L;
     protected static long healthUpdateCounter = 0L;
 
-    @Unique
-    public static void drawHealth(Entity entity) {
+    public void drawHealth(@NotNull Entity entity) {
         if (!(entity instanceof EntityPlayer))
             return;
-        mc.getTextureManager().bindTexture(icons);
+        mc.getTextureManager().bindTexture(ICONS);
         GlStateManager.enableBlend();
         GlStateManager.enableTexture2D();
         EntityPlayer entityPlayer = (EntityPlayer) entity;
-        int i = MathHelper.ceiling_float_int(entityPlayer.getHealth());
+        int i = MathHelper.ceil(entityPlayer.getHealth());
         boolean bl = healthUpdateCounter > (long) mc.ingameGUI.getUpdateCounter() && (healthUpdateCounter - (long) mc.ingameGUI.getUpdateCounter()) / 3L % 2L == 1L;
         if (i < playerHealth && entityPlayer.hurtResistantTime > 0) {
             lastSystemTime = Minecraft.getSystemTime();
@@ -55,22 +53,20 @@ public class PlayerUtils {
         playerHealth = i;
         int j = lastPlayerHealth;
         rand.setSeed(mc.ingameGUI.getUpdateCounter() * 312871L);
-        IAttributeInstance iAttributeInstance = entityPlayer.getEntityAttribute(SharedMonsterAttributes.maxHealth);
+        IAttributeInstance iAttributeInstance = entityPlayer.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH);
         int m = -45;
         int o = -10;
         float f = (float) iAttributeInstance.getAttributeValue();
         float g = entityPlayer.getAbsorptionAmount();
-        int p = MathHelper.ceiling_float_int((f + g) / 2.0F / 10.0F);
+        int p = MathHelper.ceil((f + g) / 2.0F / 10.0F);
         int q = Math.max(10 - (p - 2), 3);
         int r = o - (p - 1) * q - 10;
         float h = g;
         int s = entityPlayer.getTotalArmorValue();
         int t = -1;
-        if (entityPlayer.isPotionActive(Potion.regeneration)) {
-            t = mc.ingameGUI.getUpdateCounter() % MathHelper.ceiling_float_int(f + 5.0F);
+        if (entityPlayer.isPotionActive(MobEffects.REGENERATION)) {
+            t = mc.ingameGUI.getUpdateCounter() % MathHelper.ceil(f + 5.0F);
         }
-
-        mc.mcProfiler.startSection("armor");
 
         int u;
         int v;
@@ -91,18 +87,16 @@ public class PlayerUtils {
             }
         }
 
-        mc.mcProfiler.endStartSection("health");
-
         int w;
         int x;
         int y;
         int z;
         int aa;
-        for (u = MathHelper.ceiling_float_int((f + g) / 2.0F) - 1; u >= 0; --u) {
+        for (u = MathHelper.ceil((f + g) / 2.0F) - 1; u >= 0; --u) {
             v = 16;
-            if (entityPlayer.isPotionActive(Potion.poison)) {
+            if (entityPlayer.isPotionActive(MobEffects.POISON)) {
                 v += 36;
-            } else if (entityPlayer.isPotionActive(Potion.wither)) {
+            } else if (entityPlayer.isPotionActive(MobEffects.WITHER)) {
                 v += 72;
             }
 
@@ -111,7 +105,7 @@ public class PlayerUtils {
                 w = 1;
             }
 
-            x = MathHelper.ceiling_float_int((float) (u + 1) / 10.0F) - 1;
+            x = MathHelper.ceil((float) (u + 1) / 10.0F) - 1;
             y = m + u % 10 * 8;
             z = o - x * q;
             if (i <= 4) {
@@ -123,7 +117,7 @@ public class PlayerUtils {
             }
 
             aa = 0;
-            if (entityPlayer.worldObj.getWorldInfo().isHardcoreModeEnabled()) {
+            if (entityPlayer.world.getWorldInfo().isHardcoreModeEnabled()) {
                 aa = 5;
             }
 
@@ -163,7 +157,7 @@ public class PlayerUtils {
         float f = 0.00390625F;
         float g = 0.00390625F;
         Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        BufferBuilder worldRenderer = tessellator.getBuffer();
         worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
         worldRenderer.pos(x, y + height, 0.0).tex((float) (textureX) * f, (float) (textureY + height) * g).endVertex();
         worldRenderer.pos(x + width, y + height, 0.0).tex((float) (textureX + width) * f, (float) (textureY + height) * g).endVertex();
