@@ -37,6 +37,7 @@ jobs:
         
     - name: Build with Gradle Wrapper
       run: |
+        chmod +x v1.8.9/gradlew
         cd v1.8.9
         ./gradlew build
 
@@ -48,6 +49,7 @@ jobs:
 
     - name: Build with Gradle Wrapper
       run: |
+        chmod +x v1.12.2/gradlew
         cd v1.12.2
         ./gradlew build
 
