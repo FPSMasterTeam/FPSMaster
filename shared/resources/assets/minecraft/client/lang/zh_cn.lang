@@ -312,6 +312,7 @@ customfov.nobowfov=没有弓箭视角变化
 nametags=名字标签
 nametags.desc=自定义名字标签
 nametags.showself=显示自己的名字标签
+nametags.health=显示血条
 nametags.rankmode=排名模式
 nametags.rankmode.none=不显示
 nametags.rankmode.bedwars=起床战争

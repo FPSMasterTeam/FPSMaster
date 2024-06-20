@@ -86,7 +86,7 @@ class ModuleManager {
         modules.add(TimeChanger())
         modules.add(TNTTimer())
         modules.add(Hitboxes())
-//        modules.add(LevelTag())
+        modules.add(LevelTag())
         modules.add(Keystrokes())
         modules.add(Crosshair())
         modules.add(CustomFOV())

@@ -1,28 +1,33 @@
 package top.fpsmaster.forge.mixin;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityArmorStand;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
+import net.minecraft.util.FoodStats;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import top.fpsmaster.FPSMaster;
 import top.fpsmaster.features.impl.optimizes.Performance;
+import top.fpsmaster.features.impl.utility.LevelTag;
+import top.fpsmaster.utils.render.PlayerUtils;
 
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
+import java.util.Random;
+
+import static net.minecraft.client.gui.Gui.icons;
 import static top.fpsmaster.utils.Utility.mc;
-import static top.fpsmaster.utils.render.Render2DUtils.drawModalRectWithCustomSizedTexture;
 
 @Mixin(Render.class)
 public abstract class MixinRender {
@@ -38,11 +43,46 @@ public abstract class MixinRender {
     @Final
     @Shadow
     protected RenderManager renderManager;
-    @Shadow
-    public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks){}
 
-    @Inject(method = "renderName",at = @At("HEAD"), cancellable = true)
-    public void ignore(Entity entity, double x, double y, double z, CallbackInfo ci){
+    @Shadow
+    public void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
+    }
+
+
+
+    @Inject(method = "renderLivingLabel", at = @At("HEAD"), cancellable = true)
+    protected void renderLivingLabel(Entity entityIn, String str, double x, double y, double z, int maxDistance, CallbackInfo ci) {
+        if (LevelTag.health.getValue()) {
+            double d = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
+            if (!(d > (double) (maxDistance * maxDistance))) {
+                float f = 1.6F;
+                float g = 0.016666668F * f;
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) x + 0.0F, (float) y + entityIn.height + 0.5F, (float) z);
+                GL11.glNormal3f(0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(-this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
+                GlStateManager.rotate(this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
+                GlStateManager.scale(-g, -g, g);
+                GlStateManager.disableLighting();
+                GlStateManager.depthMask(false);
+                GlStateManager.disableDepth();
+                GlStateManager.enableBlend();
+                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+                PlayerUtils.drawHealth(entityIn);
+                GlStateManager.disableTexture2D();
+                GlStateManager.enableTexture2D();
+                GlStateManager.enableLighting();
+                GlStateManager.disableBlend();
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+                GlStateManager.popMatrix();
+            }
+        } else {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "renderName", at = @At("HEAD"), cancellable = true)
+    public void ignore(Entity entity, double x, double y, double z, CallbackInfo ci) {
         if (Performance.using && Performance.ignoreStands.getValue() && entity instanceof EntityArmorStand) {
             ci.cancel();
         }

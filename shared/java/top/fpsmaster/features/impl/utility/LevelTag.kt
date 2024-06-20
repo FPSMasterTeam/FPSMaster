@@ -7,7 +7,7 @@ import top.fpsmaster.features.settings.impl.ModeSetting
 
 class LevelTag : Module("Nametags", Category.Utility) {
     init {
-        addSettings(showSelf, levelMode)
+        addSettings(showSelf)
     }
 
     override fun onEnable() {
@@ -23,6 +23,8 @@ class LevelTag : Module("Nametags", Category.Utility) {
     companion object {
         @JvmField
         var showSelf = BooleanSetting("ShowSelf", true)
+        @JvmField
+        var health = BooleanSetting("Health", true)
         var levelMode = ModeSetting("RankMode", 0, "None", "Bedwars", "Bedwars-xp", "Skywars", "Kit")
         @JvmField
         var using = false
