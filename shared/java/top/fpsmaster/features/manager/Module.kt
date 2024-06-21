@@ -77,10 +77,10 @@ open class Module {
                 onEnable()
                 if (ProviderManager.mcProvider.getPlayer() != null)
                     addNotification(
-                        FPSMaster.INSTANCE.i18n["notification.module.enable"],
-                        FPSMaster.INSTANCE.i18n["notification.module.enable.desc"].replace(
+                        FPSMaster.i18n["notification.module.enable"],
+                        FPSMaster.i18n["notification.module.enable.desc"].replace(
                             "%s",
-                            FPSMaster.INSTANCE.i18n[this.name.lowercase(Locale.getDefault())]
+                            FPSMaster.i18n[this.name.lowercase(Locale.getDefault())]
                         ),
                         1f
                     )
@@ -88,10 +88,10 @@ open class Module {
                 onDisable()
                 if (ProviderManager.mcProvider.getPlayer() != null)
                     addNotification(
-                        FPSMaster.INSTANCE.i18n["notification.module.disable"],
-                        FPSMaster.INSTANCE.i18n["notification.module.disable.desc"].replace(
+                        FPSMaster.i18n["notification.module.disable"],
+                        FPSMaster.i18n["notification.module.disable.desc"].replace(
                             "%s",
-                            FPSMaster.INSTANCE.i18n[this.name.lowercase(Locale.getDefault())]
+                            FPSMaster.i18n[this.name.lowercase(Locale.getDefault())]
                         ),
                         1f
                     )

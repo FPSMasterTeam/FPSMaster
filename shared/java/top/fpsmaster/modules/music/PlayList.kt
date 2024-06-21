@@ -13,8 +13,8 @@ class PlayList {
 
     fun play() {
         addNotification(
-            FPSMaster.INSTANCE.i18n["notification.music"],
-            FPSMaster.INSTANCE.i18n["notification.music.next"].replace(
+            FPSMaster.i18n["notification.music"],
+            FPSMaster.i18n["notification.music.next"].replace(
                 "%s",
                 MusicPlayer.playList.getCurrent()?.name ?: ""
             ),
@@ -45,8 +45,8 @@ class PlayList {
             current = 0
         }
         addNotification(
-            FPSMaster.INSTANCE.i18n["notification.music"],
-            FPSMaster.INSTANCE.i18n["notification.music.next"].replace(
+            FPSMaster.i18n["notification.music"],
+            FPSMaster.i18n["notification.music.next"].replace(
                 "%s",
                 MusicPlayer.playList.getCurrent()?.name ?: ""
             ),
@@ -65,8 +65,8 @@ class PlayList {
             current = musics.size - 1
         }
         addNotification(
-            FPSMaster.INSTANCE.i18n["notification.music"],
-            FPSMaster.INSTANCE.i18n["notification.music.next"].replace(
+            FPSMaster.i18n["notification.music"],
+            FPSMaster.i18n["notification.music.next"].replace(
                 "%s",
                 MusicPlayer.playList.getCurrent()?.name ?: ""
             ),

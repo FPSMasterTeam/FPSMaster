@@ -30,7 +30,7 @@ public class SPacketChatProvider implements IPacketChat {
         String unformattedText = getUnformattedText(p);
         if (!unformattedText.endsWith(" [T]") && unformattedText.length() > 5) {
             ClickEvent clickEvent = new ClickEvent(ClickEvent.Action.RUN_COMMAND, "#TRANSLATE" + unformattedText);
-            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(FPSMaster.INSTANCE.i18n.get("translate.hover")));
+            HoverEvent hoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponentString(FPSMaster.i18n.get("translate.hover")));
             Style style = new Style().setClickEvent(clickEvent).setHoverEvent(hoverEvent);
             TextComponentString iTextComponents = new TextComponentString(TextFormattingProvider.getGray().toString() + " [T]");
             iTextComponents.setStyle(style);

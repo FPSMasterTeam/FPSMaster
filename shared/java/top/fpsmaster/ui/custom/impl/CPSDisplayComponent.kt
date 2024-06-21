@@ -13,7 +13,7 @@ class CPSDisplayComponent : Component(CPSDisplay::class.java) {
 
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16 = FPSMaster.fontManager.s16
         val text =
             "CPS: " + CPSDisplay.lcps + TextFormattingProvider.getGray() + " | " + TextFormattingProvider.getReset() + CPSDisplay.rcps
         width = getStringWidth(s16, text) + 4

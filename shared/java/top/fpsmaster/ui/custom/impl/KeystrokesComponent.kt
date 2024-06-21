@@ -33,7 +33,7 @@ class KeystrokesComponent : Component(Keystrokes::class.java) {
         var color = ColorAnimation()
         fun render(x: Float, y: Float, speed: Float, color: Color?, color1: Color?) {
             val pressed: Boolean
-            val s16b = FPSMaster.INSTANCE.fontManager!!.s16
+            val s16b = FPSMaster.fontManager.s16
             when (keyCode) {
                 -1 -> {
                     pressed = Mouse.isButtonDown(0)

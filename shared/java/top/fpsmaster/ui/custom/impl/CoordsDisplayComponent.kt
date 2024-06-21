@@ -10,7 +10,7 @@ import top.fpsmaster.wrapper.TextFormattingProvider
 class CoordsDisplayComponent : Component(CoordsDisplay::class.java) {
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val s18 = FPSMaster.INSTANCE.fontManager!!.s18
+        val s18 = FPSMaster.fontManager.s18
 
         var s =
             "X:${ProviderManager.mcProvider.getPlayer()!!.posX.toInt()} Y:${ProviderManager.mcProvider.getPlayer()!!.posY.toInt()} Z:${ProviderManager.mcProvider.getPlayer()!!.posZ.toInt()}"

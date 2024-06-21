@@ -32,7 +32,7 @@ public class GuiButton {
         }
         Render2DUtils.drawOptimizedRoundedRect(x, y, width, height, new Color(0, 0, 0, Render2DUtils.limit(alpha)).getRGB());
         if (!text.equals("settings")) {
-            FPSMaster.INSTANCE.fontManager.s18.drawCenteredString(FPSMaster.INSTANCE.i18n.get(text), x + width / 2, y + height / 2 - 6, FPSMaster.theme.getButtonText().getRGB());
+            FPSMaster.fontManager.s18.drawCenteredString(FPSMaster.i18n.get(text), x + width / 2, y + height / 2 - 6, FPSMaster.theme.getButtonText().getRGB());
         }else{
             Render2DUtils.drawImage(new ResourceLocation("client/gui/screen/settings.png"), x + width / 2 - 6, y + height / 2 - 6, 12, 12, FPSMaster.theme.getTextColorTitle().getRGB());
         }

@@ -23,8 +23,8 @@ open class GuiButton(var text: String, var runnable: Runnable) {
             btnColor.base(Color(113, 127, 254))
         }
         Render2DUtils.drawOptimizedRoundedRect(x, y, width, height, btnColor.color)
-        FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
-            FPSMaster.INSTANCE.i18n[text],
+        FPSMaster.fontManager.s18.drawCenteredString(
+            FPSMaster.i18n[text],
             x + width / 2,
             y + height / 2 - 4,
             FPSMaster.theme.getButtonText().rgb

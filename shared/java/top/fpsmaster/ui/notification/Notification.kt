@@ -18,7 +18,7 @@ class Notification(val title: String, val desc: String, val type: Type, val time
 
     init {
         anim.start(100.0, 0.0, 0.2f, top.fpsmaster.utils.math.animation.Type.EASE_IN_OUT_QUAD)
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16 = FPSMaster.fontManager.s16
         width = 30f + max(s16.getStringWidth(title), s16.getStringWidth(desc))
         height = 30f
     }
@@ -49,13 +49,13 @@ class Notification(val title: String, val desc: String, val type: Type, val time
             14f,
             -1
         )
-        FPSMaster.INSTANCE.fontManager!!.s18.drawStringWithShadow(
+        FPSMaster.fontManager.s18.drawStringWithShadow(
             title,
             x - (width * anim.value / 100f).toFloat() + 20,
             this.y + 4,
             -1
         )
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+        FPSMaster.fontManager.s16.drawString(
             desc,
             x - (width * anim.value / 100f).toFloat() + 20,
             this.y + 15,

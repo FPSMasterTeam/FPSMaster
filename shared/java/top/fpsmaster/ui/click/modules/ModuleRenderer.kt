@@ -117,14 +117,14 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
                 content.color.rgb
             )
         }
-        FPSMaster.INSTANCE.fontManager!!.s18.drawString(
-            FPSMaster.INSTANCE.i18n[mod.name.lowercase(Locale.getDefault())],
+        FPSMaster.fontManager.s18.drawString(
+            FPSMaster.i18n[mod.name.lowercase(Locale.getDefault())],
             x + 40,
             y + 9,
             content.color.rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[mod.name.lowercase(Locale.getDefault()) + ".desc"],
+        FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[mod.name.lowercase(Locale.getDefault()) + ".desc"],
             x + 40,
             y + 20,
             FPSMaster.theme.getTextColorDescription().rgb

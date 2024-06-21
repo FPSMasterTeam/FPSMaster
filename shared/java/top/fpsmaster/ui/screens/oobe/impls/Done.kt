@@ -10,8 +10,8 @@ import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 
 class Done : Scene() {
-    var btn: GuiButton = GuiButton(FPSMaster.INSTANCE.i18n["oobe.done.start"]) {
-        FPSMaster.INSTANCE.configManager.configure["firstStart"] = "false"
+    var btn: GuiButton = GuiButton(FPSMaster.i18n["oobe.done.start"]) {
+        FPSMaster.configManager.configure["firstStart"] = "false"
         Minecraft.getMinecraft().displayGuiScreen(MainMenu())
     }
 
@@ -25,14 +25,14 @@ class Done : Scene() {
             sr.scaledHeight.toFloat(),
             Color(235, 242, 255).rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s36.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.done.desc"],
+        FPSMaster.fontManager.s36.drawCenteredString(
+            FPSMaster.i18n["oobe.done.desc"],
             sr.scaledWidth / 2f,
             70f,
             FPSMaster.theme.getTextColorDescription().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s40.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.done.title"],
+        FPSMaster.fontManager.s40.drawCenteredString(
+            FPSMaster.i18n["oobe.done.title"],
             sr.scaledWidth / 2f,
             100f,
             FPSMaster.theme.getPrimary().rgb

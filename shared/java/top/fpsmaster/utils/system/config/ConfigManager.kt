@@ -26,7 +26,7 @@ class ConfigManager {
 
     private fun saveComponents() {
         val json = JsonObject()
-        for (module in FPSMaster.INSTANCE.componentsManager.components) {
+        for (module in FPSMaster.componentsManager.components) {
             val component = JsonObject()
             component.addProperty("name", module.mod.name)
             component.addProperty("x", module.x)
@@ -42,10 +42,10 @@ class ConfigManager {
         val json1 = readFile("components.json")
         if (json1.isEmpty()) return
         val json = gson.fromJson(json1, JsonObject::class.java)
-        for (mod in FPSMaster.INSTANCE.moduleManager!!.modules) {
+        for (mod in FPSMaster.moduleManager.modules) {
             val module = json.getAsJsonObject(mod.name)
             if (module != null) {
-                val component = FPSMaster.INSTANCE.componentsManager.components.stream()
+                val component = FPSMaster.componentsManager.components.stream()
                     .filter { component1: Component -> component1.mod.name == module["name"].asString }
                     .findFirst().orElse(null)
                     ?: continue
@@ -61,7 +61,7 @@ class ConfigManager {
         val json = JsonObject()
         json.addProperty("theme", FPSMaster.themeSlot)
         json.addProperty("clientConfigure", gson.toJson(configure.configures))
-        for (module in FPSMaster.INSTANCE.moduleManager!!.modules) {
+        for (module in FPSMaster.moduleManager.modules) {
             val moduleJson = JsonObject()
             moduleJson.addProperty("enabled", module.isEnabled)
             moduleJson.addProperty("key", module.key)
@@ -94,7 +94,7 @@ class ConfigManager {
             s = readFile("$name.json")
             val json = gson.fromJson(s, JsonObject::class.java)
             FPSMaster.themeSlot = json["theme"].asString
-            for (module in FPSMaster.INSTANCE.moduleManager!!.modules) {
+            for (module in FPSMaster.moduleManager.modules) {
                 val moduleJson = json.getAsJsonObject(module.name) ?: continue
                 module.set(moduleJson["enabled"].asBoolean)
                 module.key = moduleJson["key"].asInt
@@ -134,10 +134,10 @@ class ConfigManager {
     }
 
     private fun openDefaultModules() {
-        FPSMaster.INSTANCE.moduleManager!!.getModule(Performance::class.java).set(true)
-        FPSMaster.INSTANCE.moduleManager!!.getModule(OldAnimations::class.java).set(true)
-        FPSMaster.INSTANCE.moduleManager!!.getModule(ItemPhysics::class.java).set(true)
-        FPSMaster.INSTANCE.moduleManager!!.getModule(ClientCommand::class.java).set(true)
-        FPSMaster.INSTANCE.moduleManager!!.getModule(IRC::class.java).set(true)
+        FPSMaster.moduleManager.getModule(Performance::class.java).set(true)
+        FPSMaster.moduleManager.getModule(OldAnimations::class.java).set(true)
+        FPSMaster.moduleManager.getModule(ItemPhysics::class.java).set(true)
+        FPSMaster.moduleManager.getModule(ClientCommand::class.java).set(true)
+        FPSMaster.moduleManager.getModule(IRC::class.java).set(true)
     }
 }

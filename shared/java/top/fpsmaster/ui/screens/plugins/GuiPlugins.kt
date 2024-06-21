@@ -23,8 +23,8 @@ class GuiPlugins : GuiScreen() {
         val width = sr.scaledWidth / 2f
         val height = sr.scaledHeight / 2f
         Render2DUtils.drawOptimizedRoundedRect(width / 2f, height / 2f, width, height, Color(0, 0, 0, 140).rgb)
-        FPSMaster.INSTANCE.fontManager!!.s24.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["plugin_manager.title"],
+        FPSMaster.fontManager.s24.drawCenteredString(
+            FPSMaster.i18n["plugin_manager.title"],
             width,
             height / 2f - 20,
             Color.WHITE.rgb
@@ -32,13 +32,13 @@ class GuiPlugins : GuiScreen() {
 
         var pluginY = height / 2f
         for (plugin: OnlinePlugin in plugins) {
-            FPSMaster.INSTANCE.fontManager!!.s18.drawString(
+            FPSMaster.fontManager.s18.drawString(
                 "${plugin.name} - ${plugin.author} ${plugin.version}",
                 width / 2f + 10,
                 pluginY + 4,
                 Color.WHITE.rgb
             )
-            FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+            FPSMaster.fontManager.s16.drawString(
                 plugin.desc,
                 width / 2f + 10,
                 pluginY + 16,
@@ -52,20 +52,20 @@ class GuiPlugins : GuiScreen() {
                     30f,
                     Color(255, 255, 255, 80).rgb
                 )
-                FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+                FPSMaster.fontManager.s16.drawString(
                     "安装",
                     width * 1.5f - 24,
                     pluginY + 10,
                     Color.WHITE.rgb
                 )
             } else {
-                FPSMaster.INSTANCE.fontManager!!.s16.drawString("安装", width * 1.5f - 24, pluginY + 10, Color.GRAY.rgb)
+                FPSMaster.fontManager.s16.drawString("安装", width * 1.5f - 24, pluginY + 10, Color.GRAY.rgb)
             }
             pluginY += 30
         }
 
         Render2DUtils.drawOptimizedRoundedRect(width / 2f, height * 1.5f + 10, width, 26f, Color(0, 0, 0, 140).rgb)
-        FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
+        FPSMaster.fontManager.s18.drawCenteredString(
             "打开插件文件夹",
             width,
             height * 1.5f + 18,
@@ -74,14 +74,14 @@ class GuiPlugins : GuiScreen() {
 
         Render2DUtils.drawOptimizedRoundedRect(width / 2f, height * 1.5f + 40, width, 26f, Color(0, 0, 0, 140).rgb)
 
-        FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
+        FPSMaster.fontManager.s18.drawCenteredString(
             "重载插件",
             width,
             height * 1.5f + 48,
             Color.WHITE.rgb
         )
 
-        FPSMaster.INSTANCE.fontManager!!.s18.drawString(
+        FPSMaster.fontManager.s18.drawString(
             "《FPSMaster 插件服务条款》",
             5f,
             sr.scaledHeight - 18f,
@@ -98,7 +98,7 @@ class GuiPlugins : GuiScreen() {
         for (plugin: OnlinePlugin in plugins) {
             if (Utility.isHovered(width / 2f, pluginY, width, 30f, mouseX, mouseY)) {
                 HttpRequest.downloadFile(plugin.link, FileUtils.plugins.absolutePath + "/" + plugin.name + ".jar")
-                FPSMaster.INSTANCE.plugins!!.reload()
+                FPSMaster.plugins.reload()
                 mc.displayGuiScreen(MainMenu())
             }
             pluginY += 30
@@ -118,7 +118,7 @@ class GuiPlugins : GuiScreen() {
         }
 
         if (Utility.isHovered(width / 2f, height * 1.5f + 40, width - 10, 26f, mouseX, mouseY)) {
-            FPSMaster.INSTANCE.plugins!!.reload()
+            FPSMaster.plugins.reload()
         }
     }
 

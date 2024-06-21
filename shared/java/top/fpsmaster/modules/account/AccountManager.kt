@@ -15,7 +15,7 @@ class AccountManager {
     init {
         try {
             token = FileUtils.readTempValue("token").trim()
-            username = FPSMaster.INSTANCE.configManager.configure.getOrCreate("username", "offline").trim()
+            username = FPSMaster.configManager.configure.getOrCreate("username", "offline").trim()
             if (token.isNotEmpty() && username.isNotEmpty()) {
                 if (attemptLogin(username, token)) {
                     Logger.info("自动登录成功！  $username")

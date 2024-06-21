@@ -9,7 +9,7 @@ import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 
 class Welcome : Scene() {
-    var btn: GuiButton = GuiButton(FPSMaster.INSTANCE.i18n["oobe.welcome.next"]) { FPSMaster.INSTANCE.oobeScreen.nextScene() }
+    var btn: GuiButton = GuiButton(FPSMaster.i18n["oobe.welcome.next"]) { FPSMaster.oobeScreen.nextScene() }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -21,8 +21,8 @@ class Welcome : Scene() {
             sr.scaledHeight.toFloat(),
             Color(235, 242, 255).rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s40.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.welcome.title"],
+        FPSMaster.fontManager.s40.drawCenteredString(
+            FPSMaster.i18n["oobe.welcome.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 40,
             FPSMaster.theme.getPrimary().rgb

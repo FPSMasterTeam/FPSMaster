@@ -12,7 +12,7 @@ import java.awt.Desktop
 import java.net.URI
 
 class First : Scene() {
-    var btn: GuiButton = GuiButton(FPSMaster.INSTANCE.i18n["oobe.first.next"]) {
+    var btn: GuiButton = GuiButton(FPSMaster.i18n["oobe.first.next"]) {
         val url = "https://fpsmaster.top/tutorial"
         if (Desktop.isDesktopSupported()) {
             val desktop = Desktop.getDesktop()
@@ -22,7 +22,7 @@ class First : Scene() {
                 e.printStackTrace()
             }
         }
-        FPSMaster.INSTANCE.oobeScreen.nextScene()
+        FPSMaster.oobeScreen.nextScene()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -35,20 +35,20 @@ class First : Scene() {
             sr.scaledHeight.toFloat(),
             Color(235, 242, 255).rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s36.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.first.desc"],
+        FPSMaster.fontManager.s36.drawCenteredString(
+            FPSMaster.i18n["oobe.first.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 60,
             FPSMaster.theme.getTextColorDescription().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s40.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.first.title"],
+        FPSMaster.fontManager.s40.drawCenteredString(
+            FPSMaster.i18n["oobe.first.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 40,
             FPSMaster.theme.getPrimary().rgb
         )
-        val skip = FPSMaster.INSTANCE.i18n["oobe.first.skip"]
-        val skipFont = FPSMaster.INSTANCE.fontManager!!.s22
+        val skip = FPSMaster.i18n["oobe.first.skip"]
+        val skipFont = FPSMaster.fontManager.s22
         val skipWidth = skipFont.getStringWidth(skip)
         val x = sr.scaledWidth - 10 - skipWidth
         val skipY = sr.scaledHeight - 20
@@ -60,8 +60,8 @@ class First : Scene() {
         super.mouseClick(mouseX, mouseY, mouseButton)
         val sr = ScaledResolution(Minecraft.getMinecraft())
         btn.mouseClick(mouseX.toFloat(), mouseY.toFloat(), mouseButton)
-        val skipFont = FPSMaster.INSTANCE.fontManager!!.s22
-        val skip = FPSMaster.INSTANCE.i18n["oobe.first.skip"]
+        val skipFont = FPSMaster.fontManager.s22
+        val skip = FPSMaster.i18n["oobe.first.skip"]
         val skipWidth = skipFont.getStringWidth(skip)
         val x = sr.scaledWidth - 10 - skipWidth
         val skipY = sr.scaledHeight - 20
@@ -74,7 +74,7 @@ class First : Scene() {
                 mouseY
             ) && Mouse.isButtonDown(0)
         ) {
-            FPSMaster.INSTANCE.oobeScreen.nextScene()
+            FPSMaster.oobeScreen.nextScene()
         }
     }
 }

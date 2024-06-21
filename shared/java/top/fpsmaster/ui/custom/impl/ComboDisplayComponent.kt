@@ -7,7 +7,7 @@ import top.fpsmaster.ui.custom.Component
 class ComboDisplayComponent : Component(ComboDisplay::class.java) {
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16 = FPSMaster.fontManager.s16
         var text = "Combo: " + ComboDisplay.combo
         if (ComboDisplay.combo == 0) {
             text = "No Combo"

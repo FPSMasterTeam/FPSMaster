@@ -20,7 +20,7 @@ class TargetHUDComponent : Component(TargetDisplay::class.java) {
         var target1 = TargetDisplay.target
         if (Utility.mc.ingameGUI.chatGUI.chatOpen) target1 = ProviderManager.mcProvider.getPlayer()
         if (target1 == null) return
-        width = (30 + FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(target1.displayName.formattedText)).toFloat()
+        width = (30 + FPSMaster.fontManager.s16.getStringWidth(target1.displayName.formattedText)).toFloat()
         height = 30f
         animation =
             if (target1.isDead || System.currentTimeMillis() - TargetDisplay.lastHit > 5000 && target1 !== ProviderManager.mcProvider.getPlayer()) {
@@ -41,15 +41,15 @@ class TargetHUDComponent : Component(TargetDisplay::class.java) {
         if (animation > 1) {
             Render2DUtils.drawOptimizedRoundedRect(x, y, width, height, Color(0, 0, 0, animation.toInt()))
             Render2DUtils.drawOptimizedRoundedRect(x, y, healthWidth * width, height, colorAnimation.color)
-            FPSMaster.INSTANCE.fontManager!!.s16.drawStringWithShadow(
+            FPSMaster.fontManager.s16.drawStringWithShadow(
                 target1.displayName.formattedText,
                 x + 27,
                 y + 5,
                 -1
             )
-            assert(FPSMaster.INSTANCE.playerManager != null)
-            FPSMaster.INSTANCE.fontManager!!.s16.drawStringWithShadow(
-                FPSMaster.INSTANCE.playerManager!!.getPlayerRank(
+            assert(FPSMaster.playerManager != null)
+            FPSMaster.fontManager.s16.drawStringWithShadow(
+                FPSMaster.playerManager.getPlayerRank(
                     target1.name
                 ), x + 27, y + 15, -1
             )

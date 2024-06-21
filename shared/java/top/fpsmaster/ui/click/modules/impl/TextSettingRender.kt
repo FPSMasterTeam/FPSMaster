@@ -15,7 +15,7 @@ class TextSettingRender(mod: Module, setting: TextSetting) : SettingRender<TextS
 
     init {
         this.mod = mod
-        inputBox = TextField(FPSMaster.INSTANCE.fontManager!!.s16, false, "输入名称", -1, Color(50, 50, 50).rgb, 1500)
+        inputBox = TextField(FPSMaster.fontManager.s16, false, "输入名称", -1, Color(50, 50, 50).rgb, 1500)
         inputBox.text = setting.value
     }
 
@@ -30,13 +30,13 @@ class TextSettingRender(mod: Module, setting: TextSetting) : SettingRender<TextS
     ) {
         inputBox.backGroundColor = FPSMaster.theme.textboxEnabled.rgb
         inputBox.fontColor = FPSMaster.theme.textColorTitle.rgb
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
-        val text = FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(Locale.getDefault())]
+        val s16 = FPSMaster.fontManager.s16
+        val text = FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(Locale.getDefault())]
         s16.drawString(text, x + 18, y + 6, FPSMaster.theme.getTextColorDescription().rgb)
         inputBox.drawTextBox(
             x + s16.getStringWidth(text) + 20,
             y + 2,
-            min(200f, FPSMaster.INSTANCE.fontManager!!.s18.getStringWidth(inputBox.text) + 20f),
+            min(200f, FPSMaster.fontManager.s18.getStringWidth(inputBox.text) + 20f),
             16f
         )
         this.height = 24f

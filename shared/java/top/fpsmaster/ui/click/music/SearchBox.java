@@ -86,14 +86,14 @@ public class SearchBox extends Gui {
     }
 
     public SearchBox(String placehoder) {
-        this.font = FPSMaster.INSTANCE.fontManager.s18;
+        this.font = FPSMaster.fontManager.s18;
         this.placeholder = placehoder;
         this.enabledColor = theme.getTextboxEnabled();
         this.disabledColor = theme.getTextboxDisabled();
     }
 
     public SearchBox(String s, Runnable runnable) {
-        this.font = FPSMaster.INSTANCE.fontManager.s18;
+        this.font = FPSMaster.fontManager.s18;
         this.placeholder = s;
         this.runnable = runnable;
         this.enabledColor = theme.getTextboxEnabled();

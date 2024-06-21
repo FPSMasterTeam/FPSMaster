@@ -32,15 +32,15 @@ class MusicComponent : Component(MusicOverlay::class.java) {
             height - 10,
             -1
         )
-        val s18 = FPSMaster.INSTANCE.fontManager!!.s18
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+        val s18 = FPSMaster.fontManager.s18
+        val s16 = FPSMaster.fontManager.s16
         drawString(s18, current.name, x + 40, y + 6, FPSMaster.theme.getTextColorTitle().rgb)
         drawString(s16, current.author, x + 40, y + 18, FPSMaster.theme.getTextColorDescription().rgb)
     }
 
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val s18 = FPSMaster.INSTANCE.fontManager!!.s18
+        val s18 = FPSMaster.fontManager.s18
         if (!MusicPlayer.playList.musics.isEmpty()) {
             val width: Float = max(
                 getStringWidth(s18, MusicPlayer.playList.getCurrent()!!.name), s18.getStringWidth(

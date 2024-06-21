@@ -23,7 +23,7 @@ open class Component(clazz: Class<*>?) {
     private var dragY = 0f
 
     @JvmField
-    var mod: InterfaceModule = FPSMaster.INSTANCE.moduleManager!!.getModule(clazz!!) as InterfaceModule
+    var mod: InterfaceModule = FPSMaster.moduleManager.getModule(clazz!!) as InterfaceModule
     var position = Position.LT
 
     @JvmField
@@ -92,7 +92,7 @@ open class Component(clazz: Class<*>?) {
                 mouseY
             ))
         ) return
-        val drag = FPSMaster.INSTANCE.componentsManager.dragLock == mod.name
+        val drag = FPSMaster.componentsManager.dragLock == mod.name
         alpha = if (Utility.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
             if ((base(alpha.toDouble(), 50.0, 0.1).toFloat()).isNaN())
                 0f else base(alpha.toDouble(), 50.0, 0.1).toFloat()
@@ -102,24 +102,24 @@ open class Component(clazz: Class<*>?) {
         }
         Render2DUtils.drawOptimizedRoundedRect(rX - 2, rY - 2, width + 4, height + 4, Color(0, 0, 0, alpha.toInt()))
         if (!Mouse.isButtonDown(0)) {
-            FPSMaster.INSTANCE.componentsManager.dragLock = ""
+            FPSMaster.componentsManager.dragLock = ""
         }
         if (Utility.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
-            FPSMaster.INSTANCE.fontManager!!.s14.drawString(
-                FPSMaster.INSTANCE.i18n[mod.name.lowercase()],
+            FPSMaster.fontManager.s14.drawString(
+                FPSMaster.i18n[mod.name.lowercase()],
                 rX,
                 rY - 10,
                 -1
             )
             if (!Mouse.isButtonDown(0)) return
-            if (!drag && FPSMaster.INSTANCE.componentsManager.dragLock.isEmpty()) {
+            if (!drag && FPSMaster.componentsManager.dragLock.isEmpty()) {
                 dragX = mouseX - rX
                 dragY = mouseY - rY
-                FPSMaster.INSTANCE.componentsManager.dragLock = mod.name
+                FPSMaster.componentsManager.dragLock = mod.name
             }
-            if (FPSMaster.INSTANCE.componentsManager.dragLock == mod.name) {
+            if (FPSMaster.componentsManager.dragLock == mod.name) {
                 move(mouseX.toFloat(), mouseY.toFloat())
-                FPSMaster.INSTANCE.componentsManager.dragLock = mod.name
+                FPSMaster.componentsManager.dragLock = mod.name
             }
         }
     }

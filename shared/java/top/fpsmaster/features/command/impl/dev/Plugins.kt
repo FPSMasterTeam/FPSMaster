@@ -15,7 +15,7 @@ class Plugins: Command("plugins"){
                     Utility.sendClientMessage(plugin.javaClass.simpleName)
                 }
             }else if (args[0] == "reload"){
-                FPSMaster.INSTANCE.plugins!!.reload()
+                FPSMaster.plugins.reload()
             }else{
                 Utility.sendClientMessage("Usage: #plugins <list|reload>")
             }

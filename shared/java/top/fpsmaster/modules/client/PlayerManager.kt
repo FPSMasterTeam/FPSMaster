@@ -62,7 +62,7 @@ class PlayerManager {
     @Subscribe
     fun onCape(e: EventCapeLoading) {
         try {
-            val player = FPSMaster.INSTANCE.playerManager!!.getPlayer(e.playerName)
+            val player = FPSMaster.playerManager.getPlayer(e.playerName)
             if (player.uuid != e.player.uniqueID.toString()) return
             if (player.skin != null && player.skin != player.lastSkin && player.skin!!.isNotEmpty()) {
                 player.lastSkin = player.skin
@@ -141,8 +141,8 @@ class PlayerManager {
         uuid = ProviderManager.mcProvider.getPlayer()!!.uniqueID.toString()
         skin = AccountManager.skin
         cape = AccountManager.cape
-        username = FPSMaster.INSTANCE.accountManager!!.username
-        token = FPSMaster.INSTANCE.accountManager!!.token
+        username = FPSMaster.accountManager.username
+        token = FPSMaster.accountManager.token
         if (FPSMaster.debug)
             Utility.sendClientMessage("更新用户信息: $gameid $uuid $skin $cape")
         updateInformation(

@@ -53,9 +53,9 @@ class OrnamentPanel {
                 val capes = capes
                 items.clear()
                 items.addAll(capes)
-                FPSMaster.INSTANCE.accountManager!!.getItems(
-                    FPSMaster.INSTANCE.accountManager!!.username,
-                    FPSMaster.INSTANCE.accountManager!!.token
+                FPSMaster.accountManager.getItems(
+                    FPSMaster.accountManager.username,
+                    FPSMaster.accountManager.token
                 )
             }.start()
         }
@@ -122,7 +122,7 @@ class OrnamentPanel {
     }
 
     fun hasItem(id: String): Boolean {
-        for (s in FPSMaster.INSTANCE.accountManager!!.itemsHeld) {
+        for (s in FPSMaster.accountManager.itemsHeld) {
             if (s == id) {
                 return true
             }
@@ -138,11 +138,11 @@ class OrnamentPanel {
             if (Render2DUtils.isHovered(x + item.x, y + item.y, 60f, 90f, mouseX, mouseY) && Mouse.isButtonDown(0)) {
                 if (item.itemId == cape) {
                     cape = ""
-                    FPSMaster.INSTANCE.playerManager!!.getPlayer(ProviderManager.mcProvider.getPlayer()!!.name).cape =
+                    FPSMaster.playerManager.getPlayer(ProviderManager.mcProvider.getPlayer()!!.name).cape =
                         ""
                 } else {
                     cape = item.itemId
-                    FPSMaster.INSTANCE.playerManager!!.getPlayer(ProviderManager.mcProvider.getPlayer()!!.name).cape =
+                    FPSMaster.playerManager.getPlayer(ProviderManager.mcProvider.getPlayer()!!.name).cape =
                         item.itemId
                 }
             }

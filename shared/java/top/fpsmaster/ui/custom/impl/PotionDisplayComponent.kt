@@ -20,8 +20,8 @@ class PotionDisplayComponent : Component(PotionDisplay::class.java) {
         for (effect in ProviderManager.mcProvider.getPlayer()!!.activePotionEffects) {
             val title = I18n.format(effect.effectName) + " lv." + (effect.amplifier + 1)
             val duration = (effect.duration / 20 / 60).toString() + "min" + effect.duration / 20 % 60 + "s"
-            val s18 = FPSMaster.INSTANCE.fontManager!!.s18
-            val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+            val s18 = FPSMaster.fontManager.s18
+            val s16 = FPSMaster.fontManager.s16
             val width = max(getStringWidth(s18, title), getStringWidth(s16, duration)) + 36
             drawRect(x, dY, width + 10, 32f, mod.backgroundColor.color)
             drawString(s18, title, x + 34, dY + 5, -1)

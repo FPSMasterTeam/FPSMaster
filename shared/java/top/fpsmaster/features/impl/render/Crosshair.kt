@@ -131,7 +131,9 @@ class Crosshair : Module("Crosshair", Category.RENDER) {
     }
 
     private fun isTeammate(e: EntityPlayer): Boolean {
-        return e.team?.isSameTeam(ProviderManager.mcProvider.getPlayer()?.team) ?: false
+        val player = ProviderManager.mcProvider.getPlayer() ?: return false
+        val team = e.team ?: return false
+        return team.isSameTeam(player.team)
     }
 
     private val isMoving: Boolean

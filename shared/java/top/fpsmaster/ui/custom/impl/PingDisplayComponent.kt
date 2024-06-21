@@ -8,7 +8,7 @@ import top.fpsmaster.interfaces.ProviderManager
 class PingDisplayComponent : Component(PingDisplay::class.java) {
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16 = FPSMaster.fontManager.s16
         // get ping of connection
         if (ProviderManager.mcProvider.getPlayer() == null) return
         val ping = "${ProviderManager.mcProvider.getRespondTime()}ms"

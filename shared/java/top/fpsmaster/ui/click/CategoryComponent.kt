@@ -33,8 +33,8 @@ class CategoryComponent(@JvmField var category: Category) {
             12f,
             animationName.color
         )
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n["category." + category.category.lowercase(
+        FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n["category." + category.category.lowercase(
                 Locale.getDefault()
             )], x + 30, y, animationName.color.rgb
         )

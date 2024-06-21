@@ -14,8 +14,8 @@ fun requestClientAI(prompt: String, model: String, messages: JsonArray): Array<S
         val sendPostRequest = HttpRequest.sendPostRequest(
             "${FPSMaster.SERVICE_API}/chat?timestamp=${System.currentTimeMillis()}", Gson().toJson(messages), hashMapOf(
                 "Content-Type" to "application/json",
-                "username" to FPSMaster.INSTANCE.accountManager!!.username,
-                "token" to FPSMaster.INSTANCE.accountManager!!.token,
+                "username" to FPSMaster.accountManager.username,
+                "token" to FPSMaster.accountManager.token,
                 "model" to model,
                 "prompt" to prompt
             )

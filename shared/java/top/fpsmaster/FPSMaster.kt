@@ -38,58 +38,34 @@ class FPSMaster {
     var hasOptifine: Boolean = false
 
     @JvmField
-    var moduleManager: ModuleManager? = null
-
-    @JvmField
-    var fontManager: FontManager? = null
-
-    @JvmField
-    var configManager: ConfigManager = ConfigManager()
-
-    @JvmField
-    var playerManager: PlayerManager? = null
-
-    @JvmField
-    var oobeScreen: OOBEScreen = OOBEScreen()
-
-    @JvmField
-    var accountManager: AccountManager? = null
-
-    @JvmField
     var loggedIn = false
 
-    @JvmField
-    var submitter: GlobalSubmitter? = null
-
-    @JvmField
-    var plugins: PluginManager? = null
-
-    @JvmField
-    var commandManager: CommandManager? = null
-
     var wsClient: WsClient? = null
-    lateinit var componentsManager: ComponentsManager
-    lateinit var i18n: Language
 
-    fun initialize() {
-        // fonts
+
+    private fun initializeFonts() {
         Logger.info("Initializing Fonts...")
-        fontManager = FontManager()
-        fontManager!!.load()
-        // modules
-        Logger.info("Initializing ModuleManager...")
-        moduleManager = ModuleManager()
-        Logger.info("loaded " + moduleManager!!.modules.size + " modules")
-        // lang
+        fontManager.load()
+    }
+
+
+    private fun initializeLang() {
         Logger.info("Initializing I18N...")
-        i18n = Language()
         i18n.read("zh_cn")
+    }
 
-        // special
-        Logger.info("Initializing PlayerManager...")
-        playerManager = PlayerManager()
+    private fun initializeConfigures() {
+        Logger.info("Initializing Config...")
+        configManager.loadConfig("default")
+        theme = if (themeSlot == "dark") {
+            DarkTheme()
+        } else {
+            LightTheme()
+        }
+        MusicPlayer.setVolume(configManager.configure.getOrCreate("volume", "1").toFloat())
+    }
 
-        // music
+    private fun initializeMusic() {
         Logger.info("Checking music cache...")
         val dirSize = FileUtils.getDirSize(FileUtils.artists)
         if (dirSize > 1024) {
@@ -103,25 +79,29 @@ class FPSMaster {
             Logger.warn("Cleared music cache")
         }
         Logger.info("Found music: " + dirSize1 + "mb")
+    }
 
-        // config
+    private fun initializeComponents() {
         Logger.info("Initializing component...")
         componentsManager = ComponentsManager()
+    }
 
+    private fun initializeCommands() {
         Logger.info("Initializing commands")
         commandManager = CommandManager()
+    }
 
-        Logger.info("Initializing Config...")
-        configManager.loadConfig("default")
-        theme = if (themeSlot == "dark") {
-            DarkTheme()
-        } else {
-            LightTheme()
-        }
+
+    fun initialize() {
+        initializeFonts()
+        initializeLang()
+        initializeMusic()
+        initializeComponents()
+        initializeConfigures()
+        initializeCommands()
         Logger.info("Initialized")
-        initialConfigures()
+
         async.runnable {
-            accountManager = AccountManager()
             isLatest = true
             val s = HttpRequest["https://fpsmaster.top/version"]
             val version = CLIENT_VERSION.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
@@ -132,10 +112,8 @@ class FPSMaster {
             }
         }
         loadNetease()
-        submitter = GlobalSubmitter()
         Logger.info("Start loading plugins")
-        plugins = PluginManager()
-        plugins!!.init()
+        plugins.init()
         Logger.info("Loaded ${PluginManager.plugins.size} plugins!")
 
         try {
@@ -150,9 +128,6 @@ class FPSMaster {
         MusicPanel.nickname = FileUtils.readTempValue("nickname")
     }
 
-    private fun initialConfigures() {
-        MusicPlayer.setVolume(INSTANCE.configManager.configure.getOrCreate("volume", "1").toFloat())
-    }
 
     fun shutdown() {
         configManager.saveConfig("default")
@@ -179,6 +154,39 @@ class FPSMaster {
 
         @JvmField
         var themeSlot = "dark"
+
+        @JvmField
+        var moduleManager: ModuleManager = ModuleManager()
+
+        @JvmField
+        var fontManager: FontManager = FontManager()
+
+        @JvmField
+        var configManager: ConfigManager = ConfigManager()
+
+        @JvmField
+        var playerManager: PlayerManager = PlayerManager()
+
+        @JvmField
+        var oobeScreen: OOBEScreen = OOBEScreen()
+
+        @JvmField
+        var accountManager: AccountManager = AccountManager()
+
+        @JvmField
+        var submitter: GlobalSubmitter = GlobalSubmitter()
+
+        @JvmField
+        var plugins: PluginManager = PluginManager()
+
+        @JvmField
+        var commandManager: CommandManager = CommandManager()
+
+        @JvmField
+        var componentsManager: ComponentsManager = ComponentsManager()
+
+        @JvmField
+        var i18n: Language = Language()
 
         @JvmField
         var debug = false

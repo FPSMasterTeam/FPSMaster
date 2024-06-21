@@ -51,7 +51,7 @@ class GlobalSubmitter {
         if (Translator.using) {
             if (msg.startsWith("#TRANSLATE")) {
                 val message = msg.replace("#TRANSLATE", "")
-                addNotification(FPSMaster.INSTANCE.i18n["translator"], message, 2f)
+                addNotification(FPSMaster.i18n["translator"], message, 2f)
                 FPSMaster.async.runnable {
                     val msgs = JsonArray()
                     val msgJson = JsonObject()
@@ -75,7 +75,7 @@ class GlobalSubmitter {
             if (msg.startsWith("#t ")) {
                 val lang = msg.substring(0, msg.indexOf(" ")).replace("#", "")
                 val message = msg.substring(msg.indexOf(" "), msg.length)
-                addNotification(FPSMaster.INSTANCE.i18n["translator"], "$lang: $message", 2f)
+                addNotification(FPSMaster.i18n["translator"], "$lang: $message", 2f)
                 FPSMaster.async.runnable {
                     val openAi = OpenAi(
                         "https://one.aiskt.com/v1",
@@ -120,7 +120,7 @@ class GlobalSubmitter {
         val scaledResolution = ScaledResolution(Minecraft.getMinecraft())
         val mouseX = Mouse.getX().toFloat() / scaledResolution.scaleFactor
         val mouseY = scaledResolution.scaledHeight - Mouse.getY().toFloat() / scaledResolution.scaleFactor
-        FPSMaster.INSTANCE.componentsManager.draw(mouseX.toInt(), mouseY.toInt())
+        FPSMaster.componentsManager.draw(mouseX.toInt(), mouseY.toInt())
         drawNotifications()
     }
 }

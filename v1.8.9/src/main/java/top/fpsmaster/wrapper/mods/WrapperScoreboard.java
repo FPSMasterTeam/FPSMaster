@@ -25,7 +25,7 @@ public class WrapperScoreboard {
         ScoreObjective scoreobjective = null;
         ScorePlayerTeam scoreplayerteam = scoreboard.getPlayersTeam(ProviderManager.mcProvider.getPlayer().getName());
 
-        UFontRenderer s16 = FPSMaster.INSTANCE.fontManager.s16;
+        UFontRenderer s16 = FPSMaster.fontManager.s16;
 
 
         if (scoreplayerteam != null) {

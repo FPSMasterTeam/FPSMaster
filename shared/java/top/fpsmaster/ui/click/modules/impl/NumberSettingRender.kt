@@ -29,8 +29,8 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
         mouseY: Float,
         custom: Boolean
     ) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
@@ -39,7 +39,7 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
             (setting.value.toFloat() - setting.min.toFloat()) / (setting.max.toFloat() - setting.min.toFloat())
         aWidth = base(aWidth.toDouble(), (160 * percent).toDouble(), 0.2).toFloat()
         Render2DUtils.drawOptimizedRoundedRect(x + 16 + fw, y + 3, aWidth, 6f, FPSMaster.theme.getPrimary().rgb)
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+        FPSMaster.fontManager.s16.drawString(
             setting.value.toString(),
             x + fw + 20 + 160,
             y + 2,
@@ -47,8 +47,8 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
         )
         if (!Mouse.isButtonDown(0)) MainPanel.dragLock = "null"
         if (MainPanel.dragLock == mod.name + setting.name + 4) {
-            val v = mouseX - x - 16 - FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(
-                FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+            val v = mouseX - x - 16 - FPSMaster.fontManager.s16.getStringWidth(
+                FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                     Locale.getDefault()
                 )]
             )
@@ -60,8 +60,8 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()

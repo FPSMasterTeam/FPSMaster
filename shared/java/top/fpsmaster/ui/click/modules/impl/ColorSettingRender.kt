@@ -33,14 +33,14 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
         mouseY: Float,
         custom: Boolean
     ) {
-        val tW = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val tW = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 3, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
         Render2DUtils.drawOptimizedRoundedRect(x + tW + 26, y + 1, 80f, 14f, FPSMaster.theme.getBackground())
         Render2DUtils.drawOptimizedRoundedRect(x + tW + 27, y + 2, 12f, 12f, setting.value.rGB)
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+        FPSMaster.fontManager.s16.drawString(
             "#" + Integer.toHexString(setting.rGB).uppercase(Locale.getDefault()),
             x + tW + 44,
             y + 2,
@@ -184,8 +184,8 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        val tW = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val tW = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()

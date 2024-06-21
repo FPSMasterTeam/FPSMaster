@@ -7,13 +7,13 @@ public class PluginTextField {
     TextField textField;
 
     public PluginTextField(int size, String placeHolder, int color, int fontColor, int maxLength) {
-        assert FPSMaster.INSTANCE.fontManager != null;
-        textField = new TextField(FPSMaster.INSTANCE.fontManager.getFont(size), placeHolder, color, fontColor, maxLength);
+        assert FPSMaster.fontManager != null;
+        textField = new TextField(FPSMaster.fontManager.getFont(size), placeHolder, color, fontColor, maxLength);
     }
 
     public PluginTextField(int size, boolean hideContent, String placeHolder, int color, int fontColor, int maxLength) {
-        assert FPSMaster.INSTANCE.fontManager != null;
-        textField = new TextField(FPSMaster.INSTANCE.fontManager.getFont(size), hideContent, placeHolder, color, fontColor, maxLength);
+        assert FPSMaster.fontManager != null;
+        textField = new TextField(FPSMaster.fontManager.getFont(size), hideContent, placeHolder, color, fontColor, maxLength);
     }
 
     public void drawTextBox(float x, float y, float width, float height) {

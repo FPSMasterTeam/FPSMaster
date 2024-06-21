@@ -126,7 +126,7 @@ public class InterfaceHandler {
                 GlStateManager.enableBlend();
                 GlStateManager.blendFunc(770, 771);
 
-                Component component = FPSMaster.INSTANCE.componentsManager.getComponent(MiniMap.class);
+                Component component = FPSMaster.componentsManager.getComponent(MiniMap.class);
                 InterfaceHandler.mc.ingameGUI.drawTexturedModalRect(((int) component.getRealPosition()[0]), ((int) component.getRealPosition()[1]), 0, 0, (int) ((minimapWidth / 2f + 1) / sizeFix), (int) ((minimapWidth / 2f + 1) / sizeFix));
                 super.drawInterface(width, height, scale, partial);
             }

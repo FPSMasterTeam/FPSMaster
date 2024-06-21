@@ -28,8 +28,8 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
         mouseY: Float,
         custom: Boolean
     ) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 8, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
@@ -43,8 +43,8 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             FPSMaster.theme.getModeBox(),
             FPSMaster.theme.getModeBoxBorder()
         )
-        FPSMaster.INSTANCE.fontManager!!.s18.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name + "." + setting.modeName).lowercase(
+        FPSMaster.fontManager.s18.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.modeName).lowercase(
                 Locale.getDefault()
             )], x + 20 + fw, y + 7, FPSMaster.theme.getTextColorTitle().rgb
         )
@@ -68,14 +68,14 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             expandH = base(expandH.toDouble(), (setting.modesSize * 14).toDouble(), 0.2).toFloat()
             for (i in 1..setting.modesSize) {
                 if (isHovered(x + 20 + fw, y + 4 + i * 14, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
-                    FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-                        FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
+                    FPSMaster.fontManager.s16.drawString(
+                        FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
                             Locale.getDefault()
                         )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.getTextColorDescriptionHover().rgb
                     )
                 } else {
-                    FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-                        FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
+                    FPSMaster.fontManager.s16.drawString(
+                        FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
                             Locale.getDefault()
                         )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.getTextColorDescription().rgb
                     )
@@ -88,8 +88,8 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 8, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()

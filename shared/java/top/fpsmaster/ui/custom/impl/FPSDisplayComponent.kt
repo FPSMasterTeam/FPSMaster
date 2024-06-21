@@ -14,7 +14,7 @@ class FPSDisplayComponent : Component(FPSDisplay::class.java) {
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
         val s = Minecraft.getDebugFPS().toString() + "fps"
-        val s18 = FPSMaster.INSTANCE.fontManager!!.s18
+        val s18 = FPSMaster.fontManager.s18
         width = getStringWidth(s18, s) + 4
         height = 14f
         drawRect(x - 2, y, width, height, mod.backgroundColor.color)

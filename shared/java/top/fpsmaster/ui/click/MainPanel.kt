@@ -217,14 +217,14 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             8f,
             -1
         )
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n["theme.title"],
+        FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n["theme.title"],
             (x + 20).toFloat(),
             y + Companion.height - 20,
             FPSMaster.theme.getCategoryText().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n["theme." + FPSMaster.themeSlot],
+        FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n["theme." + FPSMaster.themeSlot],
             (x + 52).toFloat(),
             y + Companion.height - 20,
             FPSMaster.theme.getCategoryTextSelected().rgb
@@ -319,7 +319,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             categories.add(CategoryComponent(c))
         }
         if (mods.isEmpty()) {
-            for (m in FPSMaster.INSTANCE.moduleManager!!.modules) {
+            for (m in FPSMaster.moduleManager.modules) {
                 mods.add(ModuleRenderer(m))
             }
         }
@@ -329,7 +329,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
 
     override fun onGuiClosed() {
         super.onGuiClosed()
-        FPSMaster.INSTANCE.configManager.saveConfig("default")
+        FPSMaster.configManager.saveConfig("default")
     }
 
     @Throws(IOException::class)

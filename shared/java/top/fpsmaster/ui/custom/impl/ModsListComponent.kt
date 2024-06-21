@@ -16,20 +16,20 @@ class ModsListComponent : Component(ModsList::class.java) {
     var modules: List<Module> = ArrayList()
     override fun draw(x: Float, y: Float) {
         super.draw(x, y)
-        val font = FPSMaster.INSTANCE.fontManager!!.s18
+        val font = FPSMaster.fontManager.s18
         var modY = 0f
 
         if ((mod as ModsList).showLogo.value) {
-            FPSMaster.INSTANCE.fontManager!!.s36.drawString("FPS V3", x + 0.5f, y + 0.5f, Color(0, 0, 0, 150).rgb)
-            FPSMaster.INSTANCE.fontManager!!.s36.drawString("FPS V3", x, y, FPSMaster.theme.primary.rgb)
+            FPSMaster.fontManager.s36.drawString("FPS V3", x + 0.5f, y + 0.5f, Color(0, 0, 0, 150).rgb)
+            FPSMaster.fontManager.s36.drawString("FPS V3", x, y, FPSMaster.theme.primary.rgb)
             modY = 20f
         }
         var width2 = 40f
         val x = x + this.width
         if (modules.isEmpty()) {
             modules =
-                FPSMaster.INSTANCE.moduleManager!!.modules.sortedBy {
-                    (if (mod.betterFont.value) font else ProviderManager.mcProvider.getFontRenderer()).getStringWidth(if ((mod as ModsList).english.value) it.name else FPSMaster.INSTANCE.i18n[it.name.lowercase()])
+                FPSMaster.moduleManager.modules.sortedBy {
+                    (if (mod.betterFont.value) font else ProviderManager.mcProvider.getFontRenderer()).getStringWidth(if ((mod as ModsList).english.value) it.name else FPSMaster.i18n[it.name.lowercase()])
                 }.reversed()
         }
         var ls = 0
@@ -41,7 +41,7 @@ class ModsListComponent : Component(ModsList::class.java) {
             )
             if (!module.isEnabled || module.category == Category.Interface)
                 continue
-            var name = FPSMaster.INSTANCE.i18n[module.name.lowercase()]
+            var name = FPSMaster.i18n[module.name.lowercase()]
             if ((mod as ModsList).english.value)
                 name = module.name
             var width = 0f

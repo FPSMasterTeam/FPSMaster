@@ -40,7 +40,7 @@ public class Util {
     }
 
     public static String getI18n(String text) {
-        return FPSMaster.INSTANCE.i18n.get(text);
+        return FPSMaster.i18n.get(text);
     }
 
     public static void drawOptimizedRect(float x, float y, float width, float height, int color) {
@@ -61,8 +61,8 @@ public class Util {
     }
 
     public static String getClientUserName() {
-        assert FPSMaster.INSTANCE.accountManager != null;
-        return FPSMaster.INSTANCE.accountManager.getUsername();
+        assert FPSMaster.accountManager != null;
+        return FPSMaster.accountManager.getUsername();
     }
 
     public static boolean isMouseDown(int b) {
@@ -70,7 +70,7 @@ public class Util {
     }
 
     public static void openModule(String mod, boolean state) {
-        for (Module module : FPSMaster.INSTANCE.moduleManager.getModules()) {
+        for (Module module : FPSMaster.moduleManager.getModules()) {
             if (module.getName().equals(mod)) {
                 module.set(state);
             }
@@ -78,7 +78,7 @@ public class Util {
     }
 
     public static String getClientUserToken() {
-        assert FPSMaster.INSTANCE.accountManager != null;
-        return FPSMaster.INSTANCE.accountManager.getToken();
+        assert FPSMaster.accountManager != null;
+        return FPSMaster.accountManager.getToken();
     }
 }

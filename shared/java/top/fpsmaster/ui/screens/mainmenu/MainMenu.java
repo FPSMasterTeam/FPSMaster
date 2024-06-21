@@ -43,15 +43,15 @@ public class MainMenu extends GuiScreen {
      * Draws the screen and all the components in it.
      */
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-        if (FPSMaster.INSTANCE.configManager.configure.getOrCreate("firstStart", "true").equals("true")) {
-            Minecraft.getMinecraft().displayGuiScreen(FPSMaster.INSTANCE.oobeScreen);
+        if (FPSMaster.configManager.configure.getOrCreate("firstStart", "true").equals("true")) {
+            Minecraft.getMinecraft().displayGuiScreen(FPSMaster.oobeScreen);
         }
         ProviderManager.mainmenuProvider.renderSkybox(mouseX, mouseY, partialTicks, this.width, this.height, this.zLevel);
 
         Render2DUtils.drawRect(0, 0, this.width, this.height, new Color(26, 59, 109, 60));
 
-        assert FPSMaster.INSTANCE.fontManager != null;
-        int stringWidth = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(mc.getSession().getUsername());
+        assert FPSMaster.fontManager != null;
+        int stringWidth = FPSMaster.fontManager.s16.getStringWidth(mc.getSession().getUsername());
         if (isHovered(10, 10, 80, 20, mouseX, mouseY)) {
             Render2DUtils.drawOptimizedRoundedRect(10, 10, 30 + stringWidth, 20, new Color(0, 0, 0, 100));
             if (Mouse.isButtonDown(0)) {
@@ -61,7 +61,7 @@ public class MainMenu extends GuiScreen {
             Render2DUtils.drawOptimizedRoundedRect(10, 10, 30 + stringWidth, 20, new Color(0, 0, 0, 60));
         }
         Render2DUtils.drawImage(new ResourceLocation("client/gui/screen/avatar.png"), 14, 15, 10, 10, -1);
-        FPSMaster.INSTANCE.fontManager.s16.drawString(mc.getSession().getUsername(), 28, 16, new Color(255, 255, 255).getRGB());
+        FPSMaster.fontManager.s16.drawString(mc.getSession().getUsername(), 28, 16, new Color(255, 255, 255).getRGB());
         Render2DUtils.drawImage(new ResourceLocation("client/gui/logo.png"), width / 2f - 153 / 4f, height / 2f - 100, 153 / 2f, 67, -1);
 
         int x = width / 2 - 50;
@@ -73,26 +73,26 @@ public class MainMenu extends GuiScreen {
         exit.render(x + 74, y + 48, 26, 20, mouseX, mouseY);
 
 
-        float w = FPSMaster.INSTANCE.fontManager.s16.getStringWidth("Copyright Mojang AB. Do not distribute!");
-        FPSMaster.INSTANCE.fontManager.s16.drawString("Copyright Mojang AB. Do not distribute!", this.width - w - 4, this.height - 14, new Color(255, 255, 255, 50).getRGB());
+        float w = FPSMaster.fontManager.s16.getStringWidth("Copyright Mojang AB. Do not distribute!");
+        FPSMaster.fontManager.s16.drawString("Copyright Mojang AB. Do not distribute!", this.width - w - 4, this.height - 14, new Color(255, 255, 255, 50).getRGB());
         if (FPSMaster.INSTANCE.loggedIn) {
-            welcome = TextFormattingProvider.getGreen() + FPSMaster.INSTANCE.i18n.get("mainmenu.welcome") + FPSMaster.INSTANCE.configManager.configure.getOrCreate("username", "");
+            welcome = TextFormattingProvider.getGreen() + FPSMaster.i18n.get("mainmenu.welcome") + FPSMaster.configManager.configure.getOrCreate("username", "");
         } else {
-            welcome = TextFormattingProvider.getRed() + String.valueOf(TextFormattingProvider.getBold()) + FPSMaster.INSTANCE.i18n.get("mainmenu.notlogin");
+            welcome = TextFormattingProvider.getRed() + String.valueOf(TextFormattingProvider.getBold()) + FPSMaster.i18n.get("mainmenu.notlogin");
         }
-        FPSMaster.INSTANCE.fontManager.s16.drawString(welcome, 4, this.height - 52, new Color(255, 255, 255).getRGB());
+        FPSMaster.fontManager.s16.drawString(welcome, 4, this.height - 52, new Color(255, 255, 255).getRGB());
 
         if (FPSMaster.isLatest) {
-            latest = TextFormattingProvider.getGreen() + FPSMaster.INSTANCE.i18n.get("mainmenu.latest");
+            latest = TextFormattingProvider.getGreen() + FPSMaster.i18n.get("mainmenu.latest");
         } else {
-            latest = TextFormattingProvider.getRed() + String.valueOf(TextFormattingProvider.getBold()) + FPSMaster.INSTANCE.i18n.get("mainmenu.notlatest") + FPSMaster.latest + FPSMaster.INSTANCE.i18n.get("mainmenu.toupdate");
+            latest = TextFormattingProvider.getRed() + String.valueOf(TextFormattingProvider.getBold()) + FPSMaster.i18n.get("mainmenu.notlatest") + FPSMaster.latest + FPSMaster.i18n.get("mainmenu.toupdate");
             needUpdate = true;
         }
-        FPSMaster.INSTANCE.fontManager.s16.drawString(latest, 4, this.height - 40, new Color(255, 255, 255).getRGB());
+        FPSMaster.fontManager.s16.drawString(latest, 4, this.height - 40, new Color(255, 255, 255).getRGB());
 
         Render2DUtils.drawRect(0, 0, 0, 0, -1);
-        FPSMaster.INSTANCE.fontManager.s16.drawString(FPSMaster.COPYRIGHT, 4, this.height - 14, new Color(255, 255, 255).getRGB());
-        FPSMaster.INSTANCE.fontManager.s16.drawString(FPSMaster.CLIENT_NAME + " Client " + FPSMaster.CLIENT_VERSION + " (Minecraft " + FPSMaster.EDITION + ")", 4, this.height - 28, new Color(255, 255, 255).getRGB());
+        FPSMaster.fontManager.s16.drawString(FPSMaster.COPYRIGHT, 4, this.height - 14, new Color(255, 255, 255).getRGB());
+        FPSMaster.fontManager.s16.drawString(FPSMaster.CLIENT_NAME + " Client " + FPSMaster.CLIENT_VERSION + " (Minecraft " + FPSMaster.EDITION + ")", 4, this.height - 28, new Color(255, 255, 255).getRGB());
 
         // plugins
         if (isHovered(this.width - 16, 15, 12, 12, mouseX, mouseY)) {
@@ -115,9 +115,9 @@ public class MainMenu extends GuiScreen {
         multiPlayer.mouseClick(mouseX, mouseY, mouseButton);
         options.mouseClick(mouseX, mouseY, mouseButton);
         exit.mouseClick(mouseX, mouseY, mouseButton);
-        assert FPSMaster.INSTANCE.fontManager != null;
-        float uw = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(latest);
-        float nw = FPSMaster.INSTANCE.fontManager.s16.getStringWidth(latest);
+        assert FPSMaster.fontManager != null;
+        float uw = FPSMaster.fontManager.s16.getStringWidth(latest);
+        float nw = FPSMaster.fontManager.s16.getStringWidth(latest);
 
         if (mouseButton == 0) {
             if (isHovered(4, this.height - 52, nw, 14, mouseX, mouseY)) {

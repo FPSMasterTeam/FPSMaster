@@ -120,7 +120,7 @@ public abstract class MixinGuiNewChat {
                     GlStateManager.popMatrix();
                 }
             } else {
-                BetterChat module = (BetterChat) FPSMaster.INSTANCE.moduleManager.getModule(BetterChat.class);
+                BetterChat module = (BetterChat) FPSMaster.moduleManager.getModule(BetterChat.class);
 
                 int i = this.getLineCount();
                 int j = this.drawnChatLines.size();
@@ -168,7 +168,7 @@ public abstract class MixinGuiNewChat {
                                     String string = chatLine.getChatComponent().getFormattedText();
                                     GlStateManager.enableBlend();
                                     if (module.betterFont.getValue()) {
-                                        FPSMaster.INSTANCE.fontManager.s16.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
+                                        FPSMaster.fontManager.s16.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
                                     } else {
                                         mc.fontRendererObj.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
                                     }
@@ -219,10 +219,10 @@ public abstract class MixinGuiNewChat {
             if (j >= 0 && k >= 0) {
                 int l = Math.min(this.getLineCount(), this.drawnChatLines.size());
                 int fontHeight = mc.fontRendererObj.FONT_HEIGHT;
-                BetterChat module = (BetterChat) FPSMaster.INSTANCE.moduleManager.getModule(BetterChat.class);
+                BetterChat module = (BetterChat) FPSMaster.moduleManager.getModule(BetterChat.class);
 
                 if (BetterChat.using && module.betterFont.getValue()) {
-                    fontHeight = FPSMaster.INSTANCE.fontManager.s16.getHeight();
+                    fontHeight = FPSMaster.fontManager.s16.getHeight();
                 }
                 if (j <= MathHelper.floor_float((float) this.getChatWidth() / this.getChatScale()) && k < fontHeight * l + l) {
                     int m = k / fontHeight + this.scrollPos;
@@ -235,7 +235,7 @@ public abstract class MixinGuiNewChat {
                             IChatComponent iTextComponent = (IChatComponent) var12.next();
                             if (iTextComponent instanceof ChatComponentText) {
                                 if (BetterChat.using && module.betterFont.getValue()) {
-                                    n += FPSMaster.INSTANCE.fontManager.s16.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) iTextComponent).getChatComponentText_TextValue(), false));
+                                    n += FPSMaster.fontManager.s16.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) iTextComponent).getChatComponentText_TextValue(), false));
                                 } else {
                                     n += mc.fontRendererObj.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) iTextComponent).getChatComponentText_TextValue(), false));
                                 }

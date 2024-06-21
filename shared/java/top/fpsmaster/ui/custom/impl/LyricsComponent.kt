@@ -68,7 +68,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                 for (i in curLine - 2..curLine + 2) {
                     if (current.lyrics!!.lines.size > i && i >= 0) {
                         val line = current.lyrics!!.lines[i]
-                        val lfont = FPSMaster.INSTANCE.fontManager!!.s20
+                        val lfont = FPSMaster.fontManager.s20
                         val content = line.content
                         val xOffset = x + (width - getStringWidth(lfont, content)) / 2
                         if (i == curLine) {
@@ -88,7 +88,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                                 line,
                                 xOffset,
                                 y + line.animation * 20 + 20,
-                                FPSMaster.INSTANCE.fontManager!!.s20,
+                                FPSMaster.fontManager.s20,
                                 i == curLine
                             )
                         }

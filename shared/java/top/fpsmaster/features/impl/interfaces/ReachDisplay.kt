@@ -61,7 +61,7 @@ class ReachDisplay : InterfaceModule("ReachDisplay", Category.Interface) {
                 val raytraceresult = axisalignedbb.calculateIntercept(vec3d, vec3d2)
                 if (axisalignedbb.isVecInside(vec3d)) {
                     if (d2 >= 0.0) {
-                        vec3d3 = raytraceresult!!.hitVec
+                        vec3d3 = raytraceresult.hitVec
                         d2 = 0.0
                     }
                 } else if (raytraceresult != null) {

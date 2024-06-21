@@ -30,7 +30,7 @@ object MusicPanel {
 
     private var playProgress = 0f
     private var inputBox = SearchBox(
-        FPSMaster.INSTANCE.i18n["music.search"]
+        FPSMaster.i18n["music.search"]
     ) {
         searchThread = Thread { run() }
         searchThread!!.start()
@@ -71,7 +71,7 @@ object MusicPanel {
         //搜索
         var xOffset = 0
         for ((i, page) in pages.withIndex()) {
-            val width = FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(FPSMaster.INSTANCE.i18n[page]) + 10
+            val width = FPSMaster.fontManager.s16.getStringWidth(FPSMaster.i18n[page]) + 10
             if (isHovered(x + 95 + xOffset, y + 8, width.toFloat(), 14f, mouseX, mouseY)) {
                 if (Mouse.isButtonDown(0)) {
                     curSearch = i
@@ -150,7 +150,7 @@ object MusicPanel {
     @JvmStatic
     fun draw(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int) {
         if (isWaitingLogin) {
-            FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
+            FPSMaster.fontManager.s18.drawCenteredString(
                 "<",
                 x + 20,
                 y + 20,
@@ -174,8 +174,8 @@ object MusicPanel {
                     isWaitingLogin = false
                 }
             }
-            FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
-                FPSMaster.INSTANCE.i18n[scan],
+            FPSMaster.fontManager.s18.drawCenteredString(
+                FPSMaster.i18n[scan],
                 x + width / 2,
                 y + height / 2 + 60,
                 FPSMaster.theme.getTextColorTitle().rgb
@@ -198,13 +198,13 @@ object MusicPanel {
             var musicHeight = 0f
 
             Render2DUtils.drawRect(x, dY - 6, width - 10, 0.5f, Color(100, 100, 100, 50))
-            FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+            FPSMaster.fontManager.s16.drawString(
                 "#",
                 x + 12,
                 dY - 20,
                 FPSMaster.theme.getTextColorTitle().rgb
             )
-            FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+            FPSMaster.fontManager.s16.drawString(
                 "标题",
                 x + 30,
                 dY - 20,
@@ -225,7 +225,7 @@ object MusicPanel {
                     ) {
                         Render2DUtils.drawOptimizedRoundedRect(x, dY, width - 10, 40f, Color(200, 200, 200, 50))
                     }
-                    FPSMaster.INSTANCE.fontManager!!.s16.drawCenteredString(
+                    FPSMaster.fontManager.s16.drawCenteredString(
                         "" + i,
                         x + 15,
                         dY + 15,
@@ -250,26 +250,26 @@ object MusicPanel {
                         )
                     }
                     if (MusicPlayer.playList.current == i) {
-                        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+                        FPSMaster.fontManager.s16.drawString(
                             music.name + "  " + music.author,
                             x + 60,
                             dY + 10,
                             FPSMaster.theme.getTextColorTitle().rgb
                         )
-                        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+                        FPSMaster.fontManager.s16.drawString(
                             music.author,
                             x + 60,
                             dY + 20,
                             FPSMaster.theme.getTextColorDescription().rgb
                         )
                     } else {
-                        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+                        FPSMaster.fontManager.s16.drawString(
                             music.name + "  " + music.author,
                             x + 60,
                             dY + 10,
                             FPSMaster.theme.getTextColorTitle().rgb
                         )
-                        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+                        FPSMaster.fontManager.s16.drawString(
                             music.author,
                             x + 60,
                             dY + 20,
@@ -283,7 +283,7 @@ object MusicPanel {
             }
 
         } else {
-            FPSMaster.INSTANCE.fontManager!!.s18.drawCenteredString(
+            FPSMaster.fontManager.s18.drawCenteredString(
                 "...",
                 x + width / 2,
                 y + 60,
@@ -299,7 +299,7 @@ object MusicPanel {
         var xOffset = 0
         var pagesWidth = 0
         for (page in pages) {
-            pagesWidth += FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(FPSMaster.INSTANCE.i18n[page]) + 10
+            pagesWidth += FPSMaster.fontManager.s16.getStringWidth(FPSMaster.i18n[page]) + 10
         }
         Render2DUtils.drawOptimizedRoundedRect(
             x + 90,
@@ -309,7 +309,7 @@ object MusicPanel {
             FPSMaster.theme.getFrontBackground()
         )
         for (page in pages) {
-            val stringWidth = FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(FPSMaster.INSTANCE.i18n[page])
+            val stringWidth = FPSMaster.fontManager.s16.getStringWidth(FPSMaster.i18n[page])
             if (page == pages[curSearch]) {
                 Render2DUtils.drawOptimizedRoundedRect(
                     x + 90 + xOffset,
@@ -318,15 +318,15 @@ object MusicPanel {
                     16f,
                     FPSMaster.theme.getPrimary()
                 )
-                FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-                    FPSMaster.INSTANCE.i18n[page],
+                FPSMaster.fontManager.s16.drawString(
+                    FPSMaster.i18n[page],
                     x + 95 + xOffset,
                     y + 10,
                     FPSMaster.theme.getTextColorTitle().rgb
                 )
             } else {
-                FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-                    FPSMaster.INSTANCE.i18n[page],
+                FPSMaster.fontManager.s16.drawString(
+                    FPSMaster.i18n[page],
                     x + 95 + xOffset,
                     y + 10,
                     FPSMaster.theme.getTextColorDescription().rgb
@@ -344,10 +344,10 @@ object MusicPanel {
 //        if (NeteaseApi.cookies.isEmpty()) {
 //            if (nickname.isNotEmpty()) nickname = "Unknown"
 //            val stringWidth =
-//                FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(FPSMaster.INSTANCE.i18n["music.notLoggedIn"])
+//                FPSMaster.fontManager!!.s16.getStringWidth(FPSMaster.i18n["music.notLoggedIn"])
 //            if (isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
-//                FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-//                    FPSMaster.INSTANCE.i18n["music.notloggedin"],
+//                FPSMaster.fontManager!!.s16.drawString(
+//                    FPSMaster.i18n["music.notloggedin"],
 //                    x + width - stringWidth - 5,
 //                    y + 10,
 //                    FPSMaster.theme.getTextColorTitle().rgb
@@ -358,16 +358,16 @@ object MusicPanel {
 //                    code = 801
 //                }
 //            } else {
-//                FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-//                    FPSMaster.INSTANCE.i18n["music.notloggedin"],
+//                FPSMaster.fontManager!!.s16.drawString(
+//                    FPSMaster.i18n["music.notloggedin"],
 //                    x + width - stringWidth - 5,
 //                    y + 10,
 //                    FPSMaster.theme.getTextColorDescription().rgb
 //                )
 //            }
 //        } else {
-//            val stringWidth = FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(nickname)
-//            FPSMaster.INSTANCE.fontManager!!.s16.drawString(
+//            val stringWidth = FPSMaster.fontManager!!.s16.getStringWidth(nickname)
+//            FPSMaster.fontManager!!.s16.drawString(
 //                nickname,
 //                x + width - stringWidth - 5,
 //                y + 10,
@@ -434,13 +434,13 @@ object MusicPanel {
         }
         val trimWidth = (width / 2 - 100).toInt()
         if (!MusicPlayer.playList.musics.isEmpty() && current != null) {
-            val name = FPSMaster.INSTANCE.fontManager!!.s18.trimString(
+            val name = FPSMaster.fontManager.s18.trimString(
                 current.name + " - " + current.author,
                 trimWidth.toFloat(),
                 false
             )
-            val s16b = FPSMaster.INSTANCE.fontManager!!.s16
-            FPSMaster.INSTANCE.fontManager!!.s18.drawString(
+            val s16b = FPSMaster.fontManager.s16
+            FPSMaster.fontManager.s18.drawString(
                 name,
                 x + 30,
                 y + height - 23,

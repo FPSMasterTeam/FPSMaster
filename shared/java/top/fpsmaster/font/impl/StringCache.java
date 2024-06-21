@@ -940,7 +940,7 @@ public class StringCache {
         /* Avoid performing full bidirectional analysis if text has no "strong" right-to-left characters */
         if (Bidi.requiresBidi(text, 0, limit)) {
             /* Note that while requiresBidi() uses start/limit the Bidi constructor uses start/length */
-            Bidi bidi = new Bidi(text, 0, null, 0, limit - 0, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
+            Bidi bidi = new Bidi(text, 0, null, 0, limit, Bidi.DIRECTION_DEFAULT_LEFT_TO_RIGHT);
 
             /* If text is entirely right-to-left, then insert an EntryText node for the entire string */
             if (bidi.isRightToLeft()) {

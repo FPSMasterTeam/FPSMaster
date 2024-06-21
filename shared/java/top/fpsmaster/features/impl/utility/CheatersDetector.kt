@@ -109,7 +109,7 @@ class CheatersDetector : Module("CheatersDetector", Category.Utility) {
                     FPSMaster.async.runnable {
                         HttpRequest[
                             FPSMaster.SERVICE_API +
-                                    "/blacklist/commit?username=${FPSMaster.INSTANCE.accountManager!!.username}&token=${FPSMaster.INSTANCE.accountManager!!.token}&player=${
+                                    "/blacklist/commit?username=${FPSMaster.accountManager.username}&token=${FPSMaster.accountManager.token}&player=${
                                         URLEncoder.encode(
                                             entity.gameProfile.name,
                                             "UTF-8"

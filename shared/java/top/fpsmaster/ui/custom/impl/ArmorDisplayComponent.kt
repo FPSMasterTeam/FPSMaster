@@ -44,7 +44,7 @@ class ArmorDisplayComponent : Component(ArmorDisplay::class.java) {
                 if (dura < 0.5) color = if (dura < 0.2) Color(255, 20, 20).rgb else Color(255, 255, 20).rgb
                 val durabilityString =
                     if (durability > 0) durability.toString() + "/" + itemStack.maxDamage else "0/" + itemStack.maxDamage
-                val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+                val s16 = FPSMaster.fontManager.s16
                 drawRect(
                     (x1 + 18).toFloat(),
                     y1.toFloat(),

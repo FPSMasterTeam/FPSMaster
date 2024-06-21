@@ -26,14 +26,14 @@ class GuiWaiting : GuiScreen() {
             sr.scaledHeight.toFloat(),
             Color(255, 255, 255),
         )
-        FPSMaster.INSTANCE.fontManager!!.s24.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["microsoft.login.desc"],
+        FPSMaster.fontManager.s24.drawCenteredString(
+            FPSMaster.i18n["microsoft.login.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 30,
             FPSMaster.theme.getTextColorDescription().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s40.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["microsoft.login.title"],
+        FPSMaster.fontManager.s40.drawCenteredString(
+            FPSMaster.i18n["microsoft.login.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f + 10,
             FPSMaster.theme.getPrimary().rgb

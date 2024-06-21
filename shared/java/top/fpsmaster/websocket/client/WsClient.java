@@ -26,10 +26,10 @@ public class WsClient extends WebSocketClient {
         if (FPSMaster.debug)
             Utility.sendClientMessage("成功连接到irc服务器");
         if (ProviderManager.mcProvider.getPlayer() != null) {
-            Utility.sendClientMessage(FPSMaster.INSTANCE.i18n.get("irc.enable"));
+            Utility.sendClientMessage(FPSMaster.i18n.get("irc.enable"));
         }
-        assert FPSMaster.INSTANCE.accountManager != null;
-        send(new LoginPacket(FPSMaster.INSTANCE.accountManager.getUsername(), FPSMaster.INSTANCE.accountManager.getToken()).toJson());
+        assert FPSMaster.accountManager != null;
+        send(new LoginPacket(FPSMaster.accountManager.getUsername(), FPSMaster.accountManager.getToken()).toJson());
     }
 
     public void sendMessage(String message) {

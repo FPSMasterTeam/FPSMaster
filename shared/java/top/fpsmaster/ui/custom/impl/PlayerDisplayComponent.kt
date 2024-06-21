@@ -15,7 +15,7 @@ class PlayerDisplayComponent : Component(PlayerDisplay::class.java) {
         for (entity in ProviderManager.worldClientProvider.getWorld()!!.playerEntities) {
             if (entity != null) {
                 if (i > 10 || entity === ProviderManager.mcProvider.getPlayer()) continue
-                val s16 = FPSMaster.INSTANCE.fontManager!!.s16
+                val s16 = FPSMaster.fontManager.s16
                 val hX = s16.getStringWidth((entity.health * 10 / 10).toInt().toString() + " hp").toFloat()
                 val nX = s16.getStringWidth(entity.displayName.formattedText).toFloat()
                 Render2DUtils.drawOptimizedRoundedRect(x, y + i * 16, 10 + hX + nX, 14f, Color(0, 0, 0, 60))

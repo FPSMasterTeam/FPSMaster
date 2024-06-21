@@ -35,8 +35,8 @@ class BooleanSettingRender(mod: Module, setting: BooleanSetting) : SettingRender
             box.start(box.color, FPSMaster.theme.getCheckboxBox(), 0.2f, Type.EASE_IN_OUT_QUAD)
         }
         Render2DUtils.drawOptimizedRoundedRect(x + 14, y + 3, 6f, 6f, 3, box.color.rgb)
-        FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 26, y + 1, FPSMaster.theme.getTextColorDescription().rgb
         )

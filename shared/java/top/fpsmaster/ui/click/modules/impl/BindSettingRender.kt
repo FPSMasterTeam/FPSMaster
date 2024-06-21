@@ -27,13 +27,13 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
         mouseY: Float,
         custom: Boolean
     ) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.drawString(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.drawString(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorTitle().rgb
         ).toFloat()
         val keyName = Keyboard.getKeyName(setting.value)
-        val s16b = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16b = FPSMaster.fontManager.s16
         val width1 = 10 + s16b.getStringWidth(keyName)
         if (Utility.isHovered(x + 15 + fw, y, width1.toFloat(), 14f, mouseX.toInt(), mouseY.toInt())) {
             Render2DUtils.drawOptimizedRoundedRect(
@@ -55,13 +55,13 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        val fw = FPSMaster.INSTANCE.fontManager!!.s16.getStringWidth(
-            FPSMaster.INSTANCE.i18n[(mod.name + "." + setting.name).lowercase(
+        val fw = FPSMaster.fontManager.s16.getStringWidth(
+            FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
             )]
         ).toFloat()
         val keyName = Keyboard.getKeyName(setting.value)
-        val s16b = FPSMaster.INSTANCE.fontManager!!.s16
+        val s16b = FPSMaster.fontManager.s16
         if (Utility.isHovered(
                 x + 12 + fw,
                 y,

@@ -23,18 +23,18 @@ class Login(isOOBE: Boolean) : Scene() {
     private var btn2: GuiButton
     private var username: TextField =
         TextField(
-            FPSMaster.INSTANCE.fontManager!!.s18,
+            FPSMaster.fontManager.s18,
             false,
-            FPSMaster.INSTANCE.i18n["oobe.login.username"],
+            FPSMaster.i18n["oobe.login.username"],
             -1,
             Color(200, 200, 200).rgb,
             32
         )
     private var password: TextField =
         TextField(
-            FPSMaster.INSTANCE.fontManager!!.s18,
+            FPSMaster.fontManager.s18,
             true,
-            FPSMaster.INSTANCE.i18n["oobe.login.password"],
+            FPSMaster.i18n["oobe.login.password"],
             -1,
             Color(200, 200, 200).rgb,
             32
@@ -42,19 +42,19 @@ class Login(isOOBE: Boolean) : Scene() {
     private var msgBoxAnimation = ColorAnimation(Color(0, 0, 0, 0))
 
     init {
-        username.text = FPSMaster.INSTANCE.configManager.configure.getOrCreate("username", "")
-        btn = GuiButton(FPSMaster.INSTANCE.i18n["oobe.login.login"]) {
+        username.text = FPSMaster.configManager.configure.getOrCreate("username", "")
+        btn = GuiButton(FPSMaster.i18n["oobe.login.login"]) {
             try {
                 val login = login(username.text, password.text)
                 if (login["code"].asInt == 200) {
-                    if (FPSMaster.INSTANCE.accountManager != null) {
-                        FPSMaster.INSTANCE.accountManager!!.username = username.text
-                        FPSMaster.INSTANCE.accountManager!!.token = login["msg"].asString
+                    if (FPSMaster.accountManager != null) {
+                        FPSMaster.accountManager.username = username.text
+                        FPSMaster.accountManager.token = login["msg"].asString
                     }
-                    saveTempValue("token", FPSMaster.INSTANCE.accountManager!!.token)
+                    saveTempValue("token", FPSMaster.accountManager.token)
                     FPSMaster.INSTANCE.loggedIn = true
                     if (isOOBE) {
-                        FPSMaster.INSTANCE.oobeScreen.nextScene()
+                        FPSMaster.oobeScreen.nextScene()
                     } else {
                         Minecraft.getMinecraft().displayGuiScreen(MainMenu())
                     }
@@ -68,13 +68,13 @@ class Login(isOOBE: Boolean) : Scene() {
                 msgbox = true
             }
         }
-        btn2 = GuiButton(FPSMaster.INSTANCE.i18n["oobe.login.skip"]) {
+        btn2 = GuiButton(FPSMaster.i18n["oobe.login.skip"]) {
             if (isOOBE) {
-                FPSMaster.INSTANCE.oobeScreen.nextScene()
+                FPSMaster.oobeScreen.nextScene()
             } else {
                 Minecraft.getMinecraft().displayGuiScreen(MainMenu())
             }
-            FPSMaster.INSTANCE.configManager.configure["username"] = "offline"
+            FPSMaster.configManager.configure["username"] = "offline"
         }
     }
 
@@ -101,20 +101,20 @@ class Login(isOOBE: Boolean) : Scene() {
         )
 //        GlStateManager.pushMatrix()
 //        GlStateManager.enableBlend()
-        FPSMaster.INSTANCE.fontManager!!.s24.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.login.desc"],
+        FPSMaster.fontManager.s24.drawCenteredString(
+            FPSMaster.i18n["oobe.login.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 90,
             FPSMaster.theme.getTextColorDescription().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s18.drawString(
-            FPSMaster.INSTANCE.i18n["oobe.login.register"],
+        FPSMaster.fontManager.s18.drawString(
+            FPSMaster.i18n["oobe.login.register"],
             sr.scaledWidth / 2f - 90,
             sr.scaledHeight / 2f + 15,
             FPSMaster.theme.getPrimary().rgb
         )
-        FPSMaster.INSTANCE.fontManager!!.s40.drawCenteredString(
-            FPSMaster.INSTANCE.i18n["oobe.login.title"],
+        FPSMaster.fontManager.s40.drawCenteredString(
+            FPSMaster.i18n["oobe.login.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 75,
             FPSMaster.theme.getPrimary().rgb
@@ -141,13 +141,13 @@ class Login(isOOBE: Boolean) : Scene() {
                 20f,
                 Color(113, 127, 254)
             )
-            FPSMaster.INSTANCE.fontManager!!.s18.drawString(
-                FPSMaster.INSTANCE.i18n["oobe.login.info"],
+            FPSMaster.fontManager.s18.drawString(
+                FPSMaster.i18n["oobe.login.info"],
                 sr.scaledWidth / 2f - 90,
                 sr.scaledHeight / 2f - 45,
                 -1
             )
-            FPSMaster.INSTANCE.fontManager!!.s18.drawString(
+            FPSMaster.fontManager.s18.drawString(
                 msg,
                 sr.scaledWidth / 2f - 90,
                 sr.scaledHeight / 2f - 20,
@@ -192,7 +192,7 @@ class Login(isOOBE: Boolean) : Scene() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         super.keyTyped(typedChar, keyCode)
         username.textboxKeyTyped(typedChar, keyCode)
-        FPSMaster.INSTANCE.configManager.configure["username"] = username.text
+        FPSMaster.configManager.configure["username"] = username.text
         password.textboxKeyTyped(typedChar, keyCode)
     }
 }

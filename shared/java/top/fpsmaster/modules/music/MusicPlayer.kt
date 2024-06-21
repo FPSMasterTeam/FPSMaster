@@ -44,7 +44,7 @@ object MusicPlayer {
                 JLayerHelper.clip!!.stop()
                 JLayerHelper.clip!!.close()
             }
-            val v = FPSMaster.INSTANCE.configManager.configure.getOrCreate("volume", "1").toFloat()
+            val v = FPSMaster.configManager.configure.getOrCreate("volume", "1").toFloat()
             FPSMaster.async.runnable {
                 JLayerHelper.playWAV(path.replace(".mp3", ".wav"))
                 setVolume(v)
@@ -60,6 +60,6 @@ object MusicPlayer {
         MusicPlayer.volume = volume
         if (JLayerHelper.clip == null) return
         JLayerHelper.setVolume(volume)
-        FPSMaster.INSTANCE.configManager.configure["volume"] = volume.toString()
+        FPSMaster.configManager.configure["volume"] = volume.toString()
     }
 }

@@ -43,7 +43,7 @@ class CommandManager {
                     return
                 }
             }
-            Utility.sendClientMessage(FPSMaster.INSTANCE.i18n["command.notfound"])
+            Utility.sendClientMessage(FPSMaster.i18n["command.notfound"])
             return
         }
         val cmdArgs = args.subList(1, args.size).toTypedArray()
@@ -53,6 +53,6 @@ class CommandManager {
                 return
             }
         }
-        Utility.sendClientMessage(FPSMaster.INSTANCE.i18n["command.notfound"])
+        Utility.sendClientMessage(FPSMaster.i18n["command.notfound"])
     }
 }
