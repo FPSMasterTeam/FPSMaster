@@ -36,4 +36,18 @@ public class Utility {
         }
         return false;
     }
+
+    public static void setOfFastRender(boolean value) {
+        if (!FPSMaster.INSTANCE.getHasOptifine())
+            return;
+        try {
+            if (ofFastRender == null) {
+                Class.forName("Config");
+                ofFastRender = GameSettings.class.getDeclaredField("ofFastRender");
+                ofFastRender.setAccessible(true);
+            }
+            ofFastRender.setBoolean(mc.gameSettings, value);
+        } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException ignore) {
+        }
+    }
 }

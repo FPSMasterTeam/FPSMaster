@@ -14,6 +14,7 @@ import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.interfaces.ProviderManager
+import top.fpsmaster.utils.Utility
 import top.fpsmaster.wrapper.renderEngine.bufferbuilder.WrapperBufferBuilder
 
 class MotionBlur : Module("MotionBlur", Category.RENDER) {
@@ -23,6 +24,13 @@ class MotionBlur : Module("MotionBlur", Category.RENDER) {
 
     init {
         addSettings(multiplier)
+    }
+
+    override fun onEnable() {
+        super.onEnable()
+        if (Utility.ofFastRender()) {
+            Utility.setOfFastRender(false)
+        }
     }
 
     private fun checkFramebufferSizes(framebuffer: Framebuffer?, width: Int, height: Int): Framebuffer {

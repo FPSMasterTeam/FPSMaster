@@ -63,6 +63,8 @@ class FPSMaster {
             LightTheme()
         }
         MusicPlayer.setVolume(configManager.configure.getOrCreate("volume", "1").toFloat())
+        NeteaseApi.cookies = FileUtils.readTempValue("cookies")
+        MusicPanel.nickname = FileUtils.readTempValue("nickname")
     }
 
     private fun initializeMusic() {
@@ -91,16 +93,22 @@ class FPSMaster {
         commandManager = CommandManager()
     }
 
-
-    fun initialize() {
-        initializeFonts()
-        initializeLang()
-        initializeMusic()
-        initializeComponents()
-        initializeConfigures()
-        initializeCommands()
+    private fun initializePlugins() {
+        Logger.info("Start loading plugins")
+        plugins.init()
+        Logger.info("Loaded ${PluginManager.plugins.size} plugins!")
         Logger.info("Initialized")
+    }
 
+    private fun checkOptifine() {
+        try {
+            Class.forName("optifine.Patcher")
+            hasOptifine = true
+        } catch (_: ClassNotFoundException) {
+        }
+    }
+
+    private fun checkUpdate() {
         async.runnable {
             isLatest = true
             val s = HttpRequest["https://fpsmaster.top/version"]
@@ -111,21 +119,19 @@ class FPSMaster {
                 isLatest = version >= newVersion
             }
         }
-        loadNetease()
-        Logger.info("Start loading plugins")
-        plugins.init()
-        Logger.info("Loaded ${PluginManager.plugins.size} plugins!")
-
-        try {
-            Class.forName("optifine.Patcher")
-            hasOptifine = true
-        } catch (_: ClassNotFoundException) {
-        }
     }
 
-    private fun loadNetease() {
-        NeteaseApi.cookies = FileUtils.readTempValue("cookies")
-        MusicPanel.nickname = FileUtils.readTempValue("nickname")
+    fun initialize() {
+        initializeFonts()
+        initializeLang()
+        initializeMusic()
+        initializeComponents()
+        initializeConfigures()
+        initializeCommands()
+        initializePlugins()
+
+        checkUpdate()
+        checkOptifine()
     }
 
 
@@ -189,13 +195,13 @@ class FPSMaster {
         var i18n: Language = Language()
 
         @JvmField
-        var debug = false
-
-        @JvmField
         var async = AsyncTask(100)
 
         @JvmField
         var isLatest = false
+
+        @JvmField
+        var debug = false
 
         @JvmField
         var latest = CLIENT_VERSION
