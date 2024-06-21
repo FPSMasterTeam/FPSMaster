@@ -7,9 +7,8 @@ import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.ColorSetting
 import top.fpsmaster.ui.click.MainPanel
 import top.fpsmaster.ui.click.modules.SettingRender
-import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
-import top.fpsmaster.utils.render.GradientUtils
+import top.fpsmaster.utils.render.shader.GradientUtils
 import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 import java.util.*
@@ -65,7 +64,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
             }
             var saturation = setting.value.saturation
             var brightness = setting.value.brightness
-            if (isHovered(
+            if (Render2DUtils.isHovered(
                     x + tW + 26,
                     y + 16,
                     80f,
@@ -106,7 +105,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
                 -1
             )
 //            Render2DUtils.drawRect(x + tW + 110, y + 16 + aHeight * setting.value.hue, 10f, 1f, -1)
-            if (isHovered(
+            if (Render2DUtils.isHovered(
                     x + tW + 110,
                     y + 16,
                     10f,
@@ -150,7 +149,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
                 5f,
                 -1
             )
-            if (isHovered(
+            if (Render2DUtils.isHovered(
                     x + tW + 122,
                     y + 16,
                     10f,
@@ -172,8 +171,13 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
 
             // 应用修改后的颜色
             setting.value.setColor(hue, saturation, brightness, alpha)
-        }else{
-            setting.value.setColor(setting.value.hue, setting.value.saturation, setting.value.brightness, setting.value.alpha)
+        } else {
+            setting.value.setColor(
+                setting.value.hue,
+                setting.value.saturation,
+                setting.value.brightness,
+                setting.value.alpha
+            )
         }
         aHeight = if (expand) {
             base(aHeight.toDouble(), 80.0, 0.2).toFloat()
@@ -189,7 +193,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
-        if (isHovered(x + tW + 26, y + 1, 80f, 14f, mouseX.toInt(), mouseY.toInt()) && btn == 0) {
+        if (Render2DUtils.isHovered(x + tW + 26, y + 1, 80f, 14f, mouseX.toInt(), mouseY.toInt()) && btn == 0) {
             expand = !expand
         }
     }

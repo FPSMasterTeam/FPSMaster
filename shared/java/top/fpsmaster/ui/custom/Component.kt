@@ -12,7 +12,7 @@ import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.render.Render2DUtils
 import top.fpsmaster.interfaces.ProviderManager
-import top.fpsmaster.utils.shader.BlurBuffer
+import top.fpsmaster.utils.render.shader.BlurBuffer
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -83,7 +83,7 @@ open class Component(clazz: Class<*>?) {
         val rX = getRealPosition()[0]
         val rY = getRealPosition()[1]
         draw(rX.toInt().toFloat(), rY.toInt().toFloat())
-        if (Utility.mc.currentScreen !is GuiChat && !(Utility.mc.currentScreen is MainPanel && !Utility.isHovered(
+        if (Utility.mc.currentScreen !is GuiChat && !(Utility.mc.currentScreen is MainPanel && !Render2DUtils.isHovered(
                 MainPanel.x.toFloat(),
                 MainPanel.y.toFloat(),
                 MainPanel.width,
@@ -93,7 +93,7 @@ open class Component(clazz: Class<*>?) {
             ))
         ) return
         val drag = FPSMaster.componentsManager.dragLock == mod.name
-        alpha = if (Utility.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
+        alpha = if (Render2DUtils.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
             if ((base(alpha.toDouble(), 50.0, 0.1).toFloat()).isNaN())
                 0f else base(alpha.toDouble(), 50.0, 0.1).toFloat()
         } else {
@@ -104,7 +104,7 @@ open class Component(clazz: Class<*>?) {
         if (!Mouse.isButtonDown(0)) {
             FPSMaster.componentsManager.dragLock = ""
         }
-        if (Utility.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
+        if (Render2DUtils.isHovered(rX, rY, width, height, mouseX, mouseY) || drag) {
             FPSMaster.fontManager.s14.drawString(
                 FPSMaster.i18n[mod.name.lowercase()],
                 rX,
@@ -174,7 +174,7 @@ open class Component(clazz: Class<*>?) {
             }
     }
 
-    fun drawString(font: UFontRenderer, text: String?, x: Float, y: Float, color: Int) {
+    fun drawString(font: UFontRenderer, text: String, x: Float, y: Float, color: Int) {
         if (mod.betterFont.value) {
             if (mod.fontShadow.value) font.drawStringWithShadow(text, x, y, color) else font.drawString(
                 text,
@@ -188,7 +188,7 @@ open class Component(clazz: Class<*>?) {
         }
     }
 
-    protected fun getStringWidth(font: UFontRenderer, name: String?): Float {
+    protected fun getStringWidth(font: UFontRenderer, name: String): Float {
         return if (mod.betterFont.value) {
             font.getStringWidth(name).toFloat()
         } else {

@@ -18,7 +18,6 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 
-import static top.fpsmaster.utils.Utility.isHovered;
 
 public class MainMenu extends GuiScreen {
     GuiButton singlePlayer = new GuiButton("mainmenu.single", () -> ProviderManager.mainmenuProvider.showSinglePlayer(this));
@@ -52,7 +51,7 @@ public class MainMenu extends GuiScreen {
 
         assert FPSMaster.fontManager != null;
         int stringWidth = FPSMaster.fontManager.s16.getStringWidth(mc.getSession().getUsername());
-        if (isHovered(10, 10, 80, 20, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(10, 10, 80, 20, mouseX, mouseY)) {
             Render2DUtils.drawOptimizedRoundedRect(10, 10, 30 + stringWidth, 20, new Color(0, 0, 0, 100));
             if (Mouse.isButtonDown(0)) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiWaiting());
@@ -95,10 +94,10 @@ public class MainMenu extends GuiScreen {
         FPSMaster.fontManager.s16.drawString(FPSMaster.CLIENT_NAME + " Client " + FPSMaster.CLIENT_VERSION + " (Minecraft " + FPSMaster.EDITION + ")", 4, this.height - 28, new Color(255, 255, 255).getRGB());
 
         // plugins
-        if (isHovered(this.width - 16, 15, 12, 12, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(this.width - 16, 15, 12, 12, mouseX, mouseY)) {
             Render2DUtils.drawImage(new ResourceLocation("client/gui/screen/plugin.png"), this.width - 20, 12, 12, 12, -1);
         } else {
-            Render2DUtils.drawImage(new ResourceLocation("client/gui/screen/plugin.png"), this.width - 20, 12, 12, 12, new Color(200,200,200));
+            Render2DUtils.drawImage(new ResourceLocation("client/gui/screen/plugin.png"), this.width - 20, 12, 12, 12, new Color(200, 200, 200));
         }
 
 
@@ -120,11 +119,11 @@ public class MainMenu extends GuiScreen {
         float nw = FPSMaster.fontManager.s16.getStringWidth(latest);
 
         if (mouseButton == 0) {
-            if (isHovered(4, this.height - 52, nw, 14, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(4, this.height - 52, nw, 14, mouseX, mouseY)) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiLogin());
             }
 
-            if (isHovered(4, this.height - 40, uw, 14, mouseX, mouseY) && needUpdate) {
+            if (Render2DUtils.isHovered(4, this.height - 40, uw, 14, mouseX, mouseY) && needUpdate) {
                 Desktop desktop = Desktop.getDesktop();
                 try {
                     desktop.browse(new URI("https://fpsmaster.top/download"));
@@ -133,7 +132,7 @@ public class MainMenu extends GuiScreen {
                 }
             }
 
-            if (isHovered(this.width - 16, 15, 12, 12, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(this.width - 16, 15, 12, 12, mouseX, mouseY)) {
                 Minecraft.getMinecraft().displayGuiScreen(new GuiPlugins());
             }
         }

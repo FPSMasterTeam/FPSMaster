@@ -13,7 +13,6 @@ import top.fpsmaster.modules.music.netease.Music
 import top.fpsmaster.modules.music.netease.NeteaseApi
 import top.fpsmaster.modules.music.netease.deserialize.MusicWrapper
 import top.fpsmaster.ui.click.component.ScrollContainer
-import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.os.FileUtils
 import top.fpsmaster.utils.os.FileUtils.saveFileBytes
 import top.fpsmaster.utils.os.FileUtils.saveTempValue
@@ -55,7 +54,7 @@ object MusicPanel {
         if (searchThread == null || !searchThread!!.isAlive) {
             var dY = y + 50 + container.getRealScroll()
             for ((i, music) in displayList.musics.withIndex()) {
-                if (isHovered(x, dY, width - 10f, 40f, mouseX, mouseY) && mouseY < y + height - 34 && mouseY > y + 34) {
+                if (Render2DUtils.isHovered(x, dY, width - 10f, 40f, mouseX, mouseY) && mouseY < y + height - 34 && mouseY > y + 34) {
                     if (Mouse.isButtonDown(0)) {
                         music.play()
                         MusicPlayer.isPlaying = true
@@ -72,7 +71,7 @@ object MusicPanel {
         var xOffset = 0
         for ((i, page) in pages.withIndex()) {
             val width = FPSMaster.fontManager.s16.getStringWidth(FPSMaster.i18n[page]) + 10
-            if (isHovered(x + 95 + xOffset, y + 8, width.toFloat(), 14f, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(x + 95 + xOffset, y + 8, width.toFloat(), 14f, mouseX, mouseY)) {
                 if (Mouse.isButtonDown(0)) {
                     curSearch = i
                     if (curSearch == 2) {
@@ -88,7 +87,7 @@ object MusicPanel {
 
         // 操作栏
         val current = MusicPlayer.playList.getCurrent()
-        if (isHovered(x, y + height - 30, width, 4f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(x, y + height - 30, width, 4f, mouseX, mouseY)) {
             if (Mouse.isButtonDown(0) && current != null) {
                 if (!MusicPlayer.isPlaying) {
                     FPSMaster.async.runnable {
@@ -106,13 +105,13 @@ object MusicPanel {
                 }
             }
         }
-        if (isHovered(x + width / 2 - 35, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
+        if (Render2DUtils.isHovered(x + width / 2 - 35, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
             MusicPlayer.playList.previous()
         }
-        if (isHovered(x + width / 2 + 5, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
+        if (Render2DUtils.isHovered(x + width / 2 + 5, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
             MusicPlayer.playList.next()
         }
-        if (isHovered(x + width / 2 - 15, y + height - 23, 35 / 2f, 35 / 2f, mouseX, mouseY) && btn == 0) {
+        if (Render2DUtils.isHovered(x + width / 2 - 15, y + height - 23, 35 / 2f, 35 / 2f, mouseX, mouseY) && btn == 0) {
             if (!MusicPlayer.playList.musics.isEmpty()) {
                 if (MusicPlayer.isPlaying) {
                     playProgress = MusicPlayer.playProgress
@@ -132,7 +131,7 @@ object MusicPanel {
                 }
             }
         }
-        if (isHovered(x + width / 2 - 55, y + height - 21, 12f, 12f, mouseX, mouseY) && btn == 0) {
+        if (Render2DUtils.isHovered(x + width / 2 - 55, y + height - 21, 12f, 12f, mouseX, mouseY) && btn == 0) {
             if (MusicPlayer.mode < 2) {
                 MusicPlayer.mode++
             } else {
@@ -156,7 +155,7 @@ object MusicPanel {
                 y + 20,
                 FPSMaster.theme.getTextColorTitle().rgb
             )
-            if (isHovered(x + 20, y + 20, 20f, 20f, mouseX, mouseY) && Mouse.isButtonDown(0)) isWaitingLogin = false
+            if (Render2DUtils.isHovered(x + 20, y + 20, 20f, 20f, mouseX, mouseY) && Mouse.isButtonDown(0)) isWaitingLogin = false
             val resourceLocation = ResourceLocation("music/qr")
             Render2DUtils.drawImage(resourceLocation, x + width / 2 - 45, y + height / 2 - 45, 90f, 90f, -1)
             var scan = ""
@@ -214,7 +213,7 @@ object MusicPanel {
             // music list
             container.draw(x, y + 50, width - 5, height - 80, mouseX, mouseY) {
                 for ((i, music) in displayList.musics.withIndex()) {
-                    if (isHovered(
+                    if (Render2DUtils.isHovered(
                             x,
                             dY,
                             width - 10f,
@@ -345,7 +344,7 @@ object MusicPanel {
 //            if (nickname.isNotEmpty()) nickname = "Unknown"
 //            val stringWidth =
 //                FPSMaster.fontManager!!.s16.getStringWidth(FPSMaster.i18n["music.notLoggedIn"])
-//            if (isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+//            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
 //                FPSMaster.fontManager!!.s16.drawString(
 //                    FPSMaster.i18n["music.notloggedin"],
 //                    x + width - stringWidth - 5,
@@ -373,7 +372,7 @@ object MusicPanel {
 //                y + 10,
 //                FPSMaster.theme.getTextColorTitle().rgb
 //            )
-//            if (isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+//            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
 //                if (Mouse.isButtonDown(0)) {
 //                    isWaitingLogin = true
 //                    reloadImg()
@@ -392,7 +391,7 @@ object MusicPanel {
             2f,
             FPSMaster.theme.getPrimary().rgb
         )
-        if (isHovered(x, y + height - 32, width, 4f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(x, y + height - 32, width, 4f, mouseX, mouseY)) {
             Render2DUtils.drawRect(
                 x,
                 y + height - 31f,
@@ -419,7 +418,7 @@ object MusicPanel {
             2f,
             FPSMaster.theme.getPrimary().rgb
         )
-        if (isHovered(x + width - 40, y + height - 14, 30f, 2f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(x + width - 40, y + height - 14, 30f, 2f, mouseX, mouseY)) {
             Render2DUtils.drawRect(
                 x + width - 40,
                 y + height - 14.5f,

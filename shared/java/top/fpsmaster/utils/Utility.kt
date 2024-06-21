@@ -1,53 +1,21 @@
-package top.fpsmaster.utils;
+package top.fpsmaster.utils
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.settings.GameSettings;
-import top.fpsmaster.FPSMaster;
-import top.fpsmaster.interfaces.ProviderManager;
+import net.minecraft.client.Minecraft
+import net.minecraft.client.settings.GameSettings
+import top.fpsmaster.FPSMaster
+import top.fpsmaster.interfaces.ProviderManager
+import java.lang.reflect.Field
 
-import java.lang.reflect.Field;
+open class Utility {
+    companion object {
+        @JvmField
+        var mc: Minecraft = Minecraft.getMinecraft()
 
-public class Utility {
-    public static Minecraft mc = Minecraft.getMinecraft();
-
-    public static void sendClientMessage(String msg) {
-        if (ProviderManager.mcProvider.getWorld() != null) {
-            ProviderManager.mcProvider.printChatMessage(ProviderManager.utilityProvider.makeChatComponent(msg));
-        }
-    }
-
-    public static boolean isHovered(float x, float y, float width, float height, int mouseX, int mouseY) {
-        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
-    }
-
-    public static Field ofFastRender;
-
-    public static boolean ofFastRender() {
-        if (!FPSMaster.INSTANCE.getHasOptifine())
-            return false;
-        try {
-            if (ofFastRender == null) {
-                Class.forName("Config");
-                ofFastRender = GameSettings.class.getDeclaredField("ofFastRender");
-                ofFastRender.setAccessible(true);
+        @JvmStatic
+        fun sendClientMessage(msg: String?) {
+            if (ProviderManager.mcProvider.getWorld() != null) {
+                ProviderManager.mcProvider.printChatMessage(ProviderManager.utilityProvider.makeChatComponent(msg))
             }
-            return ofFastRender.getBoolean(mc.gameSettings);
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException ignore) {
-        }
-        return false;
-    }
-
-    public static void setOfFastRender(boolean value) {
-        if (!FPSMaster.INSTANCE.getHasOptifine())
-            return;
-        try {
-            if (ofFastRender == null) {
-                Class.forName("Config");
-                ofFastRender = GameSettings.class.getDeclaredField("ofFastRender");
-                ofFastRender.setAccessible(true);
-            }
-            ofFastRender.setBoolean(mc.gameSettings, value);
-        } catch (ClassNotFoundException | IllegalAccessException | NoSuchFieldException ignore) {
         }
     }
 }

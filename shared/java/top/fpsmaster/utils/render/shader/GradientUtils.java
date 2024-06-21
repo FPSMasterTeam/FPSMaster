@@ -1,12 +1,10 @@
-package top.fpsmaster.utils.render;
+package top.fpsmaster.utils.render.shader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import top.fpsmaster.utils.Utility;
-import top.fpsmaster.utils.render.shader.ShaderUtil;
-import top.fpsmaster.utils.render.shader.Shaders;
 
 import java.awt.*;
 

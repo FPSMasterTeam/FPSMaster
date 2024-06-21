@@ -1,6 +1,7 @@
 package top.fpsmaster.utils.render.shader;
 
 import top.fpsmaster.modules.logger.Logger;
+import top.fpsmaster.utils.OptifineUtil;
 import top.fpsmaster.utils.Utility;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -122,7 +123,7 @@ public class ShaderUtil extends Utility {
     }
 
     public static void drawQuads(float x, float y, float width, float height) {
-        if (Utility.ofFastRender()) return;
+        if (OptifineUtil.Companion.isFastRender()) return;
         glBegin(GL_QUADS);
         glTexCoord2f(0, 0);
         glVertex2f(x, y);

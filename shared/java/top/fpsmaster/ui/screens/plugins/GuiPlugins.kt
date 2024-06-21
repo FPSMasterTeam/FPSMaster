@@ -44,7 +44,7 @@ class GuiPlugins : GuiScreen() {
                 pluginY + 16,
                 Color.GRAY.rgb
             )
-            if (Utility.isHovered(width / 2f, pluginY, width, 30f, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(width / 2f, pluginY, width, 30f, mouseX, mouseY)) {
                 Render2DUtils.drawOptimizedRoundedRect(
                     width / 2f,
                     pluginY,
@@ -96,7 +96,7 @@ class GuiPlugins : GuiScreen() {
         val height = sr.scaledHeight / 2f
         var pluginY = height / 2f
         for (plugin: OnlinePlugin in plugins) {
-            if (Utility.isHovered(width / 2f, pluginY, width, 30f, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(width / 2f, pluginY, width, 30f, mouseX, mouseY)) {
                 HttpRequest.downloadFile(plugin.link, FileUtils.plugins.absolutePath + "/" + plugin.name + ".jar")
                 FPSMaster.plugins.reload()
                 mc.displayGuiScreen(MainMenu())
@@ -104,11 +104,11 @@ class GuiPlugins : GuiScreen() {
             pluginY += 30
         }
 
-        if (Utility.isHovered(width / 2f, height * 1.5f + 10, width - 10, 26f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(width / 2f, height * 1.5f + 10, width - 10, 26f, mouseX, mouseY)) {
             Desktop.getDesktop().open(FileUtils.plugins)
         }
 
-        if (Utility.isHovered(0f, sr.scaledHeight- 20f, 100f, 20f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(0f, sr.scaledHeight- 20f, 100f, 20f, mouseX, mouseY)) {
             val desktop = Desktop.getDesktop()
             try {
                 desktop.browse(URI("https://fpsmaster.top/plugin-tos"))
@@ -117,7 +117,7 @@ class GuiPlugins : GuiScreen() {
             }
         }
 
-        if (Utility.isHovered(width / 2f, height * 1.5f + 40, width - 10, 26f, mouseX, mouseY)) {
+        if (Render2DUtils.isHovered(width / 2f, height * 1.5f + 40, width - 10, 26f, mouseX, mouseY)) {
             FPSMaster.plugins.reload()
         }
     }

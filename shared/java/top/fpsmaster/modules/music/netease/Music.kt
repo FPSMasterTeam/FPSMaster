@@ -17,7 +17,7 @@ import top.fpsmaster.utils.os.HttpRequest.downloadFile
 import top.fpsmaster.wrapper.WorldClientProvider
 import java.io.File
 
-class Music(id: Long, name: String?, artists: String?, picUrl: String) : AbstractMusic() {
+class Music(id: Long, name: String, artists: String, picUrl: String) : AbstractMusic() {
     private var imgURL: String
     var isLoadedImage = false
     private var musicURL: String? = null

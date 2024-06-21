@@ -3,9 +3,9 @@ package top.fpsmaster.modules.music
 abstract class AbstractMusic {
     // stuff to display
     @JvmField
-    var name: String? = null
+    var name: String = ""
     @JvmField
-    var author: String? = null
+    var author: String = ""
     @JvmField
     var lyrics: Lyrics? = null
     var tlyrics: Lyrics? = null

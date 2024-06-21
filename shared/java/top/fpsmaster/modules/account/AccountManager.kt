@@ -12,7 +12,7 @@ class AccountManager {
     var username: String = ""
     var itemsHeld = arrayOf<String>()
 
-    init {
+    fun autoLogin() {
         try {
             token = FileUtils.readTempValue("token").trim()
             username = FPSMaster.configManager.configure.getOrCreate("username", "offline").trim()

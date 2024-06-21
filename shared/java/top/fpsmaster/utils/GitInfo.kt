@@ -1,37 +1,30 @@
-package top.fpsmaster.utils;
+package top.fpsmaster.utils
 
-import top.fpsmaster.modules.logger.Logger;
+import top.fpsmaster.modules.logger.Logger.error
+import java.io.IOException
+import java.util.*
 
-import java.io.IOException;
-import java.util.Properties;
-import java.io.InputStream;
-  
-public class GitInfo {
+object GitInfo {
+    private val properties = Properties()
 
-    private static final Properties properties;
-    static {
-        properties = new Properties();
-        InputStream inputStream = GitInfo.class.getResourceAsStream("/git.properties");
+    init {
+        val inputStream = GitInfo::class.java.getResourceAsStream("/git.properties")
         try {
-            properties.load(inputStream);
-        } catch (IOException e) {
-            Logger.error("Failed to load git.properties file");
+            properties.load(inputStream)
+        } catch (e: IOException) {
+            error("Failed to load git.properties file")
         }
     }
 
-    public static String getCommitId(){
-        return properties.getProperty("git.commit.id");
-    }
+    val commitId: String
+        get() = properties.getProperty("git.commit.id")
 
-    public static String getCommitIdAbbrev(){
-        return properties.getProperty("git.commit.id.abbrev");
-    }
+    val commitIdAbbrev: String
+        get() = properties.getProperty("git.commit.id.abbrev")
 
-    public static String getCommitTime(){
-        return properties.getProperty("git.commit.time");
-    }
+    val commitTime: String
+        get() = properties.getProperty("git.commit.time")
 
-    public static String getBranch(){
-        return properties.getProperty("git.branch");
-    }
+    val branch: String
+        get() = properties.getProperty("git.branch")
 }

@@ -1,7 +1,6 @@
 package top.fpsmaster.ui.common
 
 import top.fpsmaster.FPSMaster
-import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.math.animation.ColorAnimation
 import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
@@ -17,7 +16,7 @@ open class GuiButton(var text: String, var runnable: Runnable) {
         this.y = y
         this.width = width
         this.height = height
-        if (isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
             btnColor.base(Color(135, 147, 255))
         } else {
             btnColor.base(Color(113, 127, 254))
@@ -32,7 +31,7 @@ open class GuiButton(var text: String, var runnable: Runnable) {
     }
 
     open fun mouseClick(mouseX: Float, mouseY: Float, btn: Int) {
-        if (isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt()) && btn == 0) {
+        if (Render2DUtils.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt()) && btn == 0) {
             runnable.run()
         }
     }

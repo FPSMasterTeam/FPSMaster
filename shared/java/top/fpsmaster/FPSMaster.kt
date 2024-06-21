@@ -65,6 +65,7 @@ class FPSMaster {
         MusicPlayer.setVolume(configManager.configure.getOrCreate("volume", "1").toFloat())
         NeteaseApi.cookies = FileUtils.readTempValue("cookies")
         MusicPanel.nickname = FileUtils.readTempValue("nickname")
+        accountManager.autoLogin()
     }
 
     private fun initializeMusic() {
@@ -209,7 +210,7 @@ class FPSMaster {
 
         @JvmStatic
         fun getClientTitle(): String {
-            return "$CLIENT_NAME $CLIENT_VERSION ${Constants.VERSION} (${Constants.EDITION}) (${GitInfo.getBranch()} - ${GitInfo.getCommitIdAbbrev()})"
+            return "$CLIENT_NAME $CLIENT_VERSION ${Constants.VERSION} (${Constants.EDITION}) (${GitInfo.branch} - ${GitInfo.commitIdAbbrev})"
         }
 
 

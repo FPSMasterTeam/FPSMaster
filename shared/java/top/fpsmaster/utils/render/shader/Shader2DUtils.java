@@ -1,8 +1,6 @@
-package top.fpsmaster.utils.render;
+package top.fpsmaster.utils.render.shader;
 
 import top.fpsmaster.utils.Utility;
-import top.fpsmaster.utils.render.shader.RainbowFontShader;
-import top.fpsmaster.utils.render.shader.RainbowShader;
 
 public class Shader2DUtils extends Utility {
     static RainbowShader rainbowShader = new RainbowShader();

@@ -6,6 +6,7 @@ import top.fpsmaster.features.settings.impl.TextSetting
 import top.fpsmaster.ui.common.TextField
 import top.fpsmaster.ui.click.modules.SettingRender
 import top.fpsmaster.utils.Utility
+import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 import java.util.*
 import kotlin.math.min
@@ -43,7 +44,7 @@ class TextSettingRender(mod: Module, setting: TextSetting) : SettingRender<TextS
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        if (Utility.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
             inputBox.mouseClicked(mouseX.toInt(), mouseY.toInt(), btn)
         } else {
             inputBox.setFocused(false)

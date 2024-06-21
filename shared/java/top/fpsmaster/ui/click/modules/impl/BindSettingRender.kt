@@ -35,7 +35,7 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
         val keyName = Keyboard.getKeyName(setting.value)
         val s16b = FPSMaster.fontManager.s16
         val width1 = 10 + s16b.getStringWidth(keyName)
-        if (Utility.isHovered(x + 15 + fw, y, width1.toFloat(), 14f, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x + 15 + fw, y, width1.toFloat(), 14f, mouseX.toInt(), mouseY.toInt())) {
             Render2DUtils.drawOptimizedRoundedRect(
                 x + 14.5f + fw,
                 y - 0.5f,
@@ -62,7 +62,7 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
         ).toFloat()
         val keyName = Keyboard.getKeyName(setting.value)
         val s16b = FPSMaster.fontManager.s16
-        if (Utility.isHovered(
+        if (Render2DUtils.isHovered(
                 x + 12 + fw,
                 y,
                 10f + s16b.getStringWidth(keyName),

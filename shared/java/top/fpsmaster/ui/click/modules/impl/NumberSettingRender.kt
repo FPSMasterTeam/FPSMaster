@@ -65,7 +65,7 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
                 Locale.getDefault()
             )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
-        if (Utility.isHovered(x + 16 + fw, y, 160f, height, mouseX.toInt(), mouseY.toInt()) && Mouse.isButtonDown(0)) {
+        if (Render2DUtils.isHovered(x + 16 + fw, y, 160f, height, mouseX.toInt(), mouseY.toInt()) && Mouse.isButtonDown(0)) {
             if (btn == 0 && MainPanel.dragLock == "null") {
                 MainPanel.dragLock = mod.name + setting.name + 4
                 dragging = true

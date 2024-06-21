@@ -44,7 +44,7 @@ class BooleanSettingRender(mod: Module, setting: BooleanSetting) : SettingRender
     }
 
     override fun mouseClick(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, btn: Int) {
-        if (Utility.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x, y, width, height, mouseX.toInt(), mouseY.toInt())) {
             setting.toggle()
         }
     }

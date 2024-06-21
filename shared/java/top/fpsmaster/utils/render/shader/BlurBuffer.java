@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.shader;
+package top.fpsmaster.utils.render.shader;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
@@ -13,6 +13,7 @@ import org.lwjgl.opengl.GL11;
 import top.fpsmaster.features.impl.optimizes.Performance;
 import top.fpsmaster.forge.api.IShaderGroup;
 import top.fpsmaster.interfaces.ProviderManager;
+import top.fpsmaster.utils.OptifineUtil;
 import top.fpsmaster.utils.Utility;
 import top.fpsmaster.utils.math.MathTimer;
 import top.fpsmaster.utils.render.Render2DUtils;
@@ -29,7 +30,7 @@ public class BlurBuffer {
 	private static final MathTimer updateTimer = new MathTimer();
 
 	public static void initFboAndShader() {
-		if(Utility.ofFastRender()){
+		if(OptifineUtil.Companion.isFastRender()){
 			return;
 		}
 		try {
@@ -53,7 +54,7 @@ public class BlurBuffer {
 	public static void blurArea(float x, float y, float width, float height, boolean setupOverlay) {
 		if (!blurEnabled())
 			return;
-		if(Utility.ofFastRender()){
+		if(OptifineUtil.Companion.isFastRender()){
 			return;
 		}
 		ScaledResolution scale = new ScaledResolution(mc);
@@ -139,7 +140,7 @@ public class BlurBuffer {
 
 	public static void updateBlurBuffer(boolean setupOverlay) {
 		// 以60帧每秒的速度更新 FrameBuffer
-		if(Utility.ofFastRender()){
+		if(OptifineUtil.Companion.isFastRender()){
 			return;
 		}
 		if (updateTimer.delay((long) (1000 / 60f)) && blurShader != null) {

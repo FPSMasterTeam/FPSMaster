@@ -77,7 +77,7 @@ public class MinecraftProvider implements IMinecraftProvider {
 
     @Override
     public void drawString(String text, float x, float y, int color) {
-        Minecraft.getMinecraft().fontRenderer.drawString(text, (int) x, (int) y, color);
+        Minecraft.getMinecraft().fontRenderer.drawStringWithShadow(text, (int) x, (int) y, color);
     }
 
     @Override

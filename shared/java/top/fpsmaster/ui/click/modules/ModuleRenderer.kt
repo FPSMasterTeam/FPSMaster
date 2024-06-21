@@ -67,7 +67,7 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
     ) {
         content.update()
         background.update()
-        border = if (Utility.isHovered(x + 5, y, width - 10, height, mouseX.toInt(), mouseY.toInt())) {
+        border = if (Render2DUtils.isHovered(x + 5, y, width - 10, height, mouseX.toInt(), mouseY.toInt())) {
             base(border.toDouble(), 200.0, 0.3).toFloat()
         } else {
             base(border.toDouble(), 30.0, 0.3).toFloat()
@@ -160,7 +160,7 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
                 }
             }
         }
-        if (Utility.isHovered(x + 5, y, width - 10, 40f, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x + 5, y, width - 10, 40f, mouseX.toInt(), mouseY.toInt())) {
             if (btn == 0) {
                 mod.toggle()
             } else if (btn == 1) {

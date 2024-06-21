@@ -90,7 +90,7 @@ dependencies {
     implementation("org.yaml:snakeyaml:2.0")
 
     // If you don't want to log in with your real minecraft account, remove this line
-    runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
+//    runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.1.2")
     implementation("javazoom:jlayer:1.0.1")
     implementation(kotlin("stdlib-jdk8"))
 }

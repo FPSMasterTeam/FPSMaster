@@ -149,4 +149,8 @@ public class Render2DUtils extends Utility {
         mc.getTextureManager().bindTexture(((AbstractClientPlayer) target).getLocationSkin());
         Gui.drawScaledCustomSizeModalRect((int) x, (int) y, 8, 8, 8, 8, w, h, 64, 64);
     }
+
+    public static boolean isHovered(float x, float y, float width, float height, int mouseX, int mouseY) {
+        return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+    }
 }

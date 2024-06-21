@@ -22,8 +22,7 @@ import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
 import top.fpsmaster.utils.openai.OpenAi
 import top.fpsmaster.utils.openai.requestClientAI
-import top.fpsmaster.utils.shader.BlurBuffer
-import top.fpsmaster.wrapper.GuiMainMenuProvider
+import top.fpsmaster.utils.render.shader.BlurBuffer
 import top.fpsmaster.wrapper.TextFormattingProvider
 
 class GlobalSubmitter {

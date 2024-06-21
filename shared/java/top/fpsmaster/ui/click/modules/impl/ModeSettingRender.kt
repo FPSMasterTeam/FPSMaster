@@ -6,7 +6,6 @@ import top.fpsmaster.FPSMaster
 import top.fpsmaster.features.manager.Module
 import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.ui.click.modules.SettingRender
-import top.fpsmaster.utils.Utility.isHovered
 import top.fpsmaster.utils.math.animation.AnimationUtils.base
 import top.fpsmaster.utils.render.Render2DUtils
 import java.util.*
@@ -67,7 +66,7 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
         if (expand) {
             expandH = base(expandH.toDouble(), (setting.modesSize * 14).toDouble(), 0.2).toFloat()
             for (i in 1..setting.modesSize) {
-                if (isHovered(x + 20 + fw, y + 4 + i * 14, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
+                if (Render2DUtils.isHovered(x + 20 + fw, y + 4 + i * 14, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
                     FPSMaster.fontManager.s16.drawString(
                         FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
                             Locale.getDefault()
@@ -94,12 +93,12 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             )], x + 10, y + 8, FPSMaster.theme.getTextColorDescription().rgb
         ).toFloat()
         val maxWidth = 80f
-        if (isHovered(x + 16 + fw, y + 4, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
+        if (Render2DUtils.isHovered(x + 16 + fw, y + 4, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
             expand = !expand
         }
         if (expand) {
             for (i in 1..setting.modesSize) {
-                if (isHovered(x + 20 + fw, y + 7 + i * 14, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
+                if (Render2DUtils.isHovered(x + 20 + fw, y + 7 + i * 14, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {
                     setting.value = i - 1
                     expand = false
                 }

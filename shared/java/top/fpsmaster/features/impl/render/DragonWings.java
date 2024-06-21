@@ -68,7 +68,6 @@ public class DragonWings extends Module {
             this.mc = Minecraft.getMinecraft();
             this.location = new ResourceLocation("client/wings/wings.png");
             this.playerUsesFullHeight = false; //Loader.isModLoaded("animations");
-            assert FPSMaster.moduleManager != null;
             this.wingsModule = FPSMaster.moduleManager.getModule(DragonWings.class);
 
             // Set texture offsets.

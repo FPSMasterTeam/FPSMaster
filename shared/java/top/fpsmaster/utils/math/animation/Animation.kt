@@ -4,9 +4,7 @@ class Animation {
     private var duration: Long = 0
     private var startTime: Long = 0
     private var start = 0.0
-    @JvmField
     var value = 0.0
-    @JvmField
     var end = 0.0
     private var type = Type.LINEAR
     private var isStarted = false
