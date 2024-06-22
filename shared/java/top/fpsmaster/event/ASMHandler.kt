@@ -11,7 +11,11 @@ object ASMHandler {
     private var index = 0
     fun loadHandlerClass(listener: Any, method: Method): Handler {
         val declaringClass = method.declaringClass
+
+        index++;
+
         val className = "EventHandler$index"
+
         val cv = ClassWriter(ClassWriter.COMPUTE_FRAMES or ClassWriter.COMPUTE_MAXS)
 
         cv.visit(V1_8, ACC_PUBLIC or ACC_SUPER, className, null, Type.getInternalName(Handler::class.java), null)
