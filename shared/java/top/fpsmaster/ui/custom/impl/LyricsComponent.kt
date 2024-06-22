@@ -108,11 +108,13 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                 if (duration >= word.time) {
                     // animation percent
                     val animation = 0.3f + (duration - word.time) / word.duration.toFloat()
+                    val animation2 =(duration - word.time) / word.duration.toFloat()
+
                     drawString(
                         lfont,
                         word.content,
                         xOffset,
-                        y + 5,
+                        y + 7 - (animation2.coerceIn(0f,1f) * 3),
                         Render2DUtils.reAlpha(
                             LyricsDisplay.textColor.color,
                             Render2DUtils.limit((animation * 255).toDouble())
@@ -124,7 +126,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                         lfont,
                         word.content,
                         xOffset,
-                        y + 5,
+                        y + 7,
                         Render2DUtils.reAlpha(LyricsDisplay.textBG.color, (0.3 * 255).toInt()).rgb
                     )
                     getStringWidth(lfont, word.content)
@@ -137,7 +139,7 @@ class LyricsComponent : Component(LyricsDisplay::class.java) {
                     y + 5,
                     Render2DUtils.reAlpha(
                         LyricsDisplay.textBG.color,
-                        Render2DUtils.limit((line.alpha * 140).toDouble())
+                        Render2DUtils.limit((line.alpha * 120).toDouble())
                     ).rgb
                 )
                 getStringWidth(lfont, word.content)
