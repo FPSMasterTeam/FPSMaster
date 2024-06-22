@@ -33,7 +33,7 @@ class TextSettingRender(mod: Module, setting: TextSetting) : SettingRender<TextS
         inputBox.fontColor = FPSMaster.theme.textColorTitle.rgb
         val s16 = FPSMaster.fontManager.s16
         val text = FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(Locale.getDefault())]
-        s16.drawString(text, x + 18, y + 6, FPSMaster.theme.getTextColorDescription().rgb)
+        s16.drawString(text, x + 18, y + 6, FPSMaster.theme.textColorDescription.rgb)
         inputBox.drawTextBox(
             x + s16.getStringWidth(text) + 20,
             y + 2,

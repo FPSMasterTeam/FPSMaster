@@ -29,13 +29,13 @@ class Done : Scene() {
             FPSMaster.i18n["oobe.done.desc"],
             sr.scaledWidth / 2f,
             70f,
-            FPSMaster.theme.getTextColorDescription().rgb
+            FPSMaster.theme.textColorDescription.rgb
         )
         FPSMaster.fontManager.s40.drawCenteredString(
             FPSMaster.i18n["oobe.done.title"],
             sr.scaledWidth / 2f,
             100f,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         btn.render(sr.scaledWidth / 2f - 30, sr.scaledHeight / 2f + 40, 60f, 24f, mouseX.toFloat(), mouseY.toFloat())
     }

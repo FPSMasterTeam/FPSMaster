@@ -1,6 +1,5 @@
 package top.fpsmaster.modules.client
 
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import net.minecraft.client.Minecraft
 import top.fpsmaster.FPSMaster
@@ -12,7 +11,7 @@ import top.fpsmaster.event.events.EventTick
 import top.fpsmaster.modules.logger.Logger
 import top.fpsmaster.ui.screens.oobe.GuiLogin
 import top.fpsmaster.utils.math.MathTimer
-import top.fpsmaster.utils.ornaments.capes.CapeUtils
+import top.fpsmaster.modules.ornaments.CapeUtils
 import top.fpsmaster.utils.os.HttpRequest
 import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.utils.Utility
@@ -22,16 +21,14 @@ import java.io.UnsupportedEncodingException
 import java.net.URLEncoder
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.function.Consumer
 
 class PlayerManager {
-    private var gameid: String = ""
-    private var uuid: String = ""
-    private var skin: String = ""
-    private var cape: String = ""
-    private var username: String = ""
-    private var token: String = ""
-
+    private var gameid = ""
+    private var uuid = ""
+    private var skin = ""
+    private var cape = ""
+    private var username = ""
+    private var token = ""
     private var timer = MathTimer()
 
     init {
@@ -45,9 +42,9 @@ class PlayerManager {
                 updateData()
                 allUsers
                 for (playerEntity in ProviderManager.mcProvider.getWorld()!!.playerEntities) {
-                    if (playerEntity == null)
-                        continue
-                    addPlayer(playerEntity.name, playerEntity.uniqueID.toString())
+                    playerEntity?.let {
+                        addPlayer(it.name, it.uniqueID.toString())
+                    }
                 }
             }
         }
@@ -62,25 +59,25 @@ class PlayerManager {
     @Subscribe
     fun onCape(e: EventCapeLoading) {
         try {
-            val player = FPSMaster.playerManager.getPlayer(e.playerName)
+            val player = getPlayer(e.playerName)
             if (player.uuid != e.player.uniqueID.toString()) return
-            if (player.skin != null && player.skin != player.lastSkin && player.skin!!.isNotEmpty()) {
+
+            if (player.skin.isNullOrEmpty().not() && player.skin != player.lastSkin) {
                 player.lastSkin = player.skin
                 FPSMaster.async.runnable {
-                    ProviderManager.skinProvider.updateSkin(e.playerName, player.uuid, player.skin)
+                    ProviderManager.skinProvider.updateSkin(e.playerName, player.uuid, player.skin!!)
                 }
             }
-            if (player.cape.isEmpty()) {
-                return
-            }
+
+            if (player.cape.isEmpty()) return
+
             if (player.cape != player.lastCape) {
                 FPSMaster.async.runnable {
                     player.lastCape = player.cape
-                    val site =
-                        HttpRequest["${FPSMaster.SERVICE_API}/getItemResource?id=${player.cape}&timestamp=${System.currentTimeMillis()}"]
-                    val parse = JsonParser().parse(site).getAsJsonObject()
-                    if (parse != null && parse["code"].asInt == 200) {
-                        val cape = parse["msg"].asString.trim { it <= ' ' }
+                    val site = HttpRequest["${FPSMaster.SERVICE_API}/getItemResource?id=${player.cape}&timestamp=${System.currentTimeMillis()}"]
+                    val parse = JsonParser().parse(site).asJsonObject
+                    if (parse["code"].asInt == 200) {
+                        val cape = parse["msg"].asString.trim()
                         if (cape.endsWith(".gif")) {
                             gifData = CapeUtils.downloadCapeGif(player.cape, cape)
                             gifCount = gifData!!.size
@@ -93,11 +90,11 @@ class PlayerManager {
                     }
                 }
             }
+
             if (gif) {
                 e.setCachedCape("fpsmaster/capes/${player.cape}_$gifNumber")
-                if (gifTimer.delay(gifData?.get(gifNumber)!!.delay.toLong())) {
-                    gifNumber++
-                    if (gifNumber >= gifCount) gifNumber = 0
+                if (gifTimer.delay(gifData?.get(gifNumber)?.delay?.toLong() ?: 0L)) {
+                    gifNumber = (gifNumber + 1) % gifCount
                 }
             } else {
                 e.setCachedCape("fpsmaster/capes/${player.cape}")
@@ -111,48 +108,45 @@ class PlayerManager {
         get() {
             FPSMaster.async.runnable {
                 val s = HttpRequest["${FPSMaster.SERVICE_API}/getUsers?timestamp=${System.currentTimeMillis()}"]
-                val json = JsonParser().parse(s).getAsJsonObject()
+                val json = JsonParser().parse(s).asJsonObject
                 if (json["code"].asInt == 200) {
                     playerList.clear()
-                    val data = json["data"].getAsJsonArray()
-                    data.forEach(Consumer { e: JsonElement ->
-                        val name = e.asString
-                        playerList.add(name)
-                    })
+                    json["data"].asJsonArray.forEach { e ->
+                        playerList.add(e.asString)
+                    }
                 }
-                if (FPSMaster.debug)
+                if (FPSMaster.debug) {
                     Utility.sendClientMessage("获取所有用户信息 ${playerList.size} 个")
+                }
             }
         }
 
     private fun updateData() {
+        val player = ProviderManager.mcProvider.getPlayer()
         if (gameid == Minecraft.getMinecraft().session.playerID
-            && uuid == ProviderManager.mcProvider.getPlayer()!!.uniqueID.toString()
+            && uuid == player!!.uniqueID.toString()
             && skin == AccountManager.skin
             && cape == AccountManager.cape
         ) {
             return
         }
+
         gameid = try {
-            URLEncoder.encode(ProviderManager.mcProvider.getPlayer()!!.name, "UTF-8")
+            URLEncoder.encode(player!!.name, "UTF-8")
         } catch (e: UnsupportedEncodingException) {
             throw RuntimeException(e)
         }
-        uuid = ProviderManager.mcProvider.getPlayer()!!.uniqueID.toString()
+        uuid = player.uniqueID.toString()
         skin = AccountManager.skin
         cape = AccountManager.cape
         username = FPSMaster.accountManager.username
         token = FPSMaster.accountManager.token
-        if (FPSMaster.debug)
+
+        if (FPSMaster.debug) {
             Utility.sendClientMessage("更新用户信息: $gameid $uuid $skin $cape")
-        updateInformation(
-            gameid,
-            username,
-            token,
-            uuid,
-            skin,
-            cape
-        )
+        }
+
+        updateInformation(gameid, username, token, uuid, skin, cape)
     }
 
     private fun updateInformation(
@@ -166,16 +160,9 @@ class PlayerManager {
         FPSMaster.async.runnable {
             if (ProviderManager.mcProvider.getPlayer() != null && token.isNotEmpty()) {
                 val serverAddress = ProviderManager.mcProvider.getServerAddress()
-                val url = "${FPSMaster.SERVICE_API}/update?api=v2&name=" + gameId +
-                        "&username=" + username +
-                        "&token=" + token.trim { it <= ' ' } +
-                        "&uuid=" + uuid +
-                        "&skin=" + skin +
-                        "&cape=" + cape +
-                        "&address=" + serverAddress +
-                        "&timestamp=${System.currentTimeMillis()}"
+                val url = "${FPSMaster.SERVICE_API}/update?api=v2&name=$gameId&username=$username&token=${token.trim()}&uuid=$uuid&skin=$skin&cape=$cape&address=$serverAddress&timestamp=${System.currentTimeMillis()}"
                 val rets = HttpRequest[url]
-                if (FPSMaster.INSTANCE.wsClient!!.isOpen) {
+                if (FPSMaster.INSTANCE.wsClient?.isOpen == true) {
                     FPSMaster.INSTANCE.wsClient!!.sendInformation(skin, cape, gameId, serverAddress)
                 }
                 if (JsonParser().parse(rets).asJsonObject["code"].asInt != 200) {
@@ -186,54 +173,37 @@ class PlayerManager {
         }
     }
 
-
     private fun addPlayer(name: String, uuid: String) {
-        if (name.isEmpty()) return
-        if (!playerList.contains(name)) return
+        if (name.isEmpty() || playerList.contains(name).not()) return
 
-        Thread(Runnable {
-            val i: Int
-            var r = ""
-            try {
-                val rank = HytApi().getRank(name)
-
-                i = rank.toInt()
-                if (i < 1000) {
-                    r = TextFormattingProvider.getRed()
-                        .toString() + " " + TextFormattingProvider.getBold() + "[" + i + "]" + TextFormattingProvider.getReset()
-                } else if (i < 9999) {
-                    r = TextFormattingProvider.getYellow()
-                        .toString() + " " + TextFormattingProvider.getBold() + "[" + i / 1000 + "k]" + TextFormattingProvider.getReset()
-                } else if (i > 10000) {
-                    r = TextFormattingProvider.getYellow()
-                        .toString() + " " + TextFormattingProvider.getBold() + "[" + i / 10000 + "w]" + TextFormattingProvider.getReset()
+        Thread {
+            val rank = try {
+                HytApi().getRank(name).toInt().let {
+                    when {
+                        it < 1000 -> "${TextFormattingProvider.getRed()} ${TextFormattingProvider.getBold()}[$it]${TextFormattingProvider.getReset()}"
+                        it < 9999 -> "${TextFormattingProvider.getYellow()} ${TextFormattingProvider.getBold()}[${it / 1000}k]${TextFormattingProvider.getReset()}"
+                        else -> "${TextFormattingProvider.getYellow()} ${TextFormattingProvider.getBold()}[${it / 10000}w]${TextFormattingProvider.getReset()}"
+                    }
                 }
             } catch (ignored: NumberFormatException) {
+                ""
             }
 
-
-
-            val json: String
-            val player = Player(r, uuid)
+            val player = Player(rank, uuid)
             try {
-                val u =
-                    "${FPSMaster.SERVICE_API}/getUser?name=" + URLEncoder.encode(
-                        name,
-                        "UTF-8"
-                    ) + "&uuid=" + uuid + "&timestamp=${System.currentTimeMillis()}"
-                json = HttpRequest[u]
-                if (json.isEmpty()) return@Runnable
-                val obj = JsonParser().parse(json).getAsJsonObject()
-                if (obj != null) {
-                    if (obj["code"].asInt == 200) {
-                        val data = obj["data"].getAsJsonObject()
-                        player.username = data["username"].asString
-                        player.skin = data["skin"].asString
-                        player.rank = data["rank"].asString
-                        ProviderManager.skinProvider.updateSkin(name, uuid, player.skin)
-                        player.cape = data["cape"].asString
-                        if (FPSMaster.debug)
-                            Utility.sendClientMessage("获取用户信息: $name $uuid ${player.rank}")
+                val u = "${FPSMaster.SERVICE_API}/getUser?name=${URLEncoder.encode(name, "UTF-8")}&uuid=$uuid&timestamp=${System.currentTimeMillis()}"
+                val json = HttpRequest[u]
+                if (json.isEmpty()) return@Thread
+                val obj = JsonParser().parse(json).asJsonObject
+                if (obj["code"].asInt == 200) {
+                    val data = obj["data"].asJsonObject
+                    player.username = data["username"].asString
+                    player.skin = data["skin"].asString
+                    player.rank = data["rank"].asString
+                    ProviderManager.skinProvider.updateSkin(name, uuid, player.skin)
+                    player.cape = data["cape"].asString
+                    if (FPSMaster.debug) {
+                        Utility.sendClientMessage("获取用户信息: $name $uuid ${player.rank}")
                     }
                 }
             } catch (e: UnsupportedEncodingException) {
@@ -241,40 +211,25 @@ class PlayerManager {
             }
 
             clientMates[name] = player
-        }).start()
+        }.start()
     }
 
-    fun getPlayer(name: String): Player {
-        return clientMates.getOrDefault(name, Player("", ""))
-    }
+    fun getPlayer(name: String): Player = clientMates.getOrDefault(name, Player("", ""))
 
-    fun getPlayerRank(name: String): String {
-        val player = clientMates[name]
-        return player?.rank ?: ""
-    }
+    fun getPlayerRank(name: String): String = clientMates[name]?.rank.orEmpty()
 
-    inner class Player(rank: String, uuid: String) {
+    inner class Player(rank: String, val uuid: String) {
         var username = ""
-
-        @JvmField
-        var hytRank = ""
-        var rank = ""
-        var uuid: String
+        var hytRank = rank
+        var rank = rank
         var lastSkin: String? = ""
         var skin: String? = ""
-
-        @JvmField
-        var cape: String = ""
-        var lastCape: String = ""
-
-        init {
-            hytRank = rank
-            this.uuid = uuid
-        }
+        var cape = ""
+        var lastCape = ""
     }
 
     companion object {
-        var playerList: MutableList<String?> = CopyOnWriteArrayList()
-        var clientMates = ConcurrentHashMap<String, Player>()
+        val playerList: MutableList<String> = CopyOnWriteArrayList()
+        val clientMates: ConcurrentHashMap<String, Player> = ConcurrentHashMap()
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.client.gui.GuiMainMenu
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
 import top.fpsmaster.FPSMaster
-import top.fpsmaster.utils.microsoft.MicrosoftLogin.login
+import top.fpsmaster.utils.thirdparty.microsoft.MicrosoftLogin.login
 import top.fpsmaster.utils.render.Render2DUtils
 import java.awt.Color
 import java.io.IOException
@@ -30,13 +30,13 @@ class GuiWaiting : GuiScreen() {
             FPSMaster.i18n["microsoft.login.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 30,
-            FPSMaster.theme.getTextColorDescription().rgb
+            FPSMaster.theme.textColorDescription.rgb
         )
         FPSMaster.fontManager.s40.drawCenteredString(
             FPSMaster.i18n["microsoft.login.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f + 10,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         if (logged) {
             logged = false

@@ -20,8 +20,8 @@ import top.fpsmaster.ui.notification.drawNotifications
 import top.fpsmaster.ui.screens.mainmenu.MainMenu
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
-import top.fpsmaster.utils.openai.OpenAi
-import top.fpsmaster.utils.openai.requestClientAI
+import top.fpsmaster.utils.thirdparty.openai.OpenAi
+import top.fpsmaster.utils.thirdparty.openai.requestClientAI
 import top.fpsmaster.utils.render.shader.BlurBuffer
 import top.fpsmaster.wrapper.TextFormattingProvider
 

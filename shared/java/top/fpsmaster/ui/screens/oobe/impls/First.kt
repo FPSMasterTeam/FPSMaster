@@ -39,20 +39,20 @@ class First : Scene() {
             FPSMaster.i18n["oobe.first.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 60,
-            FPSMaster.theme.getTextColorDescription().rgb
+            FPSMaster.theme.textColorDescription.rgb
         )
         FPSMaster.fontManager.s40.drawCenteredString(
             FPSMaster.i18n["oobe.first.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 40,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         val skip = FPSMaster.i18n["oobe.first.skip"]
         val skipFont = FPSMaster.fontManager.s22
         val skipWidth = skipFont.getStringWidth(skip)
         val x = sr.scaledWidth - 10 - skipWidth
         val skipY = sr.scaledHeight - 20
-        skipFont.drawString(skip, x.toFloat(), skipY, FPSMaster.theme.getTextColorDescription().rgb)
+        skipFont.drawString(skip, x.toFloat(), skipY, FPSMaster.theme.textColorDescription.rgb)
         btn.render(sr.scaledWidth / 2f - 30, sr.scaledHeight / 2f + 40, 60f, 24f, mouseX.toFloat(), mouseY.toFloat())
     }
 

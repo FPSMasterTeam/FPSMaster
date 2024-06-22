@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.rawinput
+package top.fpsmaster.utils.thirdparty.rawinput
 
 import net.java.games.input.Controller
 import net.java.games.input.ControllerEnvironment

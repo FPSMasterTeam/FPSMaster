@@ -32,18 +32,18 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
         val fw = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 2, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
-        Render2DUtils.drawOptimizedRoundedRect(x + 16 + fw, y + 3, 160f, 6f, FPSMaster.theme.getFrontBackground().rgb)
+        Render2DUtils.drawOptimizedRoundedRect(x + 16 + fw, y + 3, 160f, 6f, FPSMaster.theme.frontBackground.rgb)
         val percent =
             (setting.value.toFloat() - setting.min.toFloat()) / (setting.max.toFloat() - setting.min.toFloat())
         aWidth = base(aWidth.toDouble(), (160 * percent).toDouble(), 0.2).toFloat()
-        Render2DUtils.drawOptimizedRoundedRect(x + 16 + fw, y + 3, aWidth, 6f, FPSMaster.theme.getPrimary().rgb)
+        Render2DUtils.drawOptimizedRoundedRect(x + 16 + fw, y + 3, aWidth, 6f, FPSMaster.theme.primary.rgb)
         FPSMaster.fontManager.s16.drawString(
             setting.value.toString(),
             x + fw + 20 + 160,
             y + 2,
-            FPSMaster.theme.getTextNumber().rgb
+            FPSMaster.theme.textNumber.rgb
         )
         if (!Mouse.isButtonDown(0)) MainPanel.dragLock = "null"
         if (MainPanel.dragLock == mod.name + setting.name + 4) {
@@ -63,7 +63,7 @@ class NumberSettingRender(mod: Module, setting: NumberSetting) : SettingRender<N
         val fw = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 2, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
         if (Render2DUtils.isHovered(x + 16 + fw, y, 160f, height, mouseX.toInt(), mouseY.toInt()) && Mouse.isButtonDown(0)) {
             if (btn == 0 && MainPanel.dragLock == "null") {

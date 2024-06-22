@@ -34,8 +34,8 @@ class MusicComponent : Component(MusicOverlay::class.java) {
         )
         val s18 = FPSMaster.fontManager.s18
         val s16 = FPSMaster.fontManager.s16
-        drawString(s18, current.name, x + 40, y + 6, FPSMaster.theme.getTextColorTitle().rgb)
-        drawString(s16, current.author, x + 40, y + 18, FPSMaster.theme.getTextColorDescription().rgb)
+        drawString(s18, current.name, x + 40, y + 6, FPSMaster.theme.textColorTitle.rgb)
+        drawString(s16, current.author, x + 40, y + 18, FPSMaster.theme.textColorDescription.rgb)
     }
 
     override fun draw(x: Float, y: Float) {

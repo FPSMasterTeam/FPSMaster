@@ -26,7 +26,7 @@ open class GuiButton(var text: String, var runnable: Runnable) {
             FPSMaster.i18n[text],
             x + width / 2,
             y + height / 2 - 4,
-            FPSMaster.theme.getButtonText().rgb
+            FPSMaster.theme.buttonText.rgb
         )
     }
 

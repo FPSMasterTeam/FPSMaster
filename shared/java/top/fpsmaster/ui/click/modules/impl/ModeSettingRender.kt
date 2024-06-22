@@ -30,7 +30,7 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
         val fw = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 8, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 8, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
         val maxWidth = 80f
         Render2DUtils.drawOptimizedRoundedBorderRect(
@@ -39,13 +39,13 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             maxWidth,
             16 + expandH,
             0.5f,
-            FPSMaster.theme.getModeBox(),
-            FPSMaster.theme.getModeBoxBorder()
+            FPSMaster.theme.modeBox,
+            FPSMaster.theme.modeBoxBorder
         )
         FPSMaster.fontManager.s18.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.modeName).lowercase(
                 Locale.getDefault()
-            )], x + 20 + fw, y + 7, FPSMaster.theme.getTextColorTitle().rgb
+            )], x + 20 + fw, y + 7, FPSMaster.theme.textColorTitle.rgb
         )
 
         // rotate this icon
@@ -60,7 +60,7 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
             y + 8,
             8f,
             8f,
-            FPSMaster.theme.getTextColorTitle()
+            FPSMaster.theme.textColorTitle
         )
         GL11.glPopMatrix()
         if (expand) {
@@ -70,13 +70,13 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
                     FPSMaster.fontManager.s16.drawString(
                         FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
                             Locale.getDefault()
-                        )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.getTextColorDescriptionHover().rgb
+                        )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.textColorDescriptionHover.rgb
                     )
                 } else {
                     FPSMaster.fontManager.s16.drawString(
                         FPSMaster.i18n[(mod.name + "." + setting.name + "." + setting.getMode(i)).lowercase(
                             Locale.getDefault()
-                        )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.getTextColorDescription().rgb
+                        )], x + 20 + fw, y + 7 + i * 14, FPSMaster.theme.textColorDescription.rgb
                     )
                 }
             }
@@ -90,7 +90,7 @@ class ModeSettingRender(mod: Module, setting: ModeSetting) : SettingRender<ModeS
         val fw = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 8, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 8, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
         val maxWidth = 80f
         if (Render2DUtils.isHovered(x + 16 + fw, y + 4, maxWidth, 16f, mouseX.toInt(), mouseY.toInt())) {

@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.system.i18n
+package top.fpsmaster.modules.i18n
 
 import top.fpsmaster.utils.os.FileUtils.readFile
 import top.fpsmaster.utils.os.FileUtils.release

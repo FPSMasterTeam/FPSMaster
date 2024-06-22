@@ -30,7 +30,7 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
         val fw = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 2, FPSMaster.theme.getTextColorTitle().rgb
+            )], x + 10, y + 2, FPSMaster.theme.textColorTitle.rgb
         ).toFloat()
         val keyName = Keyboard.getKeyName(setting.value)
         val s16b = FPSMaster.fontManager.s16
@@ -41,15 +41,15 @@ class BindSettingRender(module: Module, setting: BindSetting) : SettingRender<Bi
                 y - 0.5f,
                 (width1 + 1).toFloat(),
                 13f,
-                FPSMaster.theme.getModeBoxBorder()
+                FPSMaster.theme.modeBoxBorder
             )
         }
         Render2DUtils.drawOptimizedRoundedRect(x + 15 + fw, y, width1.toFloat(), 12f, colorAnimation.color)
-        s16b.drawString(keyName, x + 18 + fw, y + 2, FPSMaster.theme.getTextColorTitle().rgb)
+        s16b.drawString(keyName, x + 18 + fw, y + 2, FPSMaster.theme.textColorTitle.rgb)
         if (MainPanel.bindLock == setting.name) {
-            colorAnimation.base(FPSMaster.theme.getModeBoxBorder())
+            colorAnimation.base(FPSMaster.theme.modeBoxBorder)
         } else {
-            colorAnimation.base(FPSMaster.theme.getModeBox())
+            colorAnimation.base(FPSMaster.theme.modeBox)
         }
         this.height = 16f
     }

@@ -78,7 +78,7 @@ class OrnamentPanel {
                         y + item.y,
                         60f,
                         90f,
-                        FPSMaster.theme.getPrimary()
+                        FPSMaster.theme.primary
                     )
                 } else if (Render2DUtils.isHovered(x + item.x, y + item.y, 60f, 90f, mouseX, mouseY)) {
                     Render2DUtils.drawOptimizedRoundedRect(
@@ -86,7 +86,7 @@ class OrnamentPanel {
                         y + item.y,
                         60f,
                         90f,
-                        Render2DUtils.reAlpha(FPSMaster.theme.getPrimary(), 100)
+                        Render2DUtils.reAlpha(FPSMaster.theme.primary, 100)
                     )
                 } else {
                     Render2DUtils.drawOptimizedRoundedRect(
@@ -94,7 +94,7 @@ class OrnamentPanel {
                         y + item.y,
                         60f,
                         90f,
-                        FPSMaster.theme.getFrontBackground()
+                        FPSMaster.theme.frontBackground
                     )
                 }
                 if (item.imgLoaded) {

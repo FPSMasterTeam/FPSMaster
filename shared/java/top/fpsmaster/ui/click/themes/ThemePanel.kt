@@ -1,7 +1,6 @@
-package top.fpsmaster.ui.click.themes;
+package top.fpsmaster.ui.click.themes
 
-public class ThemePanel {
-    public static void draw(float x, int y, float width, float height, int mouseX, int mouseY) {
-
+object ThemePanel {
+    fun draw(x: Float, y: Int, width: Float, height: Float, mouseX: Int, mouseY: Int) {
     }
 }

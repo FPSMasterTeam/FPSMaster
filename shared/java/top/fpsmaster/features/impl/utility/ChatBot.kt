@@ -15,8 +15,8 @@ import top.fpsmaster.features.settings.impl.TextSetting
 import top.fpsmaster.ui.notification.addNotification
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
-import top.fpsmaster.utils.openai.OpenAi
-import top.fpsmaster.utils.openai.requestClientAI
+import top.fpsmaster.utils.thirdparty.openai.OpenAi
+import top.fpsmaster.utils.thirdparty.openai.requestClientAI
 import top.fpsmaster.interfaces.ProviderManager
 import java.util.regex.Pattern
 import kotlin.math.min

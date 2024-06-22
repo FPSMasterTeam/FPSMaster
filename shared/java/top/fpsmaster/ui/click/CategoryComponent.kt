@@ -14,13 +14,13 @@ class CategoryComponent(@JvmField var category: Category) {
     var categorySelectionColor = ColorAnimation()
 
     init {
-        animationName.color = FPSMaster.theme.getCategoryText()
+        animationName.color = FPSMaster.theme.categoryText
     }
 
     fun render(x: Float, y: Float, width: Float, height: Float, mouseX: Float, mouseY: Float, selected: Boolean) {
         animationName.start(
             animationName.color,
-            if (selected) FPSMaster.theme.getCategoryTextSelected() else FPSMaster.theme.getCategoryText(),
+            if (selected) FPSMaster.theme.categoryTextSelected else FPSMaster.theme.categoryText,
             0.2f,
             Type.EASE_IN_OUT_QUAD
         )

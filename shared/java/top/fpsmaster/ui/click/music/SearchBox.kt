@@ -1,179 +1,186 @@
-package top.fpsmaster.ui.click.music;
+package top.fpsmaster.ui.click.music
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.ChatAllowedCharacters;
-import top.fpsmaster.FPSMaster;
-import top.fpsmaster.font.impl.UFontRenderer;
-import top.fpsmaster.utils.math.MathUtils;
-import top.fpsmaster.utils.math.animation.ColorAnimation;
-import top.fpsmaster.utils.render.Render2DUtils;
+import com.google.common.base.Predicate
+import com.google.common.base.Predicates
+import net.minecraft.client.gui.Gui
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.util.ChatAllowedCharacters
+import top.fpsmaster.FPSMaster
+import top.fpsmaster.font.impl.UFontRenderer
+import top.fpsmaster.utils.math.MathUtils.clamp
+import top.fpsmaster.utils.math.animation.ColorAnimation
+import top.fpsmaster.utils.render.Render2DUtils
+import java.awt.Color
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.math.min
 
-import java.awt.*;
+class SearchBox : Gui {
+    val font: UFontRenderer?
 
-import static top.fpsmaster.FPSMaster.theme;
-
-public class SearchBox extends Gui {
-    final UFontRenderer font;
     /**
      * The width of this text field.
      */
-    float width;
-    float height;
-    public float xPosition;
-    public float yPosition;
+    var width: Float = 0f
+    var height: Float = 0f
+    private var xPosition: Float = 0f
+    private var yPosition: Float = 0f
+
     /**
      * Has the current text being edited on the textbox.
      */
-    String text = "";
-    private int maxStringLength = 1000;
-    int cursorCounter;
-    boolean enableBackgroundDrawing = true;
+    var text: String = ""
+        set(textIn) {
+            if (validator.apply(textIn)) {
+                field = if (textIn.length > this.maxStringLength) {
+                    textIn.substring(0, this.maxStringLength)
+                } else {
+                    textIn
+                }
 
-    /**
-     * if true the textbox can lose focus by clicking elsewhere on the screen
-     */
-    public boolean canLoseFocus = true;
+                this.setCursorPositionEnd()
+            }
+        }
+    private var maxStringLength = 1000
+        set(length: Int) {
+            field = length
 
-    /**
-     * If this value is true along with isEnabled, keyTyped will process the keys.
-     */
-    public boolean isFocused;
+            if (text.length > length) {
+                this.text = text.substring(0, length)
+            }
+        }
+    private var cursorCounter: Int = 0
+    private var enableBackgroundDrawing: Boolean = true
+    private var canLoseFocus: Boolean = true
+    private var isFocused: Boolean = false
+        set(isFocusedIn) {
+            if (isFocusedIn && !this.isFocused) {
+                this.cursorCounter = 0
+            }
 
-    /**
-     * If this value is true along with isFocused, keyTyped will process the keys.
-     */
-    private boolean isEnabled = true;
+            field = isFocusedIn
+        }
+    private var isEnabled = true
+    private var lineScrollOffset: Int = 0
+    private var cursorPosition: Int = 0
+        set(pos) {
+            field = pos
+            val i = text.length
+            field = clamp(this.cursorPosition, 0, i)
+            this.setSelectionPos(this.cursorPosition)
+        }
 
-    /**
-     * The current character index that should be used as start of the rendered text.
-     */
-    int lineScrollOffset = 0;
-    int cursorPosition;
+    private var selectionEnd: Int = 0
+    private var enabledColor: Color
+    private val disabledColor: Color
 
-    /**
-     * other selection position, maybe the same as the cursor
-     */
-    int selectionEnd;
-    Color enabledColor;
-    private final Color disabledColor;
+    private val validator: Predicate<String> = Predicates.alwaysTrue()
 
-    /**
-     * True if this textbox is visible
-     */
-    private boolean visible = true;
-    private final Predicate<String> validator = Predicates.alwaysTrue();
+    private var placeholder: String = ""
+    private var btnColor: ColorAnimation = ColorAnimation()
 
-    String placeholder = "";
-    Runnable runnable;
-    ColorAnimation btnColor = new ColorAnimation();
+    var visible: Boolean = true
+    var runnable: Runnable? = null
 
-    public SearchBox(String placehoder, Color enable, Color disable, Color focus, Color hover, UFontRenderer fontrendererObj) {
-        this.placeholder = placehoder;
-        this.enabledColor = enable;
-        this.disabledColor = disable;
-        this.font = fontrendererObj;
+    constructor(
+        placehoder: String,
+        enable: Color,
+        disable: Color,
+        focus: Color?,
+        hover: Color?,
+        fontrendererObj: UFontRenderer?
+    ) {
+        this.placeholder = placehoder
+        this.enabledColor = enable
+        this.disabledColor = disable
+        this.font = fontrendererObj
     }
 
-    public SearchBox(String placehoder, UFontRenderer fontrendererObj, Runnable runnable) {
-        this.font = fontrendererObj;
-        this.runnable = runnable;
-        this.placeholder = placehoder;
-        this.enabledColor = theme.getTextboxEnabled();
-        this.disabledColor = theme.getTextboxDisabled();
+    constructor(placehoder: String, fontrendererObj: UFontRenderer?, runnable: Runnable?) {
+        this.font = fontrendererObj
+        this.runnable = runnable
+        this.placeholder = placehoder
+        this.enabledColor = FPSMaster.theme.textboxEnabled
+        this.disabledColor = FPSMaster.theme.textboxDisabled
     }
 
-    public SearchBox(String placehoder) {
-        this.font = FPSMaster.fontManager.s18;
-        this.placeholder = placehoder;
-        this.enabledColor = theme.getTextboxEnabled();
-        this.disabledColor = theme.getTextboxDisabled();
+    constructor(placehoder: String) {
+        this.font = FPSMaster.fontManager.s18
+        this.placeholder = placehoder
+        this.enabledColor = FPSMaster.theme.textboxEnabled
+        this.disabledColor = FPSMaster.theme.textboxDisabled
     }
 
-    public SearchBox(String s, Runnable runnable) {
-        this.font = FPSMaster.fontManager.s18;
-        this.placeholder = s;
-        this.runnable = runnable;
-        this.enabledColor = theme.getTextboxEnabled();
-        this.disabledColor = theme.getTextboxDisabled();
-    }
-
-    public void setContent(String content) {
-        this.text = content;
-        this.setCursorPositionEnd();
+    constructor(s: String, runnable: Runnable?) {
+        this.font = FPSMaster.fontManager.s18
+        this.placeholder = s
+        this.runnable = runnable
+        this.enabledColor = FPSMaster.theme.textboxEnabled
+        this.disabledColor = FPSMaster.theme.textboxDisabled
     }
 
     /**
      * Increments the cursor counter
      */
-    public void updateCursorCounter() {
-        ++this.cursorCounter;
+    fun updateCursorCounter() {
+        ++this.cursorCounter
     }
 
-    /**
-     * Returns the contents of the textbox
-     */
-    public String getContent() {
-        return this.text;
-    }
-
-    /**
-     * Sets the text of the textbox, and moves the cursor to the end.
-     */
-    public void setText(String textIn) {
-        if (this.validator.apply(textIn)) {
-            if (textIn.length() > this.maxStringLength) {
-                this.text = textIn.substring(0, this.maxStringLength);
-            } else {
-                this.text = textIn;
-            }
-
-            this.setCursorPositionEnd();
+    var content: String
+        /**
+         * Returns the contents of the textbox
+         */
+        get() = this.text
+        set(content) {
+            this.text = content
+            this.setCursorPositionEnd()
         }
-    }
 
-    /**
-     * returns the text between the cursor and selectionEnd
-     */
-    public String getSelectedText() {
-        int i = Math.min(this.cursorPosition, this.selectionEnd);
-        int j = Math.max(this.cursorPosition, this.selectionEnd);
-        return this.text.substring(i, j);
-    }
+    private val selectedText: String
+        /**
+         * returns the text between the cursor and selectionEnd
+         */
+        get() {
+            val i = min(cursorPosition.toDouble(), selectionEnd.toDouble())
+                .toInt()
+            val j = max(cursorPosition.toDouble(), selectionEnd.toDouble())
+                .toInt()
+            return text.substring(i, j)
+        }
 
     /**
      * Adds the given text after the cursor, or replaces the currently selected text if there is a selection.
      */
-    public void writeText(String textToWrite) {
-        String s = "";
-        String s1 = ChatAllowedCharacters.filterAllowedCharacters(textToWrite);
-        int i = Math.min(this.cursorPosition, this.selectionEnd);
-        int j = Math.max(this.cursorPosition, this.selectionEnd);
-        int k = this.maxStringLength - this.text.length() - (i - j);
+    private fun writeText(textToWrite: String?) {
+        var s = ""
+        val s1 = ChatAllowedCharacters.filterAllowedCharacters(textToWrite)
+        val i = min(cursorPosition.toDouble(), selectionEnd.toDouble())
+            .toInt()
+        val j = max(cursorPosition.toDouble(), selectionEnd.toDouble())
+            .toInt()
+        val k = this.maxStringLength - text.length - (i - j)
 
-        if (!this.text.isEmpty()) {
-            s = s + this.text.substring(0, i);
+        if (text.isNotEmpty()) {
+            s += text.substring(0, i)
         }
 
-        int l;
+        val l: Int
 
-        if (k < s1.length()) {
-            s = s + s1.substring(0, k);
-            l = k;
+        if (k < s1.length) {
+            s += s1.substring(0, k)
+            l = k
         } else {
-            s = s + s1;
-            l = s1.length();
+            s += s1
+            l = s1.length
         }
 
-        if (!this.text.isEmpty() && j < this.text.length()) {
-            s = s + this.text.substring(j);
+        if (text.isNotEmpty() && j < text.length) {
+            s += text.substring(j)
         }
 
-        if (this.validator.apply(s)) {
-            this.text = s;
-            this.moveCursorBy(i - this.selectionEnd + l);
+        if (validator.apply(s)) {
+            this.text = s
+            this.moveCursorBy(i - this.selectionEnd + l)
         }
     }
 
@@ -181,12 +188,12 @@ public class SearchBox extends Gui {
      * Deletes the given number of words from the current cursor's position, unless there is currently a selection, in
      * which case the selection is deleted instead.
      */
-    public void deleteWords(int num) {
-        if (!this.text.isEmpty()) {
+    private fun deleteWords(num: Int) {
+        if (text.isNotEmpty()) {
             if (this.selectionEnd != this.cursorPosition) {
-                this.writeText("");
+                this.writeText("")
             } else {
-                this.deleteFromCursor(this.getNthWordFromCursor(num) - this.cursorPosition);
+                this.deleteFromCursor(this.getNthWordFromCursor(num) - this.cursorPosition)
             }
         }
     }
@@ -195,29 +202,29 @@ public class SearchBox extends Gui {
      * Deletes the given number of characters from the current cursor's position, unless there is currently a selection,
      * in which case the selection is deleted instead.
      */
-    public void deleteFromCursor(int num) {
-        if (!this.text.isEmpty()) {
+    private fun deleteFromCursor(num: Int) {
+        if (text.isNotEmpty()) {
             if (this.selectionEnd != this.cursorPosition) {
-                this.writeText("");
+                this.writeText("")
             } else {
-                boolean flag = num < 0;
-                int i = flag ? this.cursorPosition + num : this.cursorPosition;
-                int j = flag ? this.cursorPosition : this.cursorPosition + num;
-                String s = "";
+                val flag = num < 0
+                val i = if (flag) this.cursorPosition + num else this.cursorPosition
+                val j = if (flag) this.cursorPosition else this.cursorPosition + num
+                var s = ""
 
                 if (i >= 0) {
-                    s = this.text.substring(0, i);
+                    s = text.substring(0, i)
                 }
 
-                if (j < this.text.length()) {
-                    s = s + this.text.substring(j);
+                if (j < text.length) {
+                    s += text.substring(j)
                 }
 
-                if (this.validator.apply(s)) {
-                    this.text = s;
+                if (validator.apply(s)) {
+                    this.text = s
 
                     if (flag) {
-                        this.moveCursorBy(num);
+                        this.moveCursorBy(num)
                     }
                 }
             }
@@ -227,184 +234,202 @@ public class SearchBox extends Gui {
     /**
      * Gets the starting index of the word at the specified number of words away from the cursor position.
      */
-    public int getNthWordFromCursor(int numWords) {
-        return this.getNthWordFromPos(numWords, this.getCursorPosition());
+    private fun getNthWordFromCursor(numWords: Int): Int {
+        return this.getNthWordFromPos(numWords, this.cursorPosition)
     }
 
     /**
      * Gets the starting index of the word at a distance of the specified number of words away from the given position.
      */
-    public int getNthWordFromPos(int n, int pos) {
-        return this.getNthWordFromPosWS(n, pos, true);
+    private fun getNthWordFromPos(n: Int, pos: Int): Int {
+        return this.getNthWordFromPosWS(n, pos, true)
     }
 
     /**
      * Like getNthWordFromPos (which wraps this), but adds option for skipping consecutive spaces
      */
-    public int getNthWordFromPosWS(int n, int pos, boolean skipWs) {
-        int i = pos;
-        boolean flag = n < 0;
-        int j = Math.abs(n);
+    private fun getNthWordFromPosWS(n: Int, pos: Int, skipWs: Boolean): Int {
+        var i = pos
+        val flag = n < 0
+        val j = abs(n.toDouble()).toInt()
 
-        for (int k = 0; k < j; ++k) {
+        for (k in 0 until j) {
             if (!flag) {
-                int l = this.text.length();
-                i = this.text.indexOf(32, i);
+                val l = text.length
+                i = text.indexOf(32.toChar(), i)
 
                 if (i == -1) {
-                    i = l;
+                    i = l
                 } else {
-                    while (skipWs && i < l && this.text.charAt(i) == ' ') {
-                        ++i;
+                    while (skipWs && i < l && text[i] == ' ') {
+                        ++i
                     }
                 }
             } else {
-                while (skipWs && i > 0 && this.text.charAt(i - 1) == ' ') {
-                    --i;
+                while ((skipWs && i > 0) && text[i - 1] == ' ') {
+                    --i
                 }
 
-                while (i > 0 && this.text.charAt(i - 1) != ' ') {
-                    --i;
+                while (i > 0 && text[i - 1] != ' ') {
+                    --i
                 }
             }
         }
 
-        return i;
+        return i
     }
 
     /**
      * Moves the text cursor by a specified number of characters and clears the selection
      */
-    public void moveCursorBy(int num) {
-        this.setCursorPosition(this.selectionEnd + num);
+    private fun moveCursorBy(num: Int) {
+        this.cursorPosition = this.selectionEnd + num
     }
 
     /**
      * Moves the cursor to the very start of this text box.
      */
-    public void setCursorPositionZero() {
-        this.setCursorPosition(0);
+    private fun setCursorPositionZero() {
+        this.cursorPosition = 0
     }
 
     /**
      * Moves the cursor to the very end of this text box.
      */
-    public void setCursorPositionEnd() {
-        this.setCursorPosition(this.text.length());
+    private fun setCursorPositionEnd() {
+        this.cursorPosition = text.length
     }
 
     /**
      * Call this method from your GuiScreen to process the keys into the textbox
      */
-    public boolean keyTyped(char typedChar, int keyCode) {
+    fun keyTyped(typedChar: Char, keyCode: Int): Boolean {
         if (!this.isFocused) {
-            return false;
+            return false
         } else if (GuiScreen.isKeyComboCtrlA(keyCode)) {
-            this.setCursorPositionEnd();
-            this.setSelectionPos(0);
-            return true;
+            this.setCursorPositionEnd()
+            this.setSelectionPos(0)
+            return true
         } else if (GuiScreen.isKeyComboCtrlC(keyCode)) {
-            GuiScreen.setClipboardString(this.getSelectedText());
-            return true;
+            GuiScreen.setClipboardString(this.selectedText)
+            return true
         } else if (GuiScreen.isKeyComboCtrlV(keyCode)) {
             if (this.isEnabled) {
-                this.writeText(GuiScreen.getClipboardString());
+                this.writeText(GuiScreen.getClipboardString())
             }
 
-            return true;
+            return true
         } else if (GuiScreen.isKeyComboCtrlX(keyCode)) {
-            GuiScreen.setClipboardString(this.getSelectedText());
+            GuiScreen.setClipboardString(this.selectedText)
 
             if (this.isEnabled) {
-                this.writeText("");
+                this.writeText("")
             }
 
-            return true;
+            return true
         } else {
-            switch (keyCode) {
-                case 14:
+            when (keyCode) {
+                14 -> {
                     if (GuiScreen.isCtrlKeyDown()) {
                         if (this.isEnabled) {
-                            this.deleteWords(-1);
+                            this.deleteWords(-1)
                         }
                     } else if (this.isEnabled) {
-                        this.deleteFromCursor(-1);
+                        this.deleteFromCursor(-1)
                     }
 
-                    return true;
+                    return true
+                }
 
-                case 199:
+                199 -> {
                     if (GuiScreen.isShiftKeyDown()) {
-                        this.setSelectionPos(0);
+                        this.setSelectionPos(0)
                     } else {
-                        this.setCursorPositionZero();
+                        this.setCursorPositionZero()
                     }
 
-                    return true;
+                    return true
+                }
 
-                case 203:
-                    if (GuiScreen.isShiftKeyDown()) {
-                        if (GuiScreen.isCtrlKeyDown()) {
-                            this.setSelectionPos(this.getNthWordFromPos(-1, this.getSelectionEnd()));
-                        } else {
-                            this.setSelectionPos(this.getSelectionEnd() - 1);
-                        }
-                    } else if (GuiScreen.isCtrlKeyDown()) {
-                        this.setCursorPosition(this.getNthWordFromCursor(-1));
-                    } else {
-                        this.moveCursorBy(-1);
-                    }
-
-                    return true;
-
-                case 205:
+                203 -> {
                     if (GuiScreen.isShiftKeyDown()) {
                         if (GuiScreen.isCtrlKeyDown()) {
-                            this.setSelectionPos(this.getNthWordFromPos(1, this.getSelectionEnd()));
+                            this.setSelectionPos(
+                                this.getNthWordFromPos(
+                                    -1,
+                                    selectionEnd
+                                )
+                            )
                         } else {
-                            this.setSelectionPos(this.getSelectionEnd() + 1);
+                            this.setSelectionPos(this.selectionEnd - 1)
                         }
                     } else if (GuiScreen.isCtrlKeyDown()) {
-                        this.setCursorPosition(this.getNthWordFromCursor(1));
+                        this.cursorPosition = this.getNthWordFromCursor(-1)
                     } else {
-                        this.moveCursorBy(1);
+                        this.moveCursorBy(-1)
                     }
 
-                    return true;
+                    return true
+                }
 
-                case 207:
+                205 -> {
                     if (GuiScreen.isShiftKeyDown()) {
-                        this.setSelectionPos(this.text.length());
+                        if (GuiScreen.isCtrlKeyDown()) {
+                            this.setSelectionPos(
+                                this.getNthWordFromPos(
+                                    1,
+                                    selectionEnd
+                                )
+                            )
+                        } else {
+                            this.setSelectionPos(this.selectionEnd + 1)
+                        }
+                    } else if (GuiScreen.isCtrlKeyDown()) {
+                        this.cursorPosition = this.getNthWordFromCursor(1)
                     } else {
-                        this.setCursorPositionEnd();
+                        this.moveCursorBy(1)
                     }
 
-                    return true;
+                    return true
+                }
 
-                case 211:
+                207 -> {
+                    if (GuiScreen.isShiftKeyDown()) {
+                        this.setSelectionPos(text.length)
+                    } else {
+                        this.setCursorPositionEnd()
+                    }
+
+                    return true
+                }
+
+                211 -> {
                     if (GuiScreen.isCtrlKeyDown()) {
                         if (this.isEnabled) {
-                            this.deleteWords(1);
+                            this.deleteWords(1)
                         }
                     } else if (this.isEnabled) {
-                        this.deleteFromCursor(1);
+                        this.deleteFromCursor(1)
                     }
-                    return true;
-                case 28:
+                    return true
+                }
+
+                28 -> {
                     if (runnable != null) {
-                        runnable.run();
+                        runnable!!.run()
                     }
-                    return true;
-                default:
-                    if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
-                        if (this.isEnabled) {
-                            this.writeText(Character.toString(typedChar));
-                        }
+                    return true
+                }
 
-                        return true;
-                    } else {
-                        return false;
+                else -> if (ChatAllowedCharacters.isAllowedCharacter(typedChar)) {
+                    if (this.isEnabled) {
+                        this.writeText(typedChar.toString())
                     }
+
+                    return true
+                } else {
+                    return false
+                }
             }
         }
     }
@@ -412,94 +437,95 @@ public class SearchBox extends Gui {
     /**
      * Called when mouse is clicked, regardless as to whether it is over this button or not.
      */
-    public boolean mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        boolean flag = mouseX >= this.xPosition && mouseX < this.xPosition + this.width && mouseY >= this.yPosition && mouseY < this.yPosition + this.height;
+    fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
+        val flag =
+            (mouseX >= this.xPosition && mouseX < xPosition + this.width && mouseY >= yPosition) && mouseY < this.yPosition + this.height
 
         if (this.canLoseFocus) {
-            this.setFocused(flag);
+            this.isFocused = flag
         }
 
-        if (this.isFocused && flag && mouseButton == 0) {
-            float i = mouseX - this.xPosition;
+        if (this.isFocused && flag && (mouseButton == 0)) {
+            var i = mouseX - this.xPosition
 
             if (this.enableBackgroundDrawing) {
-                i -= 4;
+                i -= 4f
             }
 
-            String s = this.font.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
-            this.setCursorPosition(this.font.trimStringToWidth(s, (int) i).length() + this.lineScrollOffset);
-            return true;
+            val s = font!!.trimStringToWidth(text.substring(this.lineScrollOffset), this.getWidth())
+            this.cursorPosition = font.trimStringToWidth(s, i.toInt()).length + this.lineScrollOffset
+            return true
         } else {
-            return false;
+            return false
         }
     }
 
     /**
      * Draws the textbox
      */
-    public void render(float x, float y, float width, float height, int mouseX, int mouseY) {
-        this.xPosition = x;
-        this.yPosition = y;
-        this.width = width;
-        this.height = height;
-        if (this.getVisible()) {
+    fun render(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int) {
+        this.xPosition = x
+        this.yPosition = y
+        this.width = width
+        this.height = height
+        if (this.visible) {
             if (Render2DUtils.isHovered(x, y, width, height, mouseX, mouseY)) {
                 if (isFocused) {
-                    btnColor.base(theme.getTextboxFocus());
+                    btnColor.base(FPSMaster.theme.textboxFocus)
                 } else {
-                    btnColor.base(theme.getTextboxHover());
+                    btnColor.base(FPSMaster.theme.textboxHover)
                 }
             } else {
-                btnColor.base(enabledColor);
+                btnColor.base(enabledColor)
             }
-            Render2DUtils.drawOptimizedRoundedRect(xPosition, yPosition, width, height, btnColor.getColor());
+            Render2DUtils.drawOptimizedRoundedRect(xPosition, yPosition, width, height, btnColor.color)
 
-            int j = this.cursorPosition - this.lineScrollOffset;
-            int k = this.selectionEnd - this.lineScrollOffset;
-            String s = this.font.trimStringToWidth(this.text.substring(this.lineScrollOffset), this.getWidth());
-            boolean flag = j >= 0 && j <= s.length();
-            boolean flag1 = this.isFocused && this.cursorCounter / 6 % 2 == 0 && flag;
-            float l = this.enableBackgroundDrawing ? this.xPosition + 4 : this.xPosition;
-            float i1 = this.enableBackgroundDrawing ? this.yPosition + (this.height - 8) / 2 : this.yPosition;
-            float j1 = l;
+            val j = this.cursorPosition - this.lineScrollOffset
+            var k = this.selectionEnd - this.lineScrollOffset
+            val s = font!!.trimStringToWidth(text.substring(this.lineScrollOffset), this.getWidth())
+            val flag = j >= 0 && j <= s.length
+            val flag1 = this.isFocused && (this.cursorCounter / 6 % 2 == 0) && flag
+            val l = if (this.enableBackgroundDrawing) this.xPosition + 4 else this.xPosition
+            val i1 = if (this.enableBackgroundDrawing) this.yPosition + (this.height - 8) / 2 else this.yPosition
+            var j1 = l
 
-            if (k > s.length()) {
-                k = s.length();
+            if (k > s.length) {
+                k = s.length
             }
 
             if (s.isEmpty() && !isFocused) {
-                this.font.drawStringWithShadow(placeholder, xPosition + 4, i1, -1);
+                font.drawStringWithShadow(placeholder, xPosition + 4, i1, -1)
             }
 
-            String s1 = flag ? s.substring(0, j) : s;
-            j1 = this.font.drawStringWithShadow(s1, l + 2, i1, -1);
+            val s1 = if (flag) s.substring(0, j) else s
+            j1 = font.drawStringWithShadow(s1, l + 2, i1, -1).toFloat()
 
 
-            boolean flag2 = this.cursorPosition < this.text.length() || this.text.length() >= this.getMaxStringLength();
-            float k1 = j1;
+            val flag2 = this.cursorPosition < text.length || text.length >= this.getMaxStringLength()
+            var k1 = j1
 
             if (!flag) {
-                k1 = j > 0 ? l + this.width : l;
+                k1 = if (j > 0) l + this.width else l
             } else if (flag2) {
-                k1 = j1 - 1;
-                --j1;
+                k1 = j1 - 1
+                --j1
             }
 
-            if (!s.isEmpty() && flag && j < s.length()) {
-                this.font.drawStringWithShadow(s.substring(j), xPosition + j1 + 8, i1, -1);
+            if (s.isNotEmpty() && flag && j < s.length) {
+                font.drawStringWithShadow(s.substring(j), xPosition + j1 + 8, i1, -1)
             }
 
             if (flag1) {
                 if (flag2) {
-                    Render2DUtils.drawRect(xPosition + j1 + 8, i1 - 1, 1, 1 + this.font.getHeight(), -3092272);
+                    Render2DUtils.drawRect(xPosition + j1 + 8, i1 - 1, 1f, (1 + font.height).toFloat(), -3092272)
                 } else {
-                    this.font.drawStringWithShadow("_", xPosition + j1 + 8, i1, -1);
+                    font.drawStringWithShadow("_", xPosition + j1 + 8, i1, -1)
                 }
             }
 
             if (k != j) {
-                float l1 = l + this.font.getStringWidth(s.substring(0, k));
-                this.drawCursorVertical(xPosition + k1 + 8, i1 - 1, l1 + 2, i1 + 1 + this.font.getHeight());
+                val l1 = l + font.getStringWidth(s.substring(0, k))
+                this.drawCursorVertical(xPosition + k1 + 8, i1 - 1, l1 + 2, i1 + 1 + font.height)
             }
         }
     }
@@ -507,157 +533,88 @@ public class SearchBox extends Gui {
     /**
      * Draws the current selection and a vertical line cursor in the text box.
      */
-    void drawCursorVertical(float startX, float startY, float endX, float endY) {
+    private fun drawCursorVertical(startX: Float, startY: Float, endX: Float, endY: Float) {
+        var startX = startX
+        var startY = startY
+        var endX = endX
+        var endY = endY
         if (startX < endX) {
-            float i = startX;
-            startX = endX;
-            endX = i;
+            val i = startX
+            startX = endX
+            endX = i
         }
 
         if (startY < endY) {
-            float j = startY;
-            startY = endY;
-            endY = j;
+            val j = startY
+            startY = endY
+            endY = j
         }
 
         if (endX > this.xPosition + this.width) {
-            endX = this.xPosition + this.width;
+            endX = this.xPosition + this.width
         }
 
         if (startX > this.xPosition + this.width) {
-            startX = this.xPosition + this.width;
+            startX = this.xPosition + this.width
         }
 
-        Render2DUtils.drawRect(startX, startY, endX - startX, endY - startY, new Color(255, 255, 255, 100));
+        Render2DUtils.drawRect(startX, startY, endX - startX, endY - startY, Color(255, 255, 255, 100))
     }
 
     /**
      * returns the maximum number of character that can be contained in this textbox
      */
-    public int getMaxStringLength() {
-        return this.maxStringLength;
+    private fun getMaxStringLength(): Int {
+        return this.maxStringLength
     }
 
-    /**
-     * Sets the maximum length for the text in this text box. If the current text is longer than this length, the
-     * current text will be trimmed.
-     */
-    public void setMaxStringLength(int length) {
-        this.maxStringLength = length;
-
-        if (this.text.length() > length) {
-            this.text = this.text.substring(0, length);
-        }
-    }
-
-    /**
-     * returns the current position of the cursor
-     */
-    public int getCursorPosition() {
-        return this.cursorPosition;
-    }
-
-    /**
-     * Sets the current position of the cursor.
-     */
-    public void setCursorPosition(int pos) {
-        this.cursorPosition = pos;
-        int i = this.text.length();
-        this.cursorPosition = MathUtils.clamp(this.cursorPosition, 0, i);
-        this.setSelectionPos(this.cursorPosition);
-    }
-
-    /**
-     * Gets whether the background and outline of this text box should be drawn (true if so).
-     */
-    public boolean getEnableBackgroundDrawing() {
-        return this.enableBackgroundDrawing;
-    }
-
-    /**
-     * Sets focus to this gui element
-     */
-    public void setFocused(boolean isFocusedIn) {
-        if (isFocusedIn && !this.isFocused) {
-            this.cursorCounter = 0;
-        }
-
-        this.isFocused = isFocusedIn;
-
-    }
-
-    /**
-     * Sets whether this text box is enabled. Disabled text boxes cannot be typed in.
-     */
-    public void setEnabled(boolean enabled) {
-        this.isEnabled = enabled;
-    }
-
-    /**
-     * the side of the selection that is not the cursor, may be the same as the cursor
-     */
-    public int getSelectionEnd() {
-        return this.selectionEnd;
-    }
 
     /**
      * returns the width of the textbox depending on if background drawing is enabled
      */
-    public int getWidth() {
-        return (int) (this.getEnableBackgroundDrawing() ? this.width - 8 : this.width);
+    private fun getWidth(): Int {
+        return (if (this.enableBackgroundDrawing) this.width - 8 else this.width).toInt()
     }
 
     /**
      * Sets the position of the selection anchor (the selection anchor and the cursor position mark the edges of the
      * selection). If the anchor is set beyond the bounds of the current text, it will be put back inside.
      */
-    public void setSelectionPos(int position) {
-        int i = this.text.length();
+    private fun setSelectionPos(position: Int) {
+        var position = position
+        val i = text.length
 
         if (position > i) {
-            position = i;
+            position = i
         }
 
         if (position < 0) {
-            position = 0;
+            position = 0
         }
 
-        this.selectionEnd = position;
+        this.selectionEnd = position
 
         if (this.font != null) {
             if (this.lineScrollOffset > i) {
-                this.lineScrollOffset = i;
+                this.lineScrollOffset = i
             }
 
-            float j = this.getWidth();
-            String s = this.font.trimStringToWidth(this.text.substring(this.lineScrollOffset), (int) j);
-            int k = s.length() + this.lineScrollOffset;
+            val j = getWidth().toFloat()
+            val s =
+                font.trimStringToWidth(text.substring(this.lineScrollOffset), j.toInt())
+            val k = s.length + this.lineScrollOffset
 
             if (position == this.lineScrollOffset) {
-                this.lineScrollOffset -= this.font.trimStringToWidth(this.text, (int) j, true).length();
+                this.lineScrollOffset -= font.trimStringToWidth(this.text, j.toInt(), true).length
             }
 
             if (position > k) {
-                this.lineScrollOffset += position - k;
+                this.lineScrollOffset += position - k
             } else if (position <= this.lineScrollOffset) {
-                this.lineScrollOffset -= this.lineScrollOffset - position;
+                this.lineScrollOffset -= this.lineScrollOffset - position
             }
 
-            this.lineScrollOffset = MathUtils.clamp(this.lineScrollOffset, 0, i);
+            this.lineScrollOffset = clamp(this.lineScrollOffset, 0, i)
         }
-    }
-
-    /**
-     * returns true if this textbox is visible
-     */
-    public boolean getVisible() {
-        return this.visible;
-    }
-
-    /**
-     * Sets whether or not this textbox is visible
-     */
-    public void setVisible(boolean isVisible) {
-        this.visible = isVisible;
     }
 }

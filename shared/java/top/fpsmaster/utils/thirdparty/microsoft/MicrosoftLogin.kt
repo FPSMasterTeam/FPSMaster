@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.microsoft
+package top.fpsmaster.utils.thirdparty.microsoft
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject

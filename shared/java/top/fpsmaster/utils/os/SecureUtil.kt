@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.secure
+package top.fpsmaster.utils.os
 
 import kotlin.system.exitProcess
 

@@ -105,19 +105,19 @@ class Login(isOOBE: Boolean) : Scene() {
             FPSMaster.i18n["oobe.login.desc"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 90,
-            FPSMaster.theme.getTextColorDescription().rgb
+            FPSMaster.theme.textColorDescription.rgb
         )
         FPSMaster.fontManager.s18.drawString(
             FPSMaster.i18n["oobe.login.register"],
             sr.scaledWidth / 2f - 90,
             sr.scaledHeight / 2f + 15,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         FPSMaster.fontManager.s40.drawCenteredString(
             FPSMaster.i18n["oobe.login.title"],
             sr.scaledWidth / 2f,
             sr.scaledHeight / 2f - 75,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         btn.render(sr.scaledWidth / 2f - 70, sr.scaledHeight / 2f + 40, 60f, 24f, mouseX.toFloat(), mouseY.toFloat())
         btn2.render(sr.scaledWidth / 2f + 5, sr.scaledHeight / 2f + 40, 60f, 24f, mouseX.toFloat(), mouseY.toFloat())

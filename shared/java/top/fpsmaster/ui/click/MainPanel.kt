@@ -35,7 +35,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
     private var categories = LinkedList<CategoryComponent>()
     private val leftWidth = 110f
     private var modsWheel = 0f
-    private var wheel_temp = 0f
+    private var wheelTemp = 0f
     private var sizeDrag = false
     private var sizeDragX = 0f
     private var sizeDragY = 0f
@@ -48,16 +48,20 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
 
     // color animation
     private var sizeDragBorder = ColorAnimation(255, 255, 255, 0)
+    private var backgroundColor = ColorAnimation(FPSMaster.theme.background)
+    private var modeColor = ColorAnimation(FPSMaster.theme.typeSelectionBackground)
+    private var logoColor = ColorAnimation(FPSMaster.theme.logo)
+
+
+
     private var close = false
 
     // module list animation
     private var moduleListAlpha = 0f
     private val mods = LinkedList<ModuleRenderer>()
-    private var modeColor = ColorAnimation(FPSMaster.theme.getTypeSelectionBackground())
     private var modHeight = 0f
     private val modsContainer = ScrollContainer()
 
-    var backgroundColor = ColorAnimation(FPSMaster.theme.getBackground())
 
     override fun doesGuiPauseGame(): Boolean {
         return doesGuiPauseGame
@@ -68,7 +72,6 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
         super.drawScreen(mouseX, mouseY, partialTicks)
         val sr = ScaledResolution(mc)
         GL11.glPushMatrix()
-        //        GL11.glScaled(2f/sr.getScaleFactor(),2f/sr.getScaleFactor(),0);
         if (!Mouse.isButtonDown(0)) {
             dragLock = "null"
             drag = false
@@ -114,7 +117,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             Companion.height + 2,
             sizeDragBorder.color
         )
-        backgroundColor.base(FPSMaster.theme.getBackground())
+        backgroundColor.base(FPSMaster.theme.background)
         Render2DUtils.drawOptimizedRoundedRect(
             x.toFloat(),
             y.toFloat(),
@@ -122,13 +125,15 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             Companion.height,
             backgroundColor.color
         )
+        logoColor.base(FPSMaster.theme.logo)
+
         Render2DUtils.drawImage(
             ResourceLocation("client/gui/settings/logo.png"),
             x + leftWidth / 2 - 40 - 5,
             (y + 15).toFloat(),
             81.5f,
             64 / 2f,
-            FPSMaster.theme.getLogo()
+            logoColor.color
         )
         if (drag || sizeDrag) {
             sizeDragBorder.start(Color(255, 255, 255, 100), Color(255, 255, 255), 0.15f, Type.EASE_IN_OUT_QUAD)
@@ -143,7 +148,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
                 y + Companion.height - 5,
                 5f,
                 5f,
-                FPSMaster.theme.getDragHovered()
+                FPSMaster.theme.dragHovered
             )
         } else {
             Render2DUtils.drawImage(
@@ -152,7 +157,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
                 y + Companion.height - 5,
                 5f,
                 5f,
-                FPSMaster.theme.getDrag()
+                FPSMaster.theme.drag
             )
         }
         var my = (y + 60).toFloat()
@@ -177,9 +182,9 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
         )
         for (m in categories) {
             if (Render2DUtils.isHovered(x.toFloat(), my - 6, leftWidth - 10, 20f, mouseX, mouseY)) {
-                m.categorySelectionColor.base(FPSMaster.theme.getTypeSelectionBackground())
+                m.categorySelectionColor.base(FPSMaster.theme.typeSelectionBackground)
             } else {
-                m.categorySelectionColor.base(Render2DUtils.reAlpha(FPSMaster.theme.getTypeSelectionBackground(), 0))
+                m.categorySelectionColor.base(Render2DUtils.reAlpha(FPSMaster.theme.typeSelectionBackground, 0))
             }
             if (m.category === curType) {
                 selection = if (sizeDrag || drag) {
@@ -221,18 +226,18 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
             FPSMaster.i18n["theme.title"],
             (x + 20).toFloat(),
             y + Companion.height - 20,
-            FPSMaster.theme.getCategoryText().rgb
+            FPSMaster.theme.categoryText.rgb
         )
         FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n["theme." + FPSMaster.themeSlot],
             (x + 52).toFloat(),
             y + Companion.height - 20,
-            FPSMaster.theme.getCategoryTextSelected().rgb
+            FPSMaster.theme.categoryTextSelected.rgb
         )
         if (Render2DUtils.isHovered((x + 40).toFloat(), y + Companion.height - 22, 34f, 14f, mouseX, mouseY)) {
-            modeColor.base(FPSMaster.theme.getPrimary())
+            modeColor.base(FPSMaster.theme.primary)
         } else {
-            modeColor.base(FPSMaster.theme.getTypeSelectionBackground())
+            modeColor.base(FPSMaster.theme.typeSelectionBackground)
         }
 
         // 绘制功能列表
@@ -281,7 +286,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
         GL11.glEnable(GL11.GL_BLEND)
         Render2DUtils.drawRect(
             x + leftWidth, y.toFloat(), Companion.width - leftWidth, Companion.height, Render2DUtils.reAlpha(
-                FPSMaster.theme.getBackground(), Render2DUtils.limit((255 - moduleListAlpha).toDouble())
+                FPSMaster.theme.background, Render2DUtils.limit((255 - moduleListAlpha).toDouble())
             )
         )
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
@@ -404,7 +409,7 @@ class MainPanel(private val doesGuiPauseGame: Boolean) : GuiScreen() {
         var my = (y + 60).toFloat()
         for (m in Category.entries) {
             if (Render2DUtils.isHovered(x.toFloat(), my - 8, leftWidth, 24f, mouseX, mouseY)) {
-                wheel_temp = 0f
+                wheelTemp = 0f
                 modsWheel = 0f
                 if (curType !== m) moduleListAlpha = 0f
                 curType = m

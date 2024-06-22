@@ -1,124 +1,95 @@
-package top.fpsmaster.ui.click.themes;
+package top.fpsmaster.ui.click.themes
 
-import java.awt.Color;
+import java.awt.Color
 
-public class LightTheme implements Theme {
-    public Color getBackground() {
-        return new Color(252,252,252);
-    }
+class LightTheme : Theme {
+    override val background: Color
+        get() = Color(252, 252, 252)
 
-    public Color getFrontBackground() {
-        return new Color(240,240,240);
-    }
+    override val frontBackground: Color
+        get() = Color(240, 240, 240)
 
-    public Color getTypeSelectionBackground() {
-        return new Color(202,202,202);
-    }
+    override val typeSelectionBackground: Color
+        get() = Color(202, 202, 202)
 
-    public Color getPrimary() {
-        return new Color(113, 127, 254);
-    }
+    override val primary: Color
+        get() = Color(113, 127, 254)
 
-    public Color getPrimaryGradientLT() {
-        return new Color(77, 100, 255);
-    }
+    override val primaryGradientLT: Color
+        get() = Color(77, 100, 255)
 
-    public Color getPrimaryGradientRB() {
-        return new Color(108, 113, 255);
-    }
+    override val primaryGradientRB: Color
+        get() = Color(108, 113, 255)
 
-    public Color getTextColorTitle() {
-        return new Color(61,61,61);
-    }
+    override val textColorTitle: Color
+        get() = Color(61, 61, 61)
 
-    public Color getTextColorDescription() {
-        return new Color(156,156,156);
-    }
+    override val textColorDescription: Color
+        get() = Color(156, 156, 156)
 
-    public Color getCategoryTextSelected() {
-        return new Color(255,255,255);
-    }
+    override val categoryTextSelected: Color
+        get() = Color(255, 255, 255)
 
-    public Color getCategoryText() {
-        return new Color(61,61,61);
-    }
+    override val categoryText: Color
+        get() = Color(61, 61, 61)
 
-    public Color getLogo() {
-        return new Color(101,109,255);
-    }
+    override val logo: Color
+        get() = Color(101, 109, 255)
 
-    public Color getDrag() {
-        return new Color(192,192,192);
-    }
+    override val drag: Color
+        get() = Color(192, 192, 192)
 
-    public Color getDragHovered() {
-        return new Color(172,172,172);
-    }
+    override val dragHovered: Color
+        get() = Color(172, 172, 172)
 
-    public Color getModuleEnabled() {
-        return new Color(255,255,255);
-    }
+    override val moduleEnabled: Color
+        get() = Color(255, 255, 255)
 
-    public Color getModuleDisabled() {
-        return new Color(240,240,240);
-    }
+    override val moduleDisabled: Color
+        get() = Color(240, 240, 240)
 
-    public Color getModuleBorder() {
-        return new Color(192,192,192);
-    }
+    override val moduleBorder: Color
+        get() = Color(192, 192, 192)
 
-    public Color getModuleTextEnabled() {
-        return new Color(61,61,61);
-    }
+    override val moduleTextEnabled: Color
+        get() = Color(61, 61, 61)
 
-    public Color getModuleTextDisabled() {
-        return new Color(61,61,61);
-    }
+    override val moduleTextDisabled: Color
+        get() = Color(61, 61, 61)
 
-    public Color getCheckboxBox() {
-        return new Color(235,235,235);
-    }
+    override val checkboxBox: Color
+        get() = Color(235, 235, 235)
 
-    public Color getCheckboxHover() {
-        return new Color(109,112,255);
-    }
+    override val checkboxHover: Color
+        get() = Color(109, 112, 255)
 
-    public Color getTextNumber() {
-        return new Color(161,161,161);
-    }
+    override val textNumber: Color
+        get() = Color(161, 161, 161)
 
-    public Color getModeBox() {
-        return new Color(242,242,242);
-    }
+    override val modeBox: Color
+        get() = Color(242, 242, 242)
 
-    public Color getModeBoxBorder() {
-        return new Color(223,223,223);
-    }
+    override val modeBoxBorder: Color
+        get() = Color(223, 223, 223)
 
-    public Color getTextboxEnabled() {
-        return new Color(237,237,237);
-    }
+    override val textboxEnabled: Color
+        get() = Color(237, 237, 237)
 
-    public Color getTextboxDisabled() {
-        return new Color(147,147,147);
-    }
+    override val textboxDisabled: Color
+        get() = Color(147, 147, 147)
 
-    public Color getTextboxFocus() {
-        return new Color(247,247,247);
-    }
+    override val textboxFocus: Color
+        get() = Color(247, 247, 247)
 
-    public Color getTextboxHover() {
-        return new Color(255, 255, 255);
-    }
+    override val textboxHover: Color
+        get() = Color(255, 255, 255)
 
-    public Color getTextColorDescriptionHover() {
-        return new Color(73,73,73);
-    }
+    override val textColorDescriptionHover: Color
+        get() = Color(73, 73, 73)
 
-    public Color getMusicBlank() {return new Color(100,100,100,255);}
+    override val musicBlank: Color
+        get() = Color(100, 100, 100, 255)
 
-    @Override
-    public Color getButtonText() {
-        return new Color(255, 255, 255);
-    }
+    override val buttonText: Color
+        get() = Color(255, 255, 255)
 }

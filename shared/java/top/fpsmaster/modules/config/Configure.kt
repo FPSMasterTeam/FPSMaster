@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.system.config
+package top.fpsmaster.modules.config
 
 class Configure {
     var configures = HashMap<String, String>()

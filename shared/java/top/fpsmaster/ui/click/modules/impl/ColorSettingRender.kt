@@ -35,15 +35,15 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
         val tW = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 3, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 3, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
-        Render2DUtils.drawOptimizedRoundedRect(x + tW + 26, y + 1, 80f, 14f, FPSMaster.theme.getBackground())
+        Render2DUtils.drawOptimizedRoundedRect(x + tW + 26, y + 1, 80f, 14f, FPSMaster.theme.background)
         Render2DUtils.drawOptimizedRoundedRect(x + tW + 27, y + 2, 12f, 12f, setting.value.rGB)
         FPSMaster.fontManager.s16.drawString(
             "#" + Integer.toHexString(setting.rGB).uppercase(Locale.getDefault()),
             x + tW + 44,
             y + 2,
-            FPSMaster.theme.getTextColorTitle().rgb
+            FPSMaster.theme.textColorTitle.rgb
         )
         if (aHeight > 1) {
             // 饱和度和亮度调节部分
@@ -191,7 +191,7 @@ class ColorSettingRender(mod: Module, setting: ColorSetting) : SettingRender<Col
         val tW = FPSMaster.fontManager.s16.drawString(
             FPSMaster.i18n[(mod.name + "." + setting.name).lowercase(
                 Locale.getDefault()
-            )], x + 10, y + 2, FPSMaster.theme.getTextColorDescription().rgb
+            )], x + 10, y + 2, FPSMaster.theme.textColorDescription.rgb
         ).toFloat()
         if (Render2DUtils.isHovered(x + tW + 26, y + 1, 80f, 14f, mouseX.toInt(), mouseY.toInt()) && btn == 0) {
             expand = !expand

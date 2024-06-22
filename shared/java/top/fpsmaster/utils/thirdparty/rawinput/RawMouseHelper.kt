@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.rawinput
+package top.fpsmaster.utils.thirdparty.rawinput
 
 import net.minecraft.util.MouseHelper
 

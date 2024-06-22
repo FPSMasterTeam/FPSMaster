@@ -2,7 +2,7 @@ package top.fpsmaster.features.impl.utility
 
 import top.fpsmaster.features.manager.Category
 import top.fpsmaster.features.manager.Module
-import top.fpsmaster.utils.rawinput.RawInputMod
+import top.fpsmaster.utils.thirdparty.rawinput.RawInputMod
 
 class RawInput : Module("RawInput", Category.Utility) {
     private var rawInputMod = RawInputMod()

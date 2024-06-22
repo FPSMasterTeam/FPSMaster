@@ -1,64 +1,64 @@
-package top.fpsmaster.ui.click.themes;
+package top.fpsmaster.ui.click.themes
 
-import java.awt.Color;
+import java.awt.Color
 
-public interface Theme {
-    Color getBackground();
+interface Theme {
+    val background: Color
 
-    Color getFrontBackground();
+    val frontBackground: Color
 
-    Color getTypeSelectionBackground();
+    val typeSelectionBackground: Color
 
-    Color getPrimary();
+    val primary: Color
 
-    Color getPrimaryGradientLT();
+    val primaryGradientLT: Color
 
-    Color getPrimaryGradientRB();
+    val primaryGradientRB: Color
 
-    Color getTextColorTitle();
+    val textColorTitle: Color
 
-    Color getTextColorDescription();
+    val textColorDescription: Color
 
-    Color getCategoryTextSelected();
+    val categoryTextSelected: Color
 
-    Color getCategoryText();
+    val categoryText: Color
 
-    Color getLogo();
+    val logo: Color
 
-    Color getDrag();
+    val drag: Color
 
-    Color getDragHovered();
+    val dragHovered: Color
 
-    Color getModuleEnabled();
+    val moduleEnabled: Color
 
-    Color getModuleDisabled();
+    val moduleDisabled: Color
 
-    Color getModuleBorder();
+    val moduleBorder: Color
 
-    Color getModuleTextEnabled();
+    val moduleTextEnabled: Color
 
-    Color getModuleTextDisabled();
+    val moduleTextDisabled: Color
 
-    Color getCheckboxBox();
+    val checkboxBox: Color
 
-    Color getCheckboxHover();
+    val checkboxHover: Color
 
-    Color getTextNumber();
+    val textNumber: Color
 
-    Color getModeBox();
+    val modeBox: Color
 
-    Color getModeBoxBorder();
+    val modeBoxBorder: Color
 
-    Color getTextboxEnabled();
+    val textboxEnabled: Color
 
-    Color getTextboxDisabled();
+    val textboxDisabled: Color
 
-    Color getTextboxFocus();
+    val textboxFocus: Color
 
-    Color getTextboxHover();
+    val textboxHover: Color
 
-    Color getTextColorDescriptionHover();
-    Color getMusicBlank();
+    val textColorDescriptionHover: Color
+    val musicBlank: Color
 
-    Color getButtonText();
+    val buttonText: Color
 }

@@ -153,7 +153,7 @@ object MusicPanel {
                 "<",
                 x + 20,
                 y + 20,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
             if (Render2DUtils.isHovered(x + 20, y + 20, 20f, 20f, mouseX, mouseY) && Mouse.isButtonDown(0)) isWaitingLogin = false
             val resourceLocation = ResourceLocation("music/qr")
@@ -177,7 +177,7 @@ object MusicPanel {
                 FPSMaster.i18n[scan],
                 x + width / 2,
                 y + height / 2 + 60,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
             return
         }
@@ -201,13 +201,13 @@ object MusicPanel {
                 "#",
                 x + 12,
                 dY - 20,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
             FPSMaster.fontManager.s16.drawString(
                 "标题",
                 x + 30,
                 dY - 20,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
 
             // music list
@@ -228,7 +228,7 @@ object MusicPanel {
                         "" + i,
                         x + 15,
                         dY + 15,
-                        FPSMaster.theme.getTextColorTitle().rgb
+                        FPSMaster.theme.textColorTitle.rgb
                     )
                     if (dY > y && dY < y + height - 10) if ((music as Music).isLoadedImage) {
                         Render2DUtils.drawImage(
@@ -245,7 +245,7 @@ object MusicPanel {
                             dY + 10,
                             20f,
                             20f,
-                            FPSMaster.theme.getMusicBlank()
+                            FPSMaster.theme.musicBlank
                         )
                     }
                     if (MusicPlayer.playList.current == i) {
@@ -253,26 +253,26 @@ object MusicPanel {
                             music.name + "  " + music.author,
                             x + 60,
                             dY + 10,
-                            FPSMaster.theme.getTextColorTitle().rgb
+                            FPSMaster.theme.textColorTitle.rgb
                         )
                         FPSMaster.fontManager.s16.drawString(
                             music.author,
                             x + 60,
                             dY + 20,
-                            FPSMaster.theme.getTextColorDescription().rgb
+                            FPSMaster.theme.textColorDescription.rgb
                         )
                     } else {
                         FPSMaster.fontManager.s16.drawString(
                             music.name + "  " + music.author,
                             x + 60,
                             dY + 10,
-                            FPSMaster.theme.getTextColorTitle().rgb
+                            FPSMaster.theme.textColorTitle.rgb
                         )
                         FPSMaster.fontManager.s16.drawString(
                             music.author,
                             x + 60,
                             dY + 20,
-                            FPSMaster.theme.getTextColorDescription().rgb
+                            FPSMaster.theme.textColorDescription.rgb
                         )
                     }
                     dY += 40f
@@ -286,7 +286,7 @@ object MusicPanel {
                 "...",
                 x + width / 2,
                 y + 60,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
         }
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
@@ -305,7 +305,7 @@ object MusicPanel {
             y + 6,
             pagesWidth.toFloat(),
             16f,
-            FPSMaster.theme.getFrontBackground()
+            FPSMaster.theme.frontBackground
         )
         for (page in pages) {
             val stringWidth = FPSMaster.fontManager.s16.getStringWidth(FPSMaster.i18n[page])
@@ -315,20 +315,20 @@ object MusicPanel {
                     y + 6,
                     (stringWidth + 10).toFloat(),
                     16f,
-                    FPSMaster.theme.getPrimary()
+                    FPSMaster.theme.primary
                 )
                 FPSMaster.fontManager.s16.drawString(
                     FPSMaster.i18n[page],
                     x + 95 + xOffset,
                     y + 10,
-                    FPSMaster.theme.getTextColorTitle().rgb
+                    FPSMaster.theme.textColorTitle.rgb
                 )
             } else {
                 FPSMaster.fontManager.s16.drawString(
                     FPSMaster.i18n[page],
                     x + 95 + xOffset,
                     y + 10,
-                    FPSMaster.theme.getTextColorDescription().rgb
+                    FPSMaster.theme.textColorDescription.rgb
                 )
             }
             xOffset += stringWidth + 10
@@ -383,13 +383,13 @@ object MusicPanel {
 
         // 操作栏
         val current = MusicPlayer.playList.getCurrent()
-        Render2DUtils.drawRect(x, y + height - 30, width, 2f, FPSMaster.theme.getFrontBackground().rgb)
+        Render2DUtils.drawRect(x, y + height - 30, width, 2f, FPSMaster.theme.frontBackground.rgb)
         Render2DUtils.drawRect(
             x,
             y + height - 30,
             width * MusicPlayer.playProgress,
             2f,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         if (Render2DUtils.isHovered(x, y + height - 32, width, 4f, mouseX, mouseY)) {
             Render2DUtils.drawRect(
@@ -397,7 +397,7 @@ object MusicPanel {
                 y + height - 31f,
                 width * MusicPlayer.playProgress,
                 4f,
-                FPSMaster.theme.getPrimary().rgb
+                FPSMaster.theme.primary.rgb
             )
         }
 
@@ -408,15 +408,15 @@ object MusicPanel {
             y + height - 16,
             7f,
             7f,
-            FPSMaster.theme.getTextColorTitle()
+            FPSMaster.theme.textColorTitle
         )
-        Render2DUtils.drawRect(x + width - 40, y + height - 14, 30f, 2f, FPSMaster.theme.getFrontBackground().rgb)
+        Render2DUtils.drawRect(x + width - 40, y + height - 14, 30f, 2f, FPSMaster.theme.frontBackground.rgb)
         Render2DUtils.drawRect(
             x + width - 40,
             y + height - 14,
             30 * MusicPlayer.getVolume(),
             2f,
-            FPSMaster.theme.getPrimary().rgb
+            FPSMaster.theme.primary.rgb
         )
         if (Render2DUtils.isHovered(x + width - 40, y + height - 14, 30f, 2f, mouseX, mouseY)) {
             Render2DUtils.drawRect(
@@ -424,7 +424,7 @@ object MusicPanel {
                 y + height - 14.5f,
                 30 * MusicPlayer.getVolume(),
                 3f,
-                FPSMaster.theme.getPrimary().rgb
+                FPSMaster.theme.primary.rgb
             )
             if (Mouse.isButtonDown(0)) {
                 val newVolume = (mouseX - x - width + 40) / 30f
@@ -443,7 +443,7 @@ object MusicPanel {
                 name,
                 x + 30,
                 y + height - 23,
-                FPSMaster.theme.getTextColorTitle().rgb
+                FPSMaster.theme.textColorTitle.rgb
             )
             var progress = "0:00/0:00"
             if (JLayerHelper.clip != null) {
@@ -453,7 +453,7 @@ object MusicPanel {
                 progress =
                     minutes.toString() + ":" + seconds + "/" + duration.toInt() + ":" + ((duration - duration.toInt()) * 60).toInt()
             }
-            s16b.drawString(progress, x + 30, y + height - 14, FPSMaster.theme.getTextColorDescription().rgb)
+            s16b.drawString(progress, x + 30, y + height - 14, FPSMaster.theme.textColorDescription.rgb)
             if ((MusicPlayer.playList.getCurrent() as Music).isLoadedImage) Render2DUtils.drawImage(
                 ResourceLocation("music/netease/" + (MusicPlayer.playList.getCurrent() as Music).id),
                 x + 5,
@@ -466,7 +466,7 @@ object MusicPanel {
                 y + height - 24,
                 20f,
                 20f,
-                FPSMaster.theme.getMusicBlank()
+                FPSMaster.theme.musicBlank
             )
         }
         var res = ResourceLocation("client/gui/settings/music/loop.png")
@@ -483,14 +483,14 @@ object MusicPanel {
                 res = ResourceLocation("client/gui/settings/music/loop.png")
             }
         }
-        Render2DUtils.drawImage(res, x + width / 2 - 55, y + height - 21, 12f, 12f, FPSMaster.theme.getTextColorTitle())
+        Render2DUtils.drawImage(res, x + width / 2 - 55, y + height - 21, 12f, 12f, FPSMaster.theme.textColorTitle)
         Render2DUtils.drawImage(
             ResourceLocation("client/gui/settings/music/previous.png"),
             x + width / 2 - 35,
             y + height - 23,
             16f,
             16f,
-            FPSMaster.theme.getTextColorTitle()
+            FPSMaster.theme.textColorTitle
         )
         Render2DUtils.drawImage(
             if (MusicPlayer.isPlaying) ResourceLocation("client/gui/settings/music/pause.png") else ResourceLocation(
@@ -503,7 +503,7 @@ object MusicPanel {
             y + height - 23,
             16f,
             16f,
-            FPSMaster.theme.getTextColorTitle()
+            FPSMaster.theme.textColorTitle
         )
     }
 

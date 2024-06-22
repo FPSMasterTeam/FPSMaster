@@ -10,7 +10,7 @@ import top.fpsmaster.utils.os.HttpRequest
 class AccountManager {
     var token: String = ""
     var username: String = ""
-    var itemsHeld = arrayOf<String>()
+    var itemsHeld = emptyArray<String>()
 
     fun autoLogin() {
         try {
@@ -22,7 +22,7 @@ class AccountManager {
                     FPSMaster.INSTANCE.loggedIn = true
                     getItems(username, token)
                 } else {
-                    Logger.info("$username  $token")
+                    Logger.info(username)
                     Logger.error("自动登录失败！")
                 }
             }
@@ -35,24 +35,21 @@ class AccountManager {
     private fun attemptLogin(username: String, token: String): Boolean {
         if (username.isEmpty() || token.isEmpty())
             return false
-        val s = HttpRequest["${FPSMaster.SERVICE_API}/checkToken?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
+        val s =
+            HttpRequest["${FPSMaster.SERVICE_API}/checkToken?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
         val json = parser.parse(s).getAsJsonObject()
-        if (json["code"].asInt != 200) {
-            this.token = ""
-            FileUtils.saveTempValue("token", "")
-            return false
-        }
         this.username = username
         this.token = token
-        return true
+        return json["code"].asInt == 200
     }
 
     fun getItems(username: String?, token: String?) {
-        val s = HttpRequest["${FPSMaster.SERVICE_API}/getWebUser?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
+        val s =
+            HttpRequest["${FPSMaster.SERVICE_API}/getWebUser?username=$username&token=$token&timestamp=${System.currentTimeMillis()}"]
         val json = parser.parse(s).getAsJsonObject()
         if (json["code"].asInt == 200) {
             val items = json["data"].getAsJsonObject()["items"].asString
-            itemsHeld = items.split(",".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            itemsHeld = items.split(",").filter { it.isNotEmpty() }.toTypedArray()
         }
     }
 
@@ -60,8 +57,10 @@ class AccountManager {
         var parser = JsonParser()
         var cape = ""
         var skin = ""
+
         fun login(username: String, password: String): JsonObject {
-            val s = HttpRequest["${FPSMaster.SERVICE_API}/login?username=$username&password=$password&timestamp=${System.currentTimeMillis()}"]
+            val s =
+                HttpRequest["${FPSMaster.SERVICE_API}/login?username=$username&password=$password&timestamp=${System.currentTimeMillis()}"]
             return parser.parse(s).getAsJsonObject()
         }
     }

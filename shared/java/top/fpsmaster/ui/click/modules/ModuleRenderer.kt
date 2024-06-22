@@ -22,11 +22,11 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
     private var border = 0f
     private var expand = false
     private var background = ColorAnimation()
-    var content = ColorAnimation(FPSMaster.theme.getModuleDisabled())
+    var content = ColorAnimation(FPSMaster.theme.moduleDisabled)
 
     init {
         content =
-            ColorAnimation(if (mod.isEnabled) FPSMaster.theme.getModuleEnabled() else FPSMaster.theme.getModuleDisabled())
+            ColorAnimation(if (mod.isEnabled) FPSMaster.theme.moduleEnabled else FPSMaster.theme.moduleDisabled)
         mod.settings.forEach(Consumer { setting: Setting<*>? ->
             when (setting) {
                 is BooleanSetting -> {
@@ -73,29 +73,29 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
             base(border.toDouble(), 30.0, 0.3).toFloat()
         }
         if (mod.isEnabled) {
-            content.start(content.color, FPSMaster.theme.getModuleTextEnabled(), 0.2f, Type.EASE_IN_OUT_QUAD)
-            background.start(background.color, FPSMaster.theme.getModuleEnabled(), 0.2f, Type.EASE_IN_OUT_QUAD)
+            content.start(content.color, FPSMaster.theme.moduleTextEnabled, 0.2f, Type.EASE_IN_OUT_QUAD)
+            background.start(background.color, FPSMaster.theme.moduleEnabled, 0.2f, Type.EASE_IN_OUT_QUAD)
         } else {
-            content.start(content.color, FPSMaster.theme.getModuleTextDisabled(), 0.2f, Type.EASE_IN_OUT_QUAD)
-            background.start(background.color, FPSMaster.theme.getModuleDisabled(), 0.2f, Type.EASE_IN_OUT_QUAD)
+            content.start(content.color, FPSMaster.theme.moduleTextDisabled, 0.2f, Type.EASE_IN_OUT_QUAD)
+            background.start(background.color, FPSMaster.theme.moduleDisabled, 0.2f, Type.EASE_IN_OUT_QUAD)
         }
         Render2DUtils.drawOptimizedRoundedRect(
             x + 4.5f,
             y - 0.5f,
             width - 9,
             settingHeight + 38f,
-            FPSMaster.theme.getModuleEnabled()
+            FPSMaster.theme.moduleEnabled
         )
         Render2DUtils.drawOptimizedRoundedRect(
             x + 5,
             y,
             width - 10,
             settingHeight + 37f,
-            FPSMaster.theme.getModuleDisabled().rgb
+            FPSMaster.theme.moduleDisabled.rgb
         )
         Render2DUtils.drawOptimizedRoundedBorderRect(
             x + 5, y, width - 10, 37f, 0.5f, background.color, Render2DUtils.reAlpha(
-                FPSMaster.theme.getModuleBorder(), border.toInt()
+                FPSMaster.theme.moduleBorder, border.toInt()
             )
         )
         if (mod.category === Category.Interface) {
@@ -127,7 +127,7 @@ class ModuleRenderer(override var mod: Module) : ValueRender() {
             FPSMaster.i18n[mod.name.lowercase(Locale.getDefault()) + ".desc"],
             x + 40,
             y + 20,
-            FPSMaster.theme.getTextColorDescription().rgb
+            FPSMaster.theme.textColorDescription.rgb
         )
         var settingsHeight = 0f
         if (expand) {

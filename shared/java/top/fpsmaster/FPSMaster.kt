@@ -9,6 +9,7 @@ import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.modules.account.AccountManager
 import top.fpsmaster.modules.client.AsyncTask
 import top.fpsmaster.modules.client.PlayerManager
+import top.fpsmaster.modules.config.ConfigManager
 import top.fpsmaster.modules.logger.Logger
 import top.fpsmaster.modules.music.MusicPlayer
 import top.fpsmaster.modules.music.netease.NeteaseApi
@@ -22,8 +23,7 @@ import top.fpsmaster.ui.screens.oobe.OOBEScreen
 import top.fpsmaster.utils.GitInfo
 import top.fpsmaster.utils.os.FileUtils
 import top.fpsmaster.utils.os.HttpRequest
-import top.fpsmaster.utils.system.config.ConfigManager
-import top.fpsmaster.utils.system.i18n.Language
+import top.fpsmaster.modules.i18n.Language
 import top.fpsmaster.websocket.client.WsClient
 import top.fpsmaster.wrapper.Constants
 import java.awt.Desktop

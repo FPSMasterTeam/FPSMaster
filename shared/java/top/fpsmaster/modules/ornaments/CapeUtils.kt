@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.ornaments.capes
+package top.fpsmaster.modules.ornaments
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.ThreadDownloadImageData

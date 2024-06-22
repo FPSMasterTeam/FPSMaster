@@ -1,4 +1,4 @@
-package top.fpsmaster.utils.openai
+package top.fpsmaster.utils.thirdparty.openai
 
 import com.google.gson.Gson
 import com.google.gson.JsonArray
