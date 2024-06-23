@@ -7,9 +7,13 @@ import java.util.*
 class PlayList {
     var musics = LinkedList<AbstractMusic>()
     var current = 0
+    var shuffled = false
+
     fun add(music: AbstractMusic) {
         musics.add(music)
     }
+
+
 
     fun play() {
         addNotification(
@@ -36,13 +40,25 @@ class PlayList {
         musics[current].seek(percent)
     }
 
+    private fun shuffleList(){
+        if (MusicPlayer.mode == 0 && !shuffled) {
+            val current1 = MusicPlayer.playList.getCurrent()
+            MusicPlayer.playList.musics.shuffle()
+            MusicPlayer.playList.current = MusicPlayer.playList.musics.indexOf(current1)
+            shuffled = true
+        }
+    }
+
     operator fun next() {
         MusicPlayer.stop()
         if (musics.size == 0)
             return
-        current++
-        if (current >= musics.size) {
-            current = 0
+        shuffleList()
+        if (MusicPlayer.mode != 2) {
+            current++
+            if (current >= musics.size) {
+                current = 0
+            }
         }
         addNotification(
             FPSMaster.i18n["notification.music"],
@@ -60,9 +76,12 @@ class PlayList {
         MusicPlayer.stop()
         if (musics.size == 0)
             return
-        current--
-        if (current < 0) {
-            current = musics.size - 1
+        shuffleList()
+        if (MusicPlayer.mode != 2) {
+            current--
+            if (current < 0) {
+                current = musics.size - 1
+            }
         }
         addNotification(
             FPSMaster.i18n["notification.music"],
@@ -87,7 +106,11 @@ class PlayList {
         musics.clear()
     }
 
-    fun shuffle() {
-        musics.shuffle()
+    fun setMusicList(musics: LinkedList<AbstractMusic>) {
+        val element = getCurrent()
+        this.musics.clear()
+        this.musics.addAll(musics)
+        current = musics.indexOf(element)
+        shuffled = false
     }
 }

@@ -53,13 +53,20 @@ object MusicPanel {
         inputBox.mouseClicked(mouseX, mouseY, btn)
         if (searchThread == null || !searchThread!!.isAlive) {
             var dY = y + 50 + container.getRealScroll()
-            for ((i, music) in displayList.musics.withIndex()) {
-                if (Render2DUtils.isHovered(x, dY, width - 10f, 40f, mouseX, mouseY) && mouseY < y + height - 34 && mouseY > y + 34) {
+            for (music in displayList.musics) {
+                if (Render2DUtils.isHovered(
+                        x,
+                        dY,
+                        width - 10f,
+                        40f,
+                        mouseX,
+                        mouseY
+                    ) && mouseY < y + height - 34 && mouseY > y + 34
+                ) {
                     if (Mouse.isButtonDown(0)) {
                         music.play()
                         MusicPlayer.isPlaying = true
-                        MusicPlayer.playList = displayList
-                        MusicPlayer.playList.current = i
+                        MusicPlayer.playList.current = MusicPlayer.playList.musics.indexOf(music)
                     }
                 }
                 dY += 40f
@@ -77,6 +84,9 @@ object MusicPanel {
                     if (curSearch == 2) {
                         if (recommendList.musics.isEmpty()) {
                             recommendList = MusicWrapper.songsFromDaily
+                            displayList = recommendList
+                            MusicPlayer.playList.pause()
+                            setMusicList()
                         }
                     }
                 }
@@ -107,11 +117,20 @@ object MusicPanel {
         }
         if (Render2DUtils.isHovered(x + width / 2 - 35, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
             MusicPlayer.playList.previous()
+
         }
         if (Render2DUtils.isHovered(x + width / 2 + 5, y + height - 23, 16f, 16f, mouseX, mouseY) && btn == 0) {
             MusicPlayer.playList.next()
         }
-        if (Render2DUtils.isHovered(x + width / 2 - 15, y + height - 23, 35 / 2f, 35 / 2f, mouseX, mouseY) && btn == 0) {
+        if (Render2DUtils.isHovered(
+                x + width / 2 - 15,
+                y + height - 23,
+                35 / 2f,
+                35 / 2f,
+                mouseX,
+                mouseY
+            ) && btn == 0
+        ) {
             if (!MusicPlayer.playList.musics.isEmpty()) {
                 if (MusicPlayer.isPlaying) {
                     playProgress = MusicPlayer.playProgress
@@ -134,9 +153,9 @@ object MusicPanel {
         if (Render2DUtils.isHovered(x + width / 2 - 55, y + height - 21, 12f, 12f, mouseX, mouseY) && btn == 0) {
             if (MusicPlayer.mode < 2) {
                 MusicPlayer.mode++
+                MusicPlayer.playList.setMusicList(displayList.musics)
             } else {
                 MusicPlayer.mode = 0
-                MusicPlayer.playList.shuffle()
             }
         }
     }
@@ -155,7 +174,15 @@ object MusicPanel {
                 y + 20,
                 FPSMaster.theme.textColorTitle.rgb
             )
-            if (Render2DUtils.isHovered(x + 20, y + 20, 20f, 20f, mouseX, mouseY) && Mouse.isButtonDown(0)) isWaitingLogin = false
+            if (Render2DUtils.isHovered(
+                    x + 20,
+                    y + 20,
+                    20f,
+                    20f,
+                    mouseX,
+                    mouseY
+                ) && Mouse.isButtonDown(0)
+            ) isWaitingLogin = false
             val resourceLocation = ResourceLocation("music/qr")
             Render2DUtils.drawImage(resourceLocation, x + width / 2 - 45, y + height / 2 - 45, 90f, 90f, -1)
             var scan = ""
@@ -332,11 +359,6 @@ object MusicPanel {
                 )
             }
             xOffset += stringWidth + 10
-        }
-        displayList = if (curSearch == 2) {
-            recommendList
-        } else {
-            searchList
         }
 
         // login
@@ -552,6 +574,10 @@ object MusicPanel {
         })
     }
 
+    private fun setMusicList(){
+        MusicPlayer.playList.setMusicList(displayList.musics)
+    }
+
     private fun run() {
         if (inputBox.content.isNotEmpty()) {
             searchList = if (curSearch == 0) {
@@ -559,6 +585,9 @@ object MusicPanel {
             } else {
                 MusicWrapper.searchList(inputBox.content)
             }
+            displayList = searchList
+            MusicPlayer.playList.pause()
+            setMusicList()
             searchThread = null
         }
     }
