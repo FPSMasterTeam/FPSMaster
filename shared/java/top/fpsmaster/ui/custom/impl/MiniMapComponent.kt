@@ -1,6 +1,8 @@
 package top.fpsmaster.ui.custom.impl
 
 import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import top.fpsmaster.features.impl.interfaces.MiniMap
 import top.fpsmaster.interfaces.ProviderManager
@@ -31,8 +33,17 @@ class MiniMapComponent : Component(MiniMap::class.java) {
                 e.printStackTrace()
             }
         }
+        Render2DUtils.drawImage(
+            ResourceLocation("client/gui/minimapbg.png"),
+            x + width / 2 - 179 / 4f,
+            y + width / 2 - 179 / 4f,
+            179f / 2f,
+            179f / 2f,
+            -1
+        )
         Minecraft.getMinecraft().entityRenderer.setupOverlayRendering()
         GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+
         InterfaceHandler.drawInterfaces(ProviderManager.timerProvider.getRenderPartialTicks())
         Render2DUtils.drawRect(x + width / 2 - 1, y + height / 2 - 1, 2f, 2f, -1)
         MinimapAnimation.tick()
