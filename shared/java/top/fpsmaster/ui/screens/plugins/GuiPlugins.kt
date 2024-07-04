@@ -125,8 +125,8 @@ class GuiPlugins : GuiScreen() {
     private var plugins = ArrayList<OnlinePlugin>()
 
     init {
-        val list = HttpRequest["${FPSMaster.FILE_API}/plugins/list.json"]
         try {
+            val list = HttpRequest["${FPSMaster.FILE_API}/plugins/list.json"]
             val json = JSONObject(list)
             json.getJSONArray("plugins").forEach {
                 val jsonObject = it as JSONObject
@@ -142,6 +142,7 @@ class GuiPlugins : GuiScreen() {
             fail = false
         } catch (e: Exception) {
             fail = true
+            e.printStackTrace()
         }
     }
 }
