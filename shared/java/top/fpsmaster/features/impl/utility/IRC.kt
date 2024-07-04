@@ -29,8 +29,12 @@ class IRC : Module("IRC", Category.Utility) {
             return
         if (ProviderManager.mcProvider.getWorld() == null)
             return
-        if (FPSMaster.INSTANCE.wsClient == null || FPSMaster.INSTANCE.wsClient!!.isClosed) {
+        if (FPSMaster.INSTANCE.wsClient == null) {
             FPSMaster.INSTANCE.wsClient = WsClient.start("wss://service.fpsmaster.top/")
+            if (FPSMaster.debug)
+                Utility.sendClientMessage("尝试连接")
+        }else if (FPSMaster.INSTANCE.wsClient!!.isClosed && !FPSMaster.INSTANCE.wsClient!!.isOpen){
+            FPSMaster.INSTANCE.wsClient!!.connect()
             if (FPSMaster.debug)
                 Utility.sendClientMessage("尝试连接")
         }
