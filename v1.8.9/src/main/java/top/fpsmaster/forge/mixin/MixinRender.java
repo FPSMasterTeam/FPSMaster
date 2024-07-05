@@ -40,7 +40,7 @@ public abstract class MixinRender {
     protected void renderLivingLabel(Entity entityIn, String str, double x, double y, double z, int maxDistance, CallbackInfo ci) {
         if (LevelTag.health.getValue()) {
             double d = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
-            if (d < 20) {
+            if (d < 100) {
                 float f = 1.6F;
                 float g = 0.016666668F * f;
                 GlStateManager.pushMatrix();
