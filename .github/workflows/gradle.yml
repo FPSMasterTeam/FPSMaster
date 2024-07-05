@@ -41,7 +41,7 @@ jobs:
         cd v1.8.9
         ./gradlew build
 
-    - name: Upload subdirectory artifacts
+    - name: Upload v1.8.9 artifacts
       uses: actions/upload-artifact@v4.3.3
       with:
         name: v1.8.9
@@ -53,7 +53,7 @@ jobs:
         cd v1.12.2
         ./gradlew build
 
-    - name: Upload subdirectory artifacts
+    - name: Upload v1.12.2 artifacts
       uses: actions/upload-artifact@v4.3.3
       with:
         name: v1.12.2
