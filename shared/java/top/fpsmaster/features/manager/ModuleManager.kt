@@ -106,6 +106,7 @@ class ModuleManager {
         modules.add(ModsList())
         modules.add(ClientCommand())
         modules.add(MiniMap())
+        modules.add(DirectionDisplay())
 
         if (ProviderManager.constants.getVersion() == "1.12.2") {
             modules.add(HideIndicator())

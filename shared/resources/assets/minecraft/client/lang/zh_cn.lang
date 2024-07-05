@@ -464,6 +464,9 @@ dragonwings.color=颜色
 dragonwings.scale=大小
 dragonwings.chroma=彩色
 
+directiondisplay=方向显示
+directiondisplay.desc=显示一个指南针
+
 # 类别
 category.optimize=优化
 category.render=视觉

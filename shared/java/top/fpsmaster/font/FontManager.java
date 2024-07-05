@@ -1,5 +1,6 @@
 package top.fpsmaster.font;
 
+import top.fpsmaster.font.impl.StringCache;
 import top.fpsmaster.font.impl.UFontRenderer;
 
 import java.util.HashMap;
@@ -12,8 +13,10 @@ public class FontManager {
     public UFontRenderer s20;
     public UFontRenderer s22;
     public UFontRenderer s24;
+    public UFontRenderer s28;
     public UFontRenderer s36;
     public UFontRenderer s40;
+
     public void load(){
         s14 = new UFontRenderer("harmony_bold",14);
         s16 = new UFontRenderer("harmony_bold",16);
@@ -21,6 +24,7 @@ public class FontManager {
         s20 = new UFontRenderer("harmony_bold",20);
         s22 = new UFontRenderer("harmony_bold",22);
         s24 = new UFontRenderer("harmony_bold",24);
+        s28 = new UFontRenderer("harmony_bold",28);
         s36 = new UFontRenderer("harmony_bold",36);
         s40 = new UFontRenderer("harmony_bold",40);
     }
