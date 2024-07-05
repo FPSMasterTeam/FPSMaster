@@ -12,12 +12,12 @@ import top.fpsmaster.features.settings.impl.BooleanSetting
 import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.features.settings.impl.TextSetting
-import top.fpsmaster.ui.notification.addNotification
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
 import top.fpsmaster.utils.thirdparty.openai.OpenAi
 import top.fpsmaster.utils.thirdparty.openai.requestClientAI
 import top.fpsmaster.interfaces.ProviderManager
+import top.fpsmaster.ui.notification.NotificationManager
 import java.util.regex.Pattern
 import kotlin.math.min
 
@@ -68,7 +68,7 @@ class ChatBot : Module("ChatBot", Category.Utility) {
                 val matcher = pattern.matcher(formattedText)
                 if (matcher.find()) {
                     val openAi: OpenAi
-                    addNotification("ChatGPT", formattedText, 1f)
+                    NotificationManager.addNotification("ChatGPT", formattedText, 1f)
                     val s: String
                     val userRole = JsonObject()
                     userRole.addProperty("role", "user")

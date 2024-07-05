@@ -40,7 +40,7 @@ class ModuleManager {
         }
 
         // 提醒一下lowiq怎么组队
-        if (ProviderManager.mcProvider.getServerAddress()?.contains("hytpc") == true) {
+        if (ProviderManager.mcProvider.getPlayer() != null && ProviderManager.mcProvider.getServerAddress()?.contains("hytpc") == true) {
             if (e.key == Keyboard.KEY_K) {
                 Utility.sendClientMessage("花雨庭组队提示：")
                 Utility.sendClientMessage("创建队伍并邀请玩家：/组队 玩家名")
@@ -105,7 +105,6 @@ class ModuleManager {
         modules.add(CoordsDisplay())
         modules.add(ModsList())
         modules.add(ClientCommand())
-        modules.add(CheatersDetector())
         modules.add(MiniMap())
 
         if (ProviderManager.constants.getVersion() == "1.12.2") {

@@ -1,6 +1,5 @@
 package top.fpsmaster.modules.client
 
-import top.fpsmaster.features.impl.utility.CheatersDetector
 import top.fpsmaster.features.impl.utility.IRC
 import top.fpsmaster.features.impl.utility.NameProtect
 import top.fpsmaster.wrapper.TextFormattingProvider
@@ -27,7 +26,6 @@ object GlobalTextFilter {
             result.replace(start, start + s.key.length, replacement)
         }
 
-        result = StringBuilder(CheatersDetector.filter(result.toString()))
         result = StringBuilder(NameProtect.filter(result.toString()))
         return result.toString()
     }

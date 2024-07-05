@@ -7,7 +7,7 @@ import top.fpsmaster.features.settings.impl.ModeSetting
 
 class LevelTag : Module("Nametags", Category.Utility) {
     init {
-        addSettings(showSelf)
+        addSettings(showSelf, health)
     }
 
     override fun onEnable() {

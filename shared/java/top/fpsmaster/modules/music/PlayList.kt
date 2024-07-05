@@ -1,7 +1,7 @@
 package top.fpsmaster.modules.music
 
 import top.fpsmaster.FPSMaster
-import top.fpsmaster.ui.notification.addNotification
+import top.fpsmaster.ui.notification.NotificationManager
 import java.util.*
 
 class PlayList {
@@ -16,7 +16,7 @@ class PlayList {
 
 
     fun play() {
-        addNotification(
+        NotificationManager.addNotification(
             FPSMaster.i18n["notification.music"],
             FPSMaster.i18n["notification.music.next"].replace(
                 "%s",
@@ -60,7 +60,7 @@ class PlayList {
                 current = 0
             }
         }
-        addNotification(
+        NotificationManager.addNotification(
             FPSMaster.i18n["notification.music"],
             FPSMaster.i18n["notification.music.next"].replace(
                 "%s",
@@ -83,7 +83,7 @@ class PlayList {
                 current = musics.size - 1
             }
         }
-        addNotification(
+        NotificationManager.addNotification(
             FPSMaster.i18n["notification.music"],
             FPSMaster.i18n["notification.music.next"].replace(
                 "%s",

@@ -6,8 +6,8 @@ import top.fpsmaster.event.EventDispatcher.registerListener
 import top.fpsmaster.event.EventDispatcher.unregisterListener
 import top.fpsmaster.features.settings.Setting
 import top.fpsmaster.features.settings.impl.*
-import top.fpsmaster.ui.notification.addNotification
 import top.fpsmaster.interfaces.ProviderManager
+import top.fpsmaster.ui.notification.NotificationManager
 import java.util.*
 
 open class Module {
@@ -76,7 +76,7 @@ open class Module {
             if (state) {
                 onEnable()
                 if (ProviderManager.mcProvider.getPlayer() != null)
-                    addNotification(
+                    NotificationManager.addNotification(
                         FPSMaster.i18n["notification.module.enable"],
                         FPSMaster.i18n["notification.module.enable.desc"].replace(
                             "%s",
@@ -87,7 +87,7 @@ open class Module {
             } else {
                 onDisable()
                 if (ProviderManager.mcProvider.getPlayer() != null)
-                    addNotification(
+                    NotificationManager.addNotification(
                         FPSMaster.i18n["notification.module.disable"],
                         FPSMaster.i18n["notification.module.disable.desc"].replace(
                             "%s",
