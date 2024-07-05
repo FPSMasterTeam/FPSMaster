@@ -15,8 +15,7 @@ import top.fpsmaster.event.events.EventTick
 import top.fpsmaster.features.impl.utility.Translator
 import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.modules.music.MusicPlayer
-import top.fpsmaster.ui.notification.addNotification
-import top.fpsmaster.ui.notification.drawNotifications
+import top.fpsmaster.ui.notification.NotificationManager
 import top.fpsmaster.ui.screens.mainmenu.MainMenu
 import top.fpsmaster.utils.Utility
 import top.fpsmaster.utils.math.MathTimer
@@ -50,7 +49,7 @@ class GlobalSubmitter {
         if (Translator.using) {
             if (msg.startsWith("#TRANSLATE")) {
                 val message = msg.replace("#TRANSLATE", "")
-                addNotification(FPSMaster.i18n["translator"], message, 2f)
+                NotificationManager.addNotification(FPSMaster.i18n["translator"], message, 2f)
                 FPSMaster.async.runnable {
                     val msgs = JsonArray()
                     val msgJson = JsonObject()
@@ -74,7 +73,7 @@ class GlobalSubmitter {
             if (msg.startsWith("#t ")) {
                 val lang = msg.substring(0, msg.indexOf(" ")).replace("#", "")
                 val message = msg.substring(msg.indexOf(" "), msg.length)
-                addNotification(FPSMaster.i18n["translator"], "$lang: $message", 2f)
+                NotificationManager.addNotification(FPSMaster.i18n["translator"], "$lang: $message", 2f)
                 FPSMaster.async.runnable {
                     val openAi = OpenAi(
                         "https://one.aiskt.com/v1",
@@ -120,6 +119,6 @@ class GlobalSubmitter {
         val mouseX = Mouse.getX().toFloat() / scaledResolution.scaleFactor
         val mouseY = scaledResolution.scaledHeight - Mouse.getY().toFloat() / scaledResolution.scaleFactor
         FPSMaster.componentsManager.draw(mouseX.toInt(), mouseY.toInt())
-        drawNotifications()
+        NotificationManager.drawNotifications()
     }
 }
