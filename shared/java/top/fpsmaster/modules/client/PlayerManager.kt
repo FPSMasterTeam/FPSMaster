@@ -167,7 +167,6 @@ class PlayerManager {
                 }
                 if (JsonParser().parse(rets).asJsonObject["code"].asInt != 200) {
                     Logger.info("更新用户信息失败: $rets")
-                    Minecraft.getMinecraft().displayGuiScreen(GuiLogin())
                 }
             }
         }
