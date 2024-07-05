@@ -1,12 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "top.fpsmaster.mixin",
+  "package": "top.fpsmaster.forge.mixin",
   "compatibilityLevel": "JAVA_8",
   "refmap": "FPSMaster-1.18.refmap.json",
   "mixins": [
   ],
   "client": [
+    "MixinMinecraft"
   ],
   "injectors": {
     "defaultRequire": 1
