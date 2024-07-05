@@ -1,0 +1,27 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="v1.18.2" type="Application" factoryName="Application" singleton="false">
+    <envs>
+      <env name="MOD_CLASSES" value="fpsmaster%%$PROJECT_DIR$\v1.18.2\build\resources\main;fpsmaster%%$PROJECT_DIR$\v1.18.2\build\classes\java\main" />
+      <env name="MCP_MAPPINGS" value="official_1.18.2" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="cpw.mods.bootstraplauncher.BootstrapLauncher" />
+    <module name="v1.18.2.main" />
+    <option name="PROGRAM_PARAMETERS" value="--launchTarget forgeclientuserdev --version MOD_DEV --assetIndex 1.18 --assetsDir C:\Users\super\.gradle\caches\forge_gradle\assets --gameDir . --fml.forgeVersion 40.2.21 --fml.mcVersion 1.18.2 --fml.forgeGroup net.minecraftforge --fml.mcpVersion 20220404.173914 --mixin.config fpsmaster.mixins.json" />
+    <option name="VM_PARAMETERS" value="-Dforge.logging.console.level=debug -Dforge.logging.markers=REGISTRIES &quot;-DlegacyClassPath.file=D:\Code\Java\Minecraft\FPSMaster\FPSMaster\FPSMaster OpenSource\v1.18.2\build\classpath\runClient_minecraftClasspath.txt&quot; &quot;-Dnet.minecraftforge.gradle.GradleStart.srg.srg-mcp=D:\Code\Java\Minecraft\FPSMaster\FPSMaster\FPSMaster OpenSource\v1.18.2\build\createSrgToMcp\output.srg&quot; -Dmixin.env.remapRefMap=true &quot;-Dmixin.env.refMapRemappingFile=D:\Code\Java\Minecraft\FPSMaster\FPSMaster\FPSMaster OpenSource\v1.18.2\build\createSrgToMcp\output.srg&quot; -DignoreList=bootstraplauncher,securejarhandler,asm-commons,asm-util,asm-analysis,asm-tree,asm,JarJarFileSystems,client-extra,fmlcore,javafmllanguage,lowcodelanguage,mclanguage,forge- &quot;-DnativesDirectory=D:\Code\Java\Minecraft\FPSMaster\FPSMaster\FPSMaster OpenSource\v1.18.2\build\natives&quot; -DmergeModules=jna-5.10.0.jar,jna-platform-5.10.0.jar,java-objc-bridge-1.0.0.jar -Dforge.enabledGameTestNamespaces=fpsmaster -Dforge.enableGameTest=true -Djava.net.preferIPv6Addresses=system -p C:\Users\super\.gradle\caches\modules-2\files-2.1\cpw.mods\bootstraplauncher\1.0.0\f55ddbb35612c6745cefc47d1a0d6dbfb25d3982\bootstraplauncher-1.0.0.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\cpw.mods\securejarhandler\1.0.8\94c7b14c960e1b6cb37337d81ad4ec5932f7595c\securejarhandler-1.0.8.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\org.ow2.asm\asm-commons\9.7\e86dda4696d3c185fcc95d8d311904e7ce38a53f\asm-commons-9.7.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\org.ow2.asm\asm-util\9.7\c0655519f24d92af2202cb681cd7c1569df6ead6\asm-util-9.7.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\org.ow2.asm\asm-analysis\9.7\e4a258b7eb96107106c0599f0061cfc1832fe07a\asm-analysis-9.7.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\org.ow2.asm\asm-tree\9.7\e446a17b175bfb733b87c5c2560ccb4e57d69f1a\asm-tree-9.7.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\org.ow2.asm\asm\9.7\73d7b3086e14beb604ced229c302feff6449723\asm-9.7.jar;C:\Users\super\.gradle\caches\modules-2\files-2.1\net.minecraftforge\JarJarFileSystems\0.3.19\2464eb7d6b9ddb9db36a82cf8a95193e5c6fe020\JarJarFileSystems-0.3.19.jar --add-modules ALL-MODULE-PATH --add-opens java.base/java.util.jar=cpw.mods.securejarhandler --add-opens java.base/java.lang.invoke=cpw.mods.securejarhandler --add-exports java.base/sun.security.util=cpw.mods.securejarhandler --add-exports jdk.naming.dns/com.sun.jndi.dns=java.naming -XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump &quot;-Dos.name=Windows 10&quot; -Dos.version=10.0" />
+    <option name="WORKING_DIRECTORY" value="E:/Minecraft/.minecraft" />
+    <extension name="net.ashald.envfile">
+      <option name="IS_ENABLED" value="false" />
+      <option name="IS_SUBST" value="false" />
+      <option name="IS_PATH_MACRO_SUPPORTED" value="false" />
+      <option name="IS_IGNORE_MISSING_FILES" value="false" />
+      <option name="IS_ENABLE_EXPERIMENTAL_INTEGRATIONS" value="false" />
+      <ENTRIES>
+        <ENTRY IS_ENABLED="true" PARSER="runconfig" IS_EXECUTABLE="false" />
+      </ENTRIES>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="prepareRunClientCompile" externalProjectPath="$PROJECT_DIR$/v1.18.2" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>
