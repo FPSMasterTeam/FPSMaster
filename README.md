@@ -29,7 +29,7 @@ FPSMaster 是一个免费、强大的 Minecraft PvP 客户端。
 4. 导入各版本gradle配置文件
 5. 直接使用IDEA打开项目应该会自动识别到启动配置，如果没有，可以手动配置。
 
-`注意：1.8.9和1.12.2应该使用java8运行，1.18.2则应使用jdk17或以上`
+`注意：1.8.9和1.12.2应该使用java8运行`
 
 
 #### 手动配置：
@@ -45,9 +45,5 @@ jvm参数：`-Dfabric.dli.config=/v1.8.9/.gradle/loom-cache/launch.cfg -Dfabric.
 主类：`net.fabricmc.devlaunchinjector.Main`
 
 jvm参数：`-Dfabric.dli.config=/v1.12.2/.gradle/loom-cache/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.minecraft.launchwrapper.Launch`
-
-- 1.18.2
-
-运行 `gradlew runClient`
 
 ![Alt](https://repobeats.axiom.co/api/embed/e686f6313e4406de4286bf27e0db4a2bf5a31b7f.svg "Repobeats analytics image")
