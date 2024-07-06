@@ -149,28 +149,6 @@ class MainMenu : GuiScreen() {
             Color(255, 255, 255).rgb
         )
 
-        // plugins
-        if (Render2DUtils.isHovered((this.width - 16).toFloat(), 15f, 12f, 12f, mouseX, mouseY)) {
-            Render2DUtils.drawImage(
-                ResourceLocation("client/gui/screen/plugin.png"),
-                (this.width - 20).toFloat(),
-                12f,
-                12f,
-                12f,
-                -1
-            )
-        } else {
-            Render2DUtils.drawImage(
-                ResourceLocation("client/gui/screen/plugin.png"),
-                (this.width - 20).toFloat(),
-                12f,
-                12f,
-                12f,
-                Color(200, 200, 200)
-            )
-        }
-
-
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
