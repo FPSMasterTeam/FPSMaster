@@ -41,7 +41,7 @@ class MainMenu : GuiScreen() {
 
     private var exit: GuiButton = GuiButton("X") { mc.shutdown() }
 
-    private var latest: String = "获取版本更新失败"
+    private var info: String = "获取版本更新失败"
     private var welcome: String = "获取版本更新失败"
     private var needUpdate: Boolean = false
 
@@ -114,9 +114,11 @@ class MainMenu : GuiScreen() {
         )
         welcome = if (FPSMaster.INSTANCE.loggedIn) {
             TextFormattingProvider.getGreen()
-                .toString() + FPSMaster.i18n["mainmenu.welcome"] + FPSMaster.configManager.configure.getOrCreate(
-                "username",
-                ""
+                .toString() + String.format(
+                FPSMaster.i18n["mainmenu.welcome"], FPSMaster.configManager.configure.getOrCreate(
+                    "username",
+                    ""
+                )
             )
         } else {
             TextFormattingProvider.getRed()
@@ -125,14 +127,18 @@ class MainMenu : GuiScreen() {
         }
         FPSMaster.fontManager.s16.drawString(welcome, 4, this.height - 52, Color(255, 255, 255).rgb)
 
-        if (FPSMaster.isLatest) {
-            latest = TextFormattingProvider.getGreen().toString() + FPSMaster.i18n["mainmenu.latest"]
+        if (FPSMaster.updateFailed) {
+            info = TextFormattingProvider.getGreen().toString() + FPSMaster.i18n["mainmenu.failed"]
         } else {
-            latest = TextFormattingProvider.getRed().toString() + TextFormattingProvider.getBold()
-                .toString() + FPSMaster.i18n["mainmenu.notlatest"] + FPSMaster.latest + FPSMaster.i18n["mainmenu.toupdate"]
-            needUpdate = true
+            if (FPSMaster.isLatest) {
+                info = TextFormattingProvider.getGreen().toString() + FPSMaster.i18n["mainmenu.latest"]
+            } else {
+                info = TextFormattingProvider.getRed().toString() + TextFormattingProvider.getBold()
+                    .toString() + String.format(FPSMaster.i18n["mainmenu.notlatest"], FPSMaster.latest)
+                needUpdate = true
+            }
         }
-        FPSMaster.fontManager.s16.drawString(latest, 4, this.height - 40, Color(255, 255, 255).rgb)
+        FPSMaster.fontManager.s16.drawString(info, 4, this.height - 40, Color(255, 255, 255).rgb)
 
         Render2DUtils.drawRect(0f, 0f, 0f, 0f, -1)
         FPSMaster.fontManager.s16.drawString(FPSMaster.COPYRIGHT, 4, this.height - 14, Color(255, 255, 255).rgb)
@@ -180,8 +186,8 @@ class MainMenu : GuiScreen() {
         options.mouseClick(mouseX.toFloat(), mouseY.toFloat(), mouseButton)
         exit.mouseClick(mouseX.toFloat(), mouseY.toFloat(), mouseButton)
         checkNotNull(FPSMaster.fontManager)
-        val uw = FPSMaster.fontManager.s16.getStringWidth(latest).toFloat()
-        val nw = FPSMaster.fontManager.s16.getStringWidth(latest).toFloat()
+        val uw = FPSMaster.fontManager.s16.getStringWidth(info).toFloat()
+        val nw = FPSMaster.fontManager.s16.getStringWidth(info).toFloat()
 
         if (mouseButton == 0) {
             if (Render2DUtils.isHovered(4f, (this.height - 52).toFloat(), nw, 14f, mouseX, mouseY)) {

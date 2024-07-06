@@ -1,11 +1,9 @@
 package top.fpsmaster
 
-import net.minecraft.crash.CrashReport
 import top.fpsmaster.features.GlobalSubmitter
 import top.fpsmaster.features.command.CommandManager
 import top.fpsmaster.features.manager.ModuleManager
 import top.fpsmaster.font.FontManager
-import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.modules.account.AccountManager
 import top.fpsmaster.modules.client.AsyncTask
 import top.fpsmaster.modules.client.PlayerManager
@@ -22,16 +20,10 @@ import top.fpsmaster.ui.custom.ComponentsManager
 import top.fpsmaster.ui.screens.oobe.OOBEScreen
 import top.fpsmaster.utils.GitInfo
 import top.fpsmaster.utils.os.FileUtils
-import top.fpsmaster.utils.os.HttpRequest
 import top.fpsmaster.modules.i18n.Language
+import top.fpsmaster.utils.thirdparty.github.UpdateChecker
 import top.fpsmaster.websocket.client.WsClient
 import top.fpsmaster.wrapper.Constants
-import java.awt.Desktop
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
-import java.io.PrintWriter
-import javax.swing.JOptionPane
 
 
 class FPSMaster {
@@ -111,8 +103,12 @@ class FPSMaster {
 
     private fun checkUpdate() {
         async.runnable {
-            isLatest = true
-            val s = HttpRequest["https://fpsmaster.top/version"]
+            val s = UpdateChecker.getLatestVersion()
+            if (s == null) {
+                isLatest = false
+                updateFailed = true
+                return@runnable
+            }
             val version = CLIENT_VERSION.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
             val newVersion = s.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
             if (s.isNotEmpty()) {
@@ -198,14 +194,18 @@ class FPSMaster {
         @JvmField
         var async = AsyncTask(100)
 
-        @JvmField
-        var isLatest = false
 
         @JvmField
         var debug = false
 
         @JvmField
-        var latest = CLIENT_VERSION
+        var isLatest = false
+
+        @JvmField
+        var updateFailed = false
+
+        @JvmField
+        var latest = ""
 
 
         @JvmStatic

@@ -78,8 +78,8 @@ open class Module {
                 if (ProviderManager.mcProvider.getPlayer() != null)
                     NotificationManager.addNotification(
                         FPSMaster.i18n["notification.module.enable"],
-                        FPSMaster.i18n["notification.module.enable.desc"].replace(
-                            "%s",
+                        String.format(
+                            FPSMaster.i18n["notification.module.enable.desc"],
                             FPSMaster.i18n[this.name.lowercase(Locale.getDefault())]
                         ),
                         1f
@@ -89,8 +89,8 @@ open class Module {
                 if (ProviderManager.mcProvider.getPlayer() != null)
                     NotificationManager.addNotification(
                         FPSMaster.i18n["notification.module.disable"],
-                        FPSMaster.i18n["notification.module.disable.desc"].replace(
-                            "%s",
+                        String.format(
+                            FPSMaster.i18n["notification.module.disable.desc"],
                             FPSMaster.i18n[this.name.lowercase(Locale.getDefault())]
                         ),
                         1f
