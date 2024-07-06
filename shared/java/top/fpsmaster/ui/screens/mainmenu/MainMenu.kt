@@ -57,9 +57,9 @@ class MainMenu : GuiScreen() {
      * Draws the screen and all the components in it.
      */
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (FPSMaster.configManager.configure.getOrCreate("firstStart", "true") == "true") {
-            Minecraft.getMinecraft().displayGuiScreen(FPSMaster.oobeScreen)
-        }
+//        if (FPSMaster.configManager.configure.getOrCreate("firstStart", "true") == "true") {
+//            Minecraft.getMinecraft().displayGuiScreen(FPSMaster.oobeScreen)
+//        }
         ProviderManager.mainmenuProvider.renderSkybox(
             mouseX,
             mouseY,
