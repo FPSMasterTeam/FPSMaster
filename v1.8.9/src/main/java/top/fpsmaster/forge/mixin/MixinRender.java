@@ -38,7 +38,7 @@ public abstract class MixinRender {
 
     @Inject(method = "renderLivingLabel", at = @At("HEAD"), cancellable = true)
     protected void renderLivingLabel(Entity entityIn, String str, double x, double y, double z, int maxDistance, CallbackInfo ci) {
-        if (LevelTag.health.getValue()) {
+        if (LevelTag.using && LevelTag.health.getValue()) {
             double d = entityIn.getDistanceSqToEntity(this.renderManager.livingPlayer);
             if (d < 100) {
                 float f = 1.6F;
