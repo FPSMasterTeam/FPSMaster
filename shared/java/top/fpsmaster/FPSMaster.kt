@@ -78,12 +78,12 @@ class FPSMaster {
 
     private fun initializeComponents() {
         Logger.info("Initializing component...")
-        componentsManager = ComponentsManager()
+        componentsManager.init()
     }
 
     private fun initializeCommands() {
         Logger.info("Initializing commands")
-        commandManager = CommandManager()
+        commandManager.init()
     }
 
     private fun initializePlugins() {
@@ -127,11 +127,11 @@ class FPSMaster {
         initializeFonts()
         initializeLang()
         initializeMusic()
+        initializeModules()
         initializeComponents()
         initializeConfigures()
         initializeCommands()
         initializePlugins()
-        initializeModules()
 
         checkUpdate()
         checkOptifine()
@@ -200,6 +200,8 @@ class FPSMaster {
         @JvmField
         var async = AsyncTask(100)
 
+        @JvmField
+        var development = false
 
         @JvmField
         var debug = false
@@ -213,11 +215,19 @@ class FPSMaster {
         @JvmField
         var latest = ""
 
+        private fun checkDevelopment() {
+            try {
+                Class.forName("net.fabricmc.devlaunchinjector.Main")
+                development = true
+            }catch (e: Throwable){
+                // ignored
+            }
+        }
 
         @JvmStatic
         fun getClientTitle(): String {
-            return "$CLIENT_NAME $CLIENT_VERSION ${Constants.VERSION} (${Constants.EDITION}) (${GitInfo.branch} - ${GitInfo.commitIdAbbrev})"
+            checkDevelopment()
+            return "$CLIENT_NAME $CLIENT_VERSION ${Constants.VERSION} (${Constants.EDITION}) (${GitInfo.branch} - ${GitInfo.commitIdAbbrev})" + if (development) " - Developer Mode" else ""
         }
     }
-
 }

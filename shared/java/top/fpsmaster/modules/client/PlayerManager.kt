@@ -176,19 +176,7 @@ class PlayerManager {
         if (name.isEmpty() || playerList.contains(name).not()) return
 
         Thread {
-            val rank = try {
-                HytApi().getRank(name).toInt().let {
-                    when {
-                        it < 1000 -> "${TextFormattingProvider.getRed()} ${TextFormattingProvider.getBold()}[$it]${TextFormattingProvider.getReset()}"
-                        it < 9999 -> "${TextFormattingProvider.getYellow()} ${TextFormattingProvider.getBold()}[${it / 1000}k]${TextFormattingProvider.getReset()}"
-                        else -> "${TextFormattingProvider.getYellow()} ${TextFormattingProvider.getBold()}[${it / 10000}w]${TextFormattingProvider.getReset()}"
-                    }
-                }
-            } catch (ignored: NumberFormatException) {
-                ""
-            }
-
-            val player = Player(rank, uuid)
+            val player = Player("", uuid)
             try {
                 val u = "${FPSMaster.SERVICE_API}/getUser?name=${URLEncoder.encode(name, "UTF-8")}&uuid=$uuid&timestamp=${System.currentTimeMillis()}"
                 val json = HttpRequest[u]

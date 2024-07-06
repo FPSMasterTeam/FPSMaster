@@ -13,7 +13,7 @@ import top.fpsmaster.utils.Utility
 class CommandManager {
     private val commands = mutableListOf<Command>()
 
-    init {
+    fun init() {
         // add commands
         commands.add(DevMode())
         commands.add(Plugins())

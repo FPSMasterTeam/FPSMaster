@@ -8,7 +8,7 @@ class ComponentsManager {
     var components = ArrayList<Component>()
     var dragLock = ""
 
-    init {
+    fun init() {
         components.add(FPSDisplayComponent())
         components.add(ArmorDisplayComponent())
         components.add(MusicComponent())
