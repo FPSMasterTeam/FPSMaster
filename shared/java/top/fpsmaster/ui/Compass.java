@@ -7,6 +7,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import org.lwjgl.opengl.GL11;
 import top.fpsmaster.FPSMaster;
+import top.fpsmaster.interfaces.ProviderManager;
 import top.fpsmaster.utils.render.Render2DUtils;
 
 import java.awt.*;
@@ -55,11 +56,13 @@ public class Compass {
     }
 
     public void draw(ScaledResolution sr) {
+        if (ProviderManager.mcProvider.getPlayer() == null)
+            return;
         preRender(sr);
         float center = sr.getScaledWidth() / 2f;
 
         int count = 0;
-        float yaaahhrewindTime = (Minecraft.getMinecraft().thePlayer.rotationYaw % 360) * 2 + 360 * 3;
+        float yaaahhrewindTime = (ProviderManager.mcProvider.getPlayer().rotationYaw % 360) * 2 + 360 * 3;
         GL11.glPushMatrix();
         GL11.glEnable(3089);
         Render2DUtils.doGlScissor(sr.getScaledWidth() / 2f - 100, 25, 200, 25);
