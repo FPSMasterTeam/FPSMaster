@@ -50,7 +50,7 @@ class ModuleManager {
         }
     }
 
-    init {
+    fun init() {
 
         // register listener
         registerListener(this)

@@ -93,6 +93,11 @@ class FPSMaster {
         Logger.info("Initialized")
     }
 
+    private fun initializeModules(){
+        moduleManager.init()
+        submitter.init()
+    }
+
     private fun checkOptifine() {
         try {
             Class.forName("optifine.Patcher")
@@ -126,6 +131,7 @@ class FPSMaster {
         initializeConfigures()
         initializeCommands()
         initializePlugins()
+        initializeModules()
 
         checkUpdate()
         checkOptifine()
@@ -213,4 +219,5 @@ class FPSMaster {
             return "$CLIENT_NAME $CLIENT_VERSION ${Constants.VERSION} (${Constants.EDITION}) (${GitInfo.branch} - ${GitInfo.commitIdAbbrev})"
         }
     }
+
 }

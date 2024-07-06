@@ -30,7 +30,7 @@ class GlobalSubmitter {
     var time = MathTimer()
     private var musicSwitchTimer = MathTimer()
 
-    init {
+    fun init() {
         registerListener(this)
     }
 
