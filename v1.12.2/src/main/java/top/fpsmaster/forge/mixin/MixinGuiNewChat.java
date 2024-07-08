@@ -8,6 +8,8 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import org.spongepowered.asm.mixin.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import top.fpsmaster.FPSMaster;
 import top.fpsmaster.forge.api.IChatLine;
 import top.fpsmaster.features.impl.interfaces.BetterChat;
@@ -251,6 +253,17 @@ public abstract class MixinGuiNewChat {
             } else {
                 return null;
             }
+        }
+    }
+
+    @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiUtilRenderComponents;splitText(Lnet/minecraft/util/text/ITextComponent;ILnet/minecraft/client/gui/FontRenderer;ZZ)Ljava/util/List;"))
+    public List<ITextComponent> spilt(ITextComponent chatComponent, int i, FontRenderer fontRenderer, boolean b, boolean b1){
+        BetterChat module = (BetterChat) FPSMaster.moduleManager.getModule(BetterChat.class);
+
+        if (BetterChat.using && module.betterFont.getValue()) {
+            return GuiUtilRenderComponents.splitText(chatComponent, i, FPSMaster.fontManager.s16, false, false);
+        } else {
+            return GuiUtilRenderComponents.splitText(chatComponent, i, mc.fontRenderer, false, false);
         }
     }
 }
