@@ -62,8 +62,6 @@ public abstract class MixinRender {
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
                 GlStateManager.popMatrix();
             }
-        } else {
-            ci.cancel();
         }
     }
 
