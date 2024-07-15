@@ -34,7 +34,7 @@ object MusicPanel {
         searchThread = Thread { run() }
         searchThread!!.start()
     }
-    private var pages = arrayOf("music.name", "music.list")
+    private var pages = arrayOf("music.name", "music.list", "music.daily")
     private var curSearch = 0
     private var isWaitingLogin = false
     private var key: String? = null
@@ -183,8 +183,12 @@ object MusicPanel {
                     mouseY
                 ) && Mouse.isButtonDown(0)
             ) isWaitingLogin = false
-            val resourceLocation = ResourceLocation("music/qr")
-            Render2DUtils.drawImage(resourceLocation, x + width / 2 - 45, y + height / 2 - 45, 90f, 90f, -1)
+            try {
+                val resourceLocation = ResourceLocation("music/qr")
+                Render2DUtils.drawImage(resourceLocation, x + width / 2 - 45, y + height / 2 - 45, 90f, 90f, -1)
+            }catch (e: Exception){
+
+            }
             var scan = ""
             when (code) {
                 801 -> scan = "music.waitscan"
@@ -528,14 +532,22 @@ object MusicPanel {
             FPSMaster.theme.textColorTitle
         )
     }
-
+    private fun extractMiddleContent(input: String, prefix: String, suffix: String): String {
+        val startIndex = input.indexOf(prefix)
+        if (startIndex != -1) {
+            val endIndex = input.indexOf(suffix, startIndex + prefix.length)
+            if (endIndex != -1) {
+                return input.substring(startIndex + prefix.length, endIndex)
+            }
+        }
+        return ""
+    }
     private fun reloadImg() {
         loginThread = Thread {
             while (isWaitingLogin) {
                 try {
                     val loginStatus = MusicWrapper.getLoginStatus(key)
                     code = loginStatus["code"].asInt
-                    println(code)
                     if (code == 802) {
                         val element = loginStatus["nickname"]
                         if (element != null) {
@@ -544,7 +556,11 @@ object MusicPanel {
                         }
                     }
                     if (code == 803) {
-                        NeteaseApi.cookies = loginStatus["cookie"].asString
+                        // parse cookie
+                        var asString = loginStatus["cookie"].asString
+                        val result = "MUSIC_U=" + extractMiddleContent(asString, "MUSIC_U=", ";")+ "; " + "NMTID=" + extractMiddleContent(asString, "NMTID=", ";")
+                        NeteaseApi.cookies = result
+
                         saveTempValue("cookies", NeteaseApi.cookies)
                         println("cookies: " + NeteaseApi.cookies)
                     }
@@ -564,8 +580,8 @@ object MusicPanel {
             val bytes = Base64.getDecoder().decode(base64)
             // create resource location
             val resourceLocation = ResourceLocation("music/qr")
-            val qr = File(FileUtils.cache, "/music/qr.png")
-            val qrf = File(FileUtils.cache, "/music")
+            val qr = File(FileUtils.dir, "/music/qr.png")
+            val qrf = File(FileUtils.dir, "/music")
             qrf.mkdirs()
             saveFileBytes("/music/qr.png", bytes)
             val textureArt = ThreadDownloadImageData(qr, null, null, null)

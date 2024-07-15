@@ -43,7 +43,7 @@ object FileUtils {
 
     @JvmStatic
     fun saveFileBytes(s: String, bytes: ByteArray) {
-        val file = file(dir, s)
+        val file = File(dir, s)
         try {
             if (!file.exists()) {
                 file.createNewFile()

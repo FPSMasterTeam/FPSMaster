@@ -4,8 +4,10 @@ import top.fpsmaster.utils.os.HttpRequest.getWithCookie
 
 object NeteaseApi {
     private const val BASE_URL = "https://music.skidder.top/"
+
     @JvmField
     var cookies = ""
+
     @JvmStatic
     fun getVerbatimLyrics(id: String): String {
         val url = BASE_URL + "lyric/new?id=" + id
@@ -44,9 +46,10 @@ object NeteaseApi {
     @JvmStatic
     val dailyList: String
         get() {
-            val url = BASE_URL + "recommend/songs"
+            val url = BASE_URL + "recommend/songs" + "?timestamp=" + System.currentTimeMillis()
             return getWithCookie(url, cookies)
         }
+
     @JvmStatic
     val uniKey: String
         get() {
@@ -62,14 +65,14 @@ object NeteaseApi {
 
     @JvmStatic
     fun checkLoginStatus(key: String): String {
-        val url = BASE_URL + "login/qr/check?key=" + key + "&timestamp=" + System.currentTimeMillis()
+        val url = BASE_URL + "login/qr/check?key=" + key + "&noCookie=true" + "&timestamp=" + System.currentTimeMillis()
         return getWithCookie(url, "")
     }
 
     @JvmStatic
     val anonmous: String
         get() {
-            val url = BASE_URL + "/register/anonimous" + "&timestamp=" + System.currentTimeMillis()
+            val url = BASE_URL + "register/anonimous" + "&timestamp=" + System.currentTimeMillis()
             return getWithCookie(url, "")
         }
 }
