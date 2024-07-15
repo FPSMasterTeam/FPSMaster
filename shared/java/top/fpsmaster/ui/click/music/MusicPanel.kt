@@ -82,12 +82,10 @@ object MusicPanel {
                 if (Mouse.isButtonDown(0)) {
                     curSearch = i
                     if (curSearch == 2) {
-                        if (recommendList.musics.isEmpty()) {
-                            recommendList = MusicWrapper.songsFromDaily
-                            displayList = recommendList
-                            MusicPlayer.playList.pause()
-                            setMusicList()
-                        }
+                        recommendList = MusicWrapper.songsFromDaily
+                        displayList = recommendList
+                        MusicPlayer.playList.pause()
+                        setMusicList()
                     }
                 }
             }
@@ -186,7 +184,7 @@ object MusicPanel {
             try {
                 val resourceLocation = ResourceLocation("music/qr")
                 Render2DUtils.drawImage(resourceLocation, x + width / 2 - 45, y + height / 2 - 45, 90f, 90f, -1)
-            }catch (e: Exception){
+            } catch (e: Exception) {
 
             }
             var scan = ""
@@ -370,7 +368,15 @@ object MusicPanel {
             if (nickname.isNotEmpty()) nickname = "Unknown"
             val stringWidth =
                 FPSMaster.fontManager!!.s16.getStringWidth(FPSMaster.i18n["music.notLoggedIn"])
-            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(
+                    x + width - stringWidth - 5,
+                    y + 10,
+                    stringWidth.toFloat(),
+                    16f,
+                    mouseX,
+                    mouseY
+                )
+            ) {
                 FPSMaster.fontManager!!.s16.drawString(
                     FPSMaster.i18n["music.notloggedin"],
                     x + width - stringWidth - 5,
@@ -398,7 +404,15 @@ object MusicPanel {
                 y + 10,
                 FPSMaster.theme.textColorTitle.rgb
             )
-            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+            if (Render2DUtils.isHovered(
+                    x + width - stringWidth - 5,
+                    y + 10,
+                    stringWidth.toFloat(),
+                    16f,
+                    mouseX,
+                    mouseY
+                )
+            ) {
                 if (Mouse.isButtonDown(0)) {
                     isWaitingLogin = true
                     reloadImg()
@@ -532,6 +546,7 @@ object MusicPanel {
             FPSMaster.theme.textColorTitle
         )
     }
+
     private fun extractMiddleContent(input: String, prefix: String, suffix: String): String {
         val startIndex = input.indexOf(prefix)
         if (startIndex != -1) {
@@ -542,6 +557,7 @@ object MusicPanel {
         }
         return ""
     }
+
     private fun reloadImg() {
         loginThread = Thread {
             while (isWaitingLogin) {
@@ -558,7 +574,11 @@ object MusicPanel {
                     if (code == 803) {
                         // parse cookie
                         var asString = loginStatus["cookie"].asString
-                        val result = "MUSIC_U=" + extractMiddleContent(asString, "MUSIC_U=", ";")+ "; " + "NMTID=" + extractMiddleContent(asString, "NMTID=", ";")
+                        val result = "MUSIC_U=" + extractMiddleContent(
+                            asString,
+                            "MUSIC_U=",
+                            ";"
+                        ) + "; " + "NMTID=" + extractMiddleContent(asString, "NMTID=", ";")
                         NeteaseApi.cookies = result
 
                         saveTempValue("cookies", NeteaseApi.cookies)
@@ -590,7 +610,7 @@ object MusicPanel {
         })
     }
 
-    private fun setMusicList(){
+    private fun setMusicList() {
         MusicPlayer.playList.setMusicList(displayList.musics)
     }
 
