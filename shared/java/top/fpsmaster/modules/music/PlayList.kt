@@ -14,7 +14,6 @@ class PlayList {
     }
 
 
-
     fun play() {
         NotificationManager.addNotification(
             FPSMaster.i18n["notification.music"],
@@ -29,7 +28,7 @@ class PlayList {
     }
 
     fun getCurrent(): AbstractMusic? {
-        return if (musics.size == 0) null else musics[current]
+        return if (musics.isEmpty() || current < 0) null else musics[current]
     }
 
     fun pause() {
@@ -40,7 +39,7 @@ class PlayList {
         musics[current].seek(percent)
     }
 
-    private fun shuffleList(){
+    private fun shuffleList() {
         if (MusicPlayer.mode == 0 && !shuffled) {
             val current1 = MusicPlayer.playList.getCurrent()
             MusicPlayer.playList.musics.shuffle()
@@ -110,7 +109,8 @@ class PlayList {
         val element = getCurrent()
         this.musics.clear()
         this.musics.addAll(musics)
-        current = musics.indexOf(element)
+        if (element != null)
+            current = musics.indexOf(element)
         shuffled = false
     }
 }
