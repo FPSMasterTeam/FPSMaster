@@ -494,7 +494,7 @@ object MusicPanel {
                     minutes.toString() + ":" + seconds + "/" + duration.toInt() + ":" + ((duration - duration.toInt()) * 60).toInt()
             }
             s16b.drawString(progress, x + 30, y + height - 14, FPSMaster.theme.textColorDescription.rgb)
-            if ((MusicPlayer.playList.getCurrent() as Music).isLoadedImage) Render2DUtils.drawImage(
+            if (MusicPlayer.playList.getCurrent() !=null && (MusicPlayer.playList.getCurrent() as Music).isLoadedImage) Render2DUtils.drawImage(
                 ResourceLocation("music/netease/" + (MusicPlayer.playList.getCurrent() as Music).id),
                 x + 5,
                 y + height - 24,
