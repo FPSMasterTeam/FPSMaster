@@ -362,46 +362,46 @@ object MusicPanel {
         }
 
         // login
-//        if (NeteaseApi.cookies.isEmpty()) {
-//            if (nickname.isNotEmpty()) nickname = "Unknown"
-//            val stringWidth =
-//                FPSMaster.fontManager!!.s16.getStringWidth(FPSMaster.i18n["music.notLoggedIn"])
-//            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
-//                FPSMaster.fontManager!!.s16.drawString(
-//                    FPSMaster.i18n["music.notloggedin"],
-//                    x + width - stringWidth - 5,
-//                    y + 10,
-//                    FPSMaster.theme.getTextColorTitle().rgb
-//                )
-//                if (Mouse.isButtonDown(0)) {
-//                    isWaitingLogin = true
-//                    reloadImg()
-//                    code = 801
-//                }
-//            } else {
-//                FPSMaster.fontManager!!.s16.drawString(
-//                    FPSMaster.i18n["music.notloggedin"],
-//                    x + width - stringWidth - 5,
-//                    y + 10,
-//                    FPSMaster.theme.getTextColorDescription().rgb
-//                )
-//            }
-//        } else {
-//            val stringWidth = FPSMaster.fontManager!!.s16.getStringWidth(nickname)
-//            FPSMaster.fontManager!!.s16.drawString(
-//                nickname,
-//                x + width - stringWidth - 5,
-//                y + 10,
-//                FPSMaster.theme.getTextColorTitle().rgb
-//            )
-//            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
-//                if (Mouse.isButtonDown(0)) {
-//                    isWaitingLogin = true
-//                    reloadImg()
-//                    code = 801
-//                }
-//            }
-//        }
+        if (NeteaseApi.cookies.isEmpty()) {
+            if (nickname.isNotEmpty()) nickname = "Unknown"
+            val stringWidth =
+                FPSMaster.fontManager!!.s16.getStringWidth(FPSMaster.i18n["music.notLoggedIn"])
+            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+                FPSMaster.fontManager!!.s16.drawString(
+                    FPSMaster.i18n["music.notloggedin"],
+                    x + width - stringWidth - 5,
+                    y + 10,
+                    FPSMaster.theme.textColorTitle.rgb
+                )
+                if (Mouse.isButtonDown(0)) {
+                    isWaitingLogin = true
+                    reloadImg()
+                    code = 801
+                }
+            } else {
+                FPSMaster.fontManager.s16.drawString(
+                    FPSMaster.i18n["music.notloggedin"],
+                    x + width - stringWidth - 5,
+                    y + 10,
+                    FPSMaster.theme.textColorDescription.rgb
+                )
+            }
+        } else {
+            val stringWidth = FPSMaster.fontManager.s16.getStringWidth(nickname)
+            FPSMaster.fontManager.s16.drawString(
+                nickname,
+                x + width - stringWidth - 5,
+                y + 10,
+                FPSMaster.theme.textColorTitle.rgb
+            )
+            if (Render2DUtils.isHovered(x + width - stringWidth - 5, y + 10, stringWidth.toFloat(), 16f, mouseX, mouseY)) {
+                if (Mouse.isButtonDown(0)) {
+                    isWaitingLogin = true
+                    reloadImg()
+                    code = 801
+                }
+            }
+        }
 
         // 操作栏
         val current = MusicPlayer.playList.getCurrent()
