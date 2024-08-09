@@ -4,7 +4,6 @@
 </p>
 
 [官方网站](https://fpsmaster.top) |
-[Forum](https://forums.fpsmaster.top) |
 [BiliBili](https://space.bilibili.com/628246693)
 </div>
 
