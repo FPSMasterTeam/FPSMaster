@@ -93,17 +93,7 @@ class GlobalSubmitter {
 
     @Subscribe
     fun onTick(e: EventTick) {
-        if (time.delay(500)) {
-            if (Minecraft.getMinecraft().currentScreen is MainMenu) {
-                if (!MusicPlayer.playList.musics.isEmpty()) {
-                    if (MusicPlayer.isPlaying) {
-                        MusicPlayer.playList.pause()
-                    }
-                }
-            }
-        }
-
-        if (musicSwitchTimer.delay(3000)) {
+        if (musicSwitchTimer.delay(1000)) {
             if (MusicPlayer.isPlaying && MusicPlayer.playProgress > 0.999) {
                 MusicPlayer.playList.next()
             }

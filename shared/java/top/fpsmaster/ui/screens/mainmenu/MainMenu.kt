@@ -8,6 +8,7 @@ import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import top.fpsmaster.FPSMaster
 import top.fpsmaster.interfaces.ProviderManager
+import top.fpsmaster.modules.music.MusicPlayer
 import top.fpsmaster.ui.screens.account.GuiWaiting
 import top.fpsmaster.ui.screens.oobe.GuiLogin
 import top.fpsmaster.ui.screens.plugins.GuiPlugins
@@ -51,6 +52,11 @@ class MainMenu : GuiScreen() {
      */
     override fun initGui() {
         ProviderManager.mainmenuProvider.initGui()
+        if (!MusicPlayer.playList.musics.isEmpty()) {
+            if (MusicPlayer.isPlaying) {
+                MusicPlayer.playList.pause()
+            }
+        }
     }
 
     /**
