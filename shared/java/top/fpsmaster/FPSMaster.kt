@@ -116,7 +116,7 @@ class FPSMaster {
             }
             if (s.isNotEmpty()) {
                 latest = s
-                isLatest = CLIENT_VERSION != s
+                isLatest = CLIENT_VERSION == s
             }
         }
     }
