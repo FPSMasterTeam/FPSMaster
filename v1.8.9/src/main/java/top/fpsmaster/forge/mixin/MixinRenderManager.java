@@ -20,7 +20,7 @@ import top.fpsmaster.features.impl.optimizes.CheckEntity;
 import top.fpsmaster.features.impl.optimizes.Performance;
 import top.fpsmaster.features.impl.render.FreeLook;
 
-@Mixin(RenderManager.class)
+@Mixin(value = RenderManager.class,priority = 999)
 @Implements(@Interface(iface = IRenderManager.class, prefix = "fpsmaster$"))
 public class MixinRenderManager implements IRenderManager {
 
