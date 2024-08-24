@@ -1,5 +1,7 @@
 package top.fpsmaster.forge.mixin;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -22,7 +24,10 @@ public abstract class MixinRenderLivingBase {
     @Inject(method = "canRenderName(Lnet/minecraft/entity/EntityLivingBase;)Z", at = @At("HEAD"), cancellable = true)
     public void tag(EntityLivingBase entity, CallbackInfoReturnable<Boolean> cir) {
         if (LevelTag.using && LevelTag.showSelf.getValue()) {
-            cir.setReturnValue(true);
+            EntityPlayerSP entityplayersp = Minecraft.getMinecraft().player;
+            boolean flag = !entity.isInvisibleToPlayer(entityplayersp);
+
+            cir.setReturnValue(flag);
         }
     }
 
