@@ -156,7 +156,7 @@ class FPSMaster {
         var CLIENT_NAME = "FPSMaster"
 
         @JvmField
-        var CLIENT_VERSION = "v3.2.9"
+        var CLIENT_VERSION = "v3.2.9-patch-1"
 
         @JvmField
         var theme: Theme = DarkTheme()
