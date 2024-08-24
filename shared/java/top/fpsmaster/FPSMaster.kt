@@ -93,7 +93,7 @@ class FPSMaster {
         Logger.info("Initialized")
     }
 
-    private fun initializeModules(){
+    private fun initializeModules() {
         moduleManager.init()
         submitter.init()
     }
@@ -114,11 +114,9 @@ class FPSMaster {
                 updateFailed = true
                 return@runnable
             }
-            val version = CLIENT_VERSION.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
-            val newVersion = s.replace("v".toRegex(), "").replace("\\.".toRegex(), "").toInt()
             if (s.isNotEmpty()) {
                 latest = s
-                isLatest = version >= newVersion
+                isLatest = CLIENT_VERSION != s
             }
         }
     }
@@ -219,7 +217,7 @@ class FPSMaster {
             try {
                 Class.forName("net.fabricmc.devlaunchinjector.Main")
                 development = true
-            }catch (e: Throwable){
+            } catch (e: Throwable) {
                 // ignored
             }
         }
