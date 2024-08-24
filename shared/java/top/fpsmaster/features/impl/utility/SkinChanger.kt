@@ -55,6 +55,13 @@ class SkinChanger : Module("SkinChanger", Category.Utility) {
 
     override fun onDisable() {
         super.onDisable()
+        FPSMaster.async.runnable {
+            ProviderManager.skinProvider.updateSkin(
+                ProviderManager.mcProvider.getPlayer()!!.name,
+                ProviderManager.mcProvider.getPlayer()!!.uniqueID.toString(),
+                ProviderManager.mcProvider.getPlayer()!!.name
+            )
+        }
         using = false
     }
 

@@ -192,6 +192,7 @@ moreparticles.special=特殊粒子
 moreparticles.special.none=无效果
 moreparticles.special.heart=心
 moreparticles.special.flame=火焰
+moreparticles.special.blood=血液
 moreparticles.special.damageindicator=伤害
 moreparticles.killeffect.none=无效果
 moreparticles.killeffect.lightning=闪电

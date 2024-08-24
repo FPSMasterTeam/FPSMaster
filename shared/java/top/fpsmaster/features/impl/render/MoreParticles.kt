@@ -1,7 +1,11 @@
 package top.fpsmaster.features.impl.render
 
+import net.minecraft.block.BlockRedstoneDiode
+import net.minecraft.block.state.BlockStateBase
+import net.minecraft.block.state.BlockWorldState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.init.Blocks
 import net.minecraft.util.EnumParticleTypes
 import top.fpsmaster.event.Subscribe
 import top.fpsmaster.event.events.EventAttack
@@ -13,7 +17,7 @@ import top.fpsmaster.features.settings.impl.ModeSetting
 import top.fpsmaster.features.settings.impl.NumberSetting
 import top.fpsmaster.interfaces.ProviderManager
 import top.fpsmaster.wrapper.WrapperEntityLightningBolt
-import top.fpsmaster.wrapper.sound.SoundProvider
+import top.fpsmaster.wrapper.blockpos.WrapperBlockPos
 
 class MoreParticles : Module("MoreParticles", Category.RENDER) {
     private var target: Entity? = null
@@ -40,22 +44,22 @@ class MoreParticles : Module("MoreParticles", Category.RENDER) {
                         false
                     )
                 )
-                SoundProvider.playLightning(
+                ProviderManager.soundProvider.playExplosion(
                     entityLivingBase.posX,
                     entityLivingBase.posY,
                     entityLivingBase.posZ,
-                    1,
+                    1f,
                     1.0f,
                     false
                 )
             } else if (killEffect.value == 2) {
                 // explosion
                 mc.effectRenderer.emitParticleAtEntity(target, EnumParticleTypes.EXPLOSION_LARGE)
-                SoundProvider.playExplosion(
+                ProviderManager.soundProvider.playExplosion(
                     entityLivingBase.posX,
                     entityLivingBase.posY,
                     entityLivingBase.posZ,
-                    1,
+                    1f,
                     1.0f,
                     false
                 )
@@ -87,6 +91,16 @@ class MoreParticles : Module("MoreParticles", Category.RENDER) {
                 mc.effectRenderer.emitParticleAtEntity(e.target, EnumParticleTypes.HEART)
             } else if (special.value == 2) {
                 mc.effectRenderer.emitParticleAtEntity(e.target, EnumParticleTypes.FLAME)
+            } else if (special.value == 3) {
+                ProviderManager.soundProvider.playRedStoneBreak(
+                    e.target.posX,
+                    e.target.posY,
+                    e.target.posZ,
+                    1f,
+                    1f,
+                    true
+                )
+                ProviderManager.effectManager.addRedStoneBreak(WrapperBlockPos(e.target.position))
             }
         }
     }
@@ -96,7 +110,7 @@ class MoreParticles : Module("MoreParticles", Category.RENDER) {
         var alwaysSharpness = BooleanSetting("AlwaysSharpness", false)
         var crit = NumberSetting("Crit", 2, 0, 30, 1)
         var alwaysCrit = BooleanSetting("AlwaysCrit", false)
-        var special = ModeSetting("Special", 0, "None", "Heart", "Flame")
+        var special = ModeSetting("Special", 0, "None", "Heart", "Flame", "Blood")
         var killEffect = ModeSetting("killEffect", 0, "None", "Lightning", "Explosion")
     }
 }
