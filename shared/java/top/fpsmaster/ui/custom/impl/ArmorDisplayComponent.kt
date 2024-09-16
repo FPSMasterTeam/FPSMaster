@@ -18,7 +18,7 @@ class ArmorDisplayComponent : Component(ArmorDisplay::class.java) {
             var x1 = (x + i * 18).toInt()
             var y1 = y.toInt()
             when (ArmorDisplay.mode.mode) {
-                0 -> {}
+                0 -> {itemStack = armorInventory[armorInventory.size - 1 - i]}
                 1, 2 -> {
                     itemStack = armorInventory[armorInventory.size - 1 - i]
                     x1 = x.toInt()

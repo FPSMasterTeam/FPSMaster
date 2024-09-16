@@ -165,11 +165,15 @@ public abstract class MixinGuiNewChat {
                                 if (alpha > 3) {
                                     int q = -m * 9;
                                     int alpha1 = (int) ((alpha / 255f) * module.backgroundColor.getColor().getAlpha());
-                                    Gui.drawRect(-2, q - 9, k + 4, q, Render2DUtils.reAlpha(module.backgroundColor.getColor(), alpha1).getRGB());
+                                    if (module.bg.getValue())
+                                        Gui.drawRect(-2, q - 9, k + 4, q, Render2DUtils.reAlpha(module.backgroundColor.getColor(), alpha1).getRGB());
                                     String string = chatLine.getChatComponent().getFormattedText();
                                     GlStateManager.enableBlend();
                                     if (module.betterFont.getValue()) {
-                                        FPSMaster.fontManager.s16.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
+                                        if (module.fontShadow.getValue())
+                                            FPSMaster.fontManager.s16.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
+                                        else
+                                            FPSMaster.fontManager.s16.drawString(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
                                     } else {
                                         mc.fontRenderer.drawStringWithShadow(string, 0.0F, (float) (q - 8) + (6 - (alpha / 255f) * 6), Render2DUtils.reAlpha(new Color(16777215), alpha).getRGB());
                                     }
@@ -257,7 +261,7 @@ public abstract class MixinGuiNewChat {
     }
 
     @Redirect(method = "setChatLine", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiUtilRenderComponents;splitText(Lnet/minecraft/util/text/ITextComponent;ILnet/minecraft/client/gui/FontRenderer;ZZ)Ljava/util/List;"))
-    public List<ITextComponent> spilt(ITextComponent chatComponent, int i, FontRenderer fontRenderer, boolean b, boolean b1){
+    public List<ITextComponent> spilt(ITextComponent chatComponent, int i, FontRenderer fontRenderer, boolean b, boolean b1) {
         BetterChat module = (BetterChat) FPSMaster.moduleManager.getModule(BetterChat.class);
 
         if (BetterChat.using && module.betterFont.getValue()) {
