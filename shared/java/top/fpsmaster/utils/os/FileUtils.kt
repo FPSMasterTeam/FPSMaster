@@ -20,6 +20,8 @@ object FileUtils {
     var artists: File
     var omaments: File
     var round: File
+    var background: File
+    var hasBackground = false
 
     init {
         cache = file(ProviderManager.mcProvider.getGameDir(), ".cache")
@@ -31,6 +33,9 @@ object FileUtils {
         music = file(netease, "songs")
         artists = file(netease, "artists")
         omaments = file(cache, "omaments")
+        background = File(dir,"background.png")
+        if (background.exists())
+            hasBackground = true
     }
 
     fun file(parent: File, child: String): File {
