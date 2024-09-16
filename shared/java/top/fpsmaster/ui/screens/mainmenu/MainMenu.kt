@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.gui.GuiOptions
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.ThreadDownloadImageData
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import top.fpsmaster.FPSMaster
@@ -12,6 +13,7 @@ import top.fpsmaster.modules.music.MusicPlayer
 import top.fpsmaster.ui.screens.account.GuiWaiting
 import top.fpsmaster.ui.screens.oobe.GuiLogin
 import top.fpsmaster.ui.screens.plugins.GuiPlugins
+import top.fpsmaster.utils.os.FileUtils
 import top.fpsmaster.utils.render.Render2DUtils
 import top.fpsmaster.wrapper.TextFormattingProvider
 import java.awt.Color
@@ -59,6 +61,8 @@ class MainMenu : GuiScreen() {
         }
     }
 
+    var textureLocation: ResourceLocation? = null
+
     /**
      * Draws the screen and all the components in it.
      */
@@ -66,20 +70,37 @@ class MainMenu : GuiScreen() {
 //        if (FPSMaster.configManager.configure.getOrCreate("firstStart", "true") == "true") {
 //            Minecraft.getMinecraft().displayGuiScreen(FPSMaster.oobeScreen)
 //        }
-        ProviderManager.mainmenuProvider.renderSkybox(
-            mouseX,
-            mouseY,
-            partialTicks,
-            this.width,
-            this.height,
-            this.zLevel
-        )
+        if (FileUtils.hasBackground) {
+            if (textureLocation == null) {
+                textureLocation = ResourceLocation("fpsmaster/gui/background.png")
+                val file = FileUtils.background
+                val textureManager = Minecraft.getMinecraft().textureManager
+                val textureArt = ThreadDownloadImageData(file, null, null, null)
+                textureManager.loadTexture(textureLocation, textureArt)
+            }
+            Render2DUtils.drawImage(textureLocation, 0f, 0f, this.width.toFloat(), this.height.toFloat(), -1)
+            Render2DUtils.drawRect(
+                0f, 0f,
+                width.toFloat(),
+                height.toFloat(), Color(22, 22, 22, 50)
+            )
+        } else {
+            ProviderManager.mainmenuProvider.renderSkybox(
+                mouseX,
+                mouseY,
+                partialTicks,
+                this.width,
+                this.height,
+                this.zLevel
+            )
+            Render2DUtils.drawRect(
+                0f, 0f,
+                width.toFloat(),
+                height.toFloat(), Color(26, 59, 109, 60)
+            )
+        }
 
-        Render2DUtils.drawRect(
-            0f, 0f,
-            width.toFloat(),
-            height.toFloat(), Color(26, 59, 109, 60)
-        )
+
 
         checkNotNull(FPSMaster.fontManager)
         val stringWidth = FPSMaster.fontManager.s16.getStringWidth(mc.session.username)
