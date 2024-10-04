@@ -10,11 +10,9 @@
 FPSMaster 是一个免费、强大的 Minecraft PvP 客户端。
 
 ## 开源许可证
-本项目采用 MIT 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
+本项目采用 GPL-3.0 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
 
-- **允许使用**：MIT 许可证允许任何人自由使用、复制、修改、合并、发布、分发、授权和/或销售本软件。
-- **保留许可和版权声明**：在所有副本或重要部分中需要包含原始许可和版权声明。
-- **不提供担保**：软件是按“原样”提供，没有任何形式的保证或条件。
+特别声明：由于疏忽，自`c6a5edaac43fdcca8ce487eee430e9fb059a2db1`前所有版本的代码均错误地使用了MIT协议开源，现已更正为GPL-3.0。
 
 ## 开发环境配置
 
@@ -46,3 +44,7 @@ jvm参数：`-Dfabric.dli.config=/v1.8.9/.gradle/loom-cache/launch.cfg -Dfabric.
 jvm参数：`-Dfabric.dli.config=/v1.12.2/.gradle/loom-cache/launch.cfg -Dfabric.dli.env=client -Dfabric.dli.main=net.minecraft.launchwrapper.Launch`
 
 ![Alt](https://repobeats.axiom.co/api/embed/e686f6313e4406de4286bf27e0db4a2bf5a31b7f.svg "Repobeats analytics image")
+
+## 引用的开源项目：
+[eventbus](https://github.com/therealbush/eventbus)
+[patcher](https://github.com/Sk1erLLC/Patcher)
