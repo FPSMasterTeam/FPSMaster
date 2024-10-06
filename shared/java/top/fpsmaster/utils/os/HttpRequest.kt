@@ -29,7 +29,6 @@ object HttpRequest {
         val value = cookie.replace("\n","")
         if (value.isNotBlank()) {
             connection.setRequestProperty("Cookie", value)
-            println(value)
         }
         connection.connectTimeout = 15000
         connection.readTimeout = 5000

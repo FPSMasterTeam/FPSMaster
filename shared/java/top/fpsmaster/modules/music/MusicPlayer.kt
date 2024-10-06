@@ -23,6 +23,10 @@ object MusicPlayer {
         JLayerHelper.start()
     }
 
+    fun getCurve(): DoubleArray? {
+        return JLayerHelper.loudnessCurve
+    }
+
     fun pause() {
         isPlaying = false
         if (JLayerHelper.clip == null) return
