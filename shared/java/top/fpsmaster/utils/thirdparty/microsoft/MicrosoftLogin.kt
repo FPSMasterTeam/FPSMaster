@@ -42,7 +42,6 @@ object MicrosoftLogin {
                 val responseBody = exchange.responseBody
                 responseBody.write(result.toByteArray(StandardCharsets.UTF_8))
                 httpServer!!.stop(3)
-                //                Hanabi.INSTANCE.notificationsManager.add(new Info("Trying to login...", Notification.Type.Info));
                 val code = s1.substring(s1.indexOf("=") + 1)
                 map["client_id"] = CLIENT_ID
                 map["code"] = code

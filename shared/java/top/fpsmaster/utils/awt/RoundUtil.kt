@@ -17,6 +17,9 @@ object RoundUtil {
 
     @JvmStatic
     fun generateRound(radius: Int) {
+        if (radius <= 0) {
+            return
+        }
         if (generated.contains(radius)) {
             return
         }
