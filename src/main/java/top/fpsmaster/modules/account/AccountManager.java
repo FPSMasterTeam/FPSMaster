@@ -11,7 +11,9 @@ import net.minecraft.util.Session;
 import top.fpsmaster.FPSMaster;
 import top.fpsmaster.exception.AccountException;
 import top.fpsmaster.forge.api.IMinecraft;
+import top.fpsmaster.modules.client.api.AuthService;
 import top.fpsmaster.modules.logger.ClientLogger;
+import top.fpsmaster.utils.io.AtomicFiles;
 import top.fpsmaster.utils.io.FileUtils;
 
 import java.io.File;
@@ -343,11 +345,39 @@ public final class AccountManager {
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + name).getBytes(StandardCharsets.UTF_8)).toString();
     }
 
+    /**
+     * Microsoft refresh tokens live here, so the file sits in the per-user FPSMaster directory next to
+     * auth.json, not in the game's "FPSMaster Edge" folder that players zip up and share with their
+     * configs. Named for Edge so it never collides with another FPSMaster client's file.
+     */
     private File file() {
+        return new File(AuthService.getInstance().getAuthFile().getParentFile(), "edge_accounts.json");
+    }
+
+    private File legacyFile() {
         return new File(FileUtils.dir, "accounts.json");
     }
 
+    /** Moves accounts.json out of the shareable game folder the first time this version runs. */
+    private void migrateLegacyFile() {
+        File legacy = legacyFile();
+        File target = file();
+        if (!legacy.isFile()) {
+            return;
+        }
+        try {
+            if (!target.exists()) {
+                AtomicFiles.write(target.toPath(), Files.readAllBytes(legacy.toPath()));
+            }
+            Files.delete(legacy.toPath());
+            ClientLogger.info("Moved accounts.json out of the game folder to " + target.getAbsolutePath());
+        } catch (IOException exception) {
+            ClientLogger.warn("Failed to move accounts.json out of the game folder: " + exception);
+        }
+    }
+
     private void load() {
+        migrateLegacyFile();
         File file = file();
         if (!file.isFile()) {
             return;
@@ -407,7 +437,7 @@ public final class AccountManager {
                 root.addProperty("selected", selectedName);
             }
             root.add("accounts", GSON.toJsonTree(accounts));
-            Files.write(file().toPath(), GSON.toJson(root).getBytes(StandardCharsets.UTF_8));
+            AtomicFiles.write(file().toPath(), GSON.toJson(root).getBytes(StandardCharsets.UTF_8));
         } catch (IOException exception) {
             ClientLogger.warn("Failed to save accounts.json: " + exception);
         }
