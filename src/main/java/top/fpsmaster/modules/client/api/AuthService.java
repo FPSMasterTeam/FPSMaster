@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import top.fpsmaster.cosmetic.RemoteCosmeticService;
 import top.fpsmaster.modules.logger.ClientLogger;
+import top.fpsmaster.modules.logger.Redactor;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -20,10 +21,13 @@ import java.nio.file.StandardCopyOption;
 /**
  * Service for managing authentication tokens at system user level.
  * Tokens are stored in AppData/Roaming/FPSMaster/auth.json
- * Launcher can pass tokens via system properties: fpsmaster.auth.token
+ * The launcher passes the platform token in the environment variable {@value #LAUNCH_TOKEN_ENV}; older
+ * launchers use the system property {@value #SYSTEM_PROPERTY_TOKEN}, which is read as a fallback and
+ * then cleared so it does not linger in System properties for the rest of the session.
  */
 public class AuthService {
     private static final String AUTH_FILE_NAME = "auth.json";
+    private static final String LAUNCH_TOKEN_ENV = "FPSMASTER_LAUNCH_TOKEN";
     private static final String SYSTEM_PROPERTY_TOKEN = "fpsmaster.auth.token";
     private static final String SYSTEM_PROPERTY_REFRESH = "fpsmaster.auth.refreshToken";
     private static final String SYSTEM_PROPERTY_EXPIRES = "fpsmaster.auth.tokenExpiresAt";
@@ -81,13 +85,19 @@ public class AuthService {
      * Initialize the service and check for launcher-provided tokens
      */
     public void initialize() {
-        // Check if launcher provided tokens via system properties
-        String launcherToken = System.getProperty(SYSTEM_PROPERTY_TOKEN);
+        String launcherToken = readLaunchToken();
+        String launcherRefresh = System.getProperty(SYSTEM_PROPERTY_REFRESH);
+        String expiresStr = System.getProperty(SYSTEM_PROPERTY_EXPIRES);
+        // Read once, then gone: anything that dumps System properties later (crash reports, mods,
+        // debug commands) must not find the tokens there.
+        System.clearProperty(SYSTEM_PROPERTY_TOKEN);
+        System.clearProperty(SYSTEM_PROPERTY_REFRESH);
+        System.clearProperty(SYSTEM_PROPERTY_EXPIRES);
         if (launcherToken != null && !launcherToken.isEmpty()) {
             ClientLogger.info("Found auth token from launcher");
             this.accessToken = launcherToken;
-            this.refreshToken = System.getProperty(SYSTEM_PROPERTY_REFRESH);
-            String expiresStr = System.getProperty(SYSTEM_PROPERTY_EXPIRES);
+            this.refreshToken = launcherRefresh;
+            Redactor.registerSecret(launcherRefresh);
             if (expiresStr != null && !expiresStr.isEmpty()) {
                 try {
                     this.tokenExpiresAt = Long.parseLong(expiresStr);
@@ -103,6 +113,17 @@ public class AuthService {
         } else {
             loadFromFile();
         }
+    }
+
+    /** Environment variable first (current launcher), then the legacy {@code -D} property. */
+    private static String readLaunchToken() {
+        String token = System.getenv(LAUNCH_TOKEN_ENV);
+        if (token == null || token.trim().isEmpty()) {
+            token = System.getProperty(SYSTEM_PROPERTY_TOKEN);
+        }
+        token = token == null ? null : token.trim();
+        Redactor.registerSecret(token);
+        return token;
     }
 
     public boolean isLoggedIn() {
@@ -133,6 +154,8 @@ public class AuthService {
             this.accessToken = access;
             this.refreshToken = refresh;
             this.tokenExpiresAt = expiresAt;
+            Redactor.registerSecret(access);
+            Redactor.registerSecret(refresh);
             saveToFile();
         }
     }
@@ -231,6 +254,8 @@ public class AuthService {
                 refreshToken = json.has("refreshToken") && !json.get("refreshToken").isJsonNull()
                         ? json.get("refreshToken").getAsString()
                         : null;
+                Redactor.registerSecret(accessToken);
+                Redactor.registerSecret(refreshToken);
                 tokenExpiresAt = json.has("tokenExpiresAt") && !json.get("tokenExpiresAt").isJsonNull()
                         ? json.get("tokenExpiresAt").getAsLong()
                         : 0L;

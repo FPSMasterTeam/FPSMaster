@@ -80,7 +80,7 @@ public final class FolderOpen {
     private static boolean openWindows(File folder) {
         String path = folder.getAbsolutePath();
         try {
-            new ProcessBuilder(windowsExplorerArgs(folder)).start();
+            ChildProcesses.builder(windowsExplorerArgs(folder)).start();
             requestExplorerForeground(path);
             return true;
         } catch (IOException exception) {
@@ -88,7 +88,7 @@ public final class FolderOpen {
         }
         try {
             // start gives the child its own process group so it can take foreground.
-            new ProcessBuilder("cmd", "/c", "start", "", "explorer.exe", path).start();
+            ChildProcesses.builder("cmd", "/c", "start", "", "explorer.exe", path).start();
             requestExplorerForeground(path);
             return true;
         } catch (IOException exception) {
@@ -188,7 +188,7 @@ public final class FolderOpen {
 
     private static boolean run(String[] command) {
         try {
-            new ProcessBuilder(command).start();
+            ChildProcesses.builder(command).start();
             return true;
         } catch (IOException exception) {
             ClientLogger.warn("Failed to run " + command[0] + ": " + exception.getMessage());

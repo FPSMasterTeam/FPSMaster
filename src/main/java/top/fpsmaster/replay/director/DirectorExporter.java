@@ -169,7 +169,7 @@ public final class DirectorExporter {
         command.add("yuv420p");
         command.add(outputFile.getAbsolutePath());
         try {
-            ProcessBuilder builder = new ProcessBuilder(command);
+            ProcessBuilder builder = top.fpsmaster.utils.system.ChildProcesses.builder(command);
             builder.redirectErrorStream(false);
             ffmpeg = builder.start();
         } catch (IOException exception) {
@@ -581,7 +581,7 @@ public final class DirectorExporter {
             try {
                 // Read -version output to EOF before waiting: closing the pipe instead makes
                 // ffmpeg die on EPIPE and look "missing" even when it is right there.
-                ProcessBuilder builder = new ProcessBuilder(candidate, "-version");
+                ProcessBuilder builder = top.fpsmaster.utils.system.ChildProcesses.builder(candidate, "-version");
                 builder.redirectErrorStream(true);
                 Process probe = builder.start();
                 byte[] scratch = new byte[4096];
