@@ -268,7 +268,7 @@ public class MainPanel extends ScaledGuiScreen {
             List<String> names = new ArrayList<String>();
             for (int i = 0; i < mode.getModesSize(); i++) {
                 String raw = mode.getMode(i + 1);
-                String key = (module.name + "." + setting.name + "." + raw).toLowerCase(Locale.getDefault());
+                String key = (module.name + "." + setting.name + "." + raw).toLowerCase(Locale.ROOT);
                 String translated = FPSMaster.i18n.get(key);
                 names.add(key.equals(translated) ? raw : translated);
             }
@@ -326,13 +326,13 @@ public class MainPanel extends ScaledGuiScreen {
     }
 
     private static String moduleLabel(Module module) {
-        String key = module.name.toLowerCase(Locale.getDefault());
+        String key = module.name.toLowerCase(Locale.ROOT);
         String translated = FPSMaster.i18n.get(key);
         return key.equals(translated) ? module.name : translated;
     }
 
     private static String settingLabel(Module module, Setting<?> setting) {
-        String key = (module.name + "." + setting.name).toLowerCase(Locale.getDefault());
+        String key = (module.name + "." + setting.name).toLowerCase(Locale.ROOT);
         String translated = FPSMaster.i18n.get(key);
         return key.equals(translated) ? setting.name : translated;
     }
@@ -340,7 +340,7 @@ public class MainPanel extends ScaledGuiScreen {
     private static boolean matchesSearch(Module module, String rawQuery) {
         String query = rawQuery.trim().toLowerCase(Locale.getDefault());
         String name = moduleLabel(module).toLowerCase(Locale.getDefault());
-        String desc = FPSMaster.i18n.get(module.name.toLowerCase(Locale.getDefault()) + ".desc").toLowerCase(Locale.getDefault());
+        String desc = FPSMaster.i18n.get(module.name.toLowerCase(Locale.ROOT) + ".desc").toLowerCase(Locale.getDefault());
         return name.contains(query) || desc.contains(query)
                 || (ClientSettings.language.getValue() != 1 && module.name.toLowerCase(Locale.getDefault()).contains(query));
     }

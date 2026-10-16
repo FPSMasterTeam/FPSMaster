@@ -8,16 +8,14 @@ import top.fpsmaster.exception.FileException;
 import top.fpsmaster.features.manager.Module;
 import top.fpsmaster.modules.logger.ClientLogger;
 import top.fpsmaster.modules.shortcut.Shortcut;
+import top.fpsmaster.utils.io.AtomicFiles;
 import top.fpsmaster.utils.io.FileUtils;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -142,33 +140,110 @@ public final class ConfigProfileUtils {
         return readString(file);
     }
 
+    /** Every save first offers the file it replaces to the rolling backups (see {@link ConfigBackups}). */
     public static void saveConfigFile(String name, String content) throws FileException {
         File file = getProfileFile(name);
+        snapshotProfile(name, false);
         writeString(file, content);
     }
 
-    public static String importProfile(File source) throws FileException {
-        if (source == null || !source.exists() || !source.isFile()) {
-            throw new FileException("Config profile source not found");
+    /**
+     * Backs up a profile's current file. A failed backup is logged, never fatal: refusing to save
+     * because the backup copy failed would lose the change the player just made.
+     */
+    public static void snapshotProfile(String name, boolean force) {
+        try {
+            String profileName = sanitizeProfileName(name);
+            ConfigBackups.forProfiles().snapshot(profileName, getProfileFile(profileName), force,
+                    System.currentTimeMillis());
+        } catch (IOException | FileException exception) {
+            ClientLogger.warn("Failed to back up config profile " + name + ": " + exception.getMessage());
         }
+    }
 
+    /** The profile name an imported file would get: its file name without {@code .json}. */
+    public static String importTargetName(File source) throws FileException {
         String fileName = source.getName();
         if (fileName.toLowerCase(Locale.ROOT).endsWith(JSON_SUFFIX)) {
             fileName = fileName.substring(0, fileName.length() - JSON_SUFFIX.length());
         }
-        String profileName = sanitizeProfileName(fileName);
-        File target = getProfileFile(profileName);
-        ensureParent(target);
-        try {
-            if (!source.getCanonicalFile().equals(target.getCanonicalFile())) {
-                Files.copy(source.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        return sanitizeProfileName(fileName);
+    }
+
+    public static boolean profileExists(String name) throws FileException {
+        return getProfileFile(name).isFile();
+    }
+
+    /** {@code base}, or the first free {@code base (n)}: the "save as" choice for an import conflict. */
+    public static String nextFreeName(String base) throws FileException {
+        String safeBase = sanitizeProfileName(base);
+        if (!profileExists(safeBase)) {
+            return safeBase;
+        }
+        for (int i = 1; ; i++) {
+            String candidate = safeBase + " (" + i + ")";
+            if (!profileExists(candidate)) {
+                return candidate;
             }
-            writeProfileMeta(profileName, "");
+        }
+    }
+
+    /**
+     * Imports {@code source} as profile {@code profileName}. An existing profile of that name is only
+     * replaced when {@code overwrite} is set, and is backed up first so the overwrite can be rolled back.
+     */
+    public static String importProfile(File source, String profileName, boolean overwrite) throws FileException {
+        if (source == null || !source.exists() || !source.isFile()) {
+            throw new FileException("Config profile source not found");
+        }
+        String targetName = sanitizeProfileName(profileName);
+        File target = getProfileFile(targetName);
+        try {
+            if (source.getCanonicalFile().equals(target.getCanonicalFile())) {
+                return targetName;
+            }
+            byte[] content = Files.readAllBytes(source.toPath());
+            // A file that is not a config object would be "imported" and then reset to defaults on
+            // load, wiping the profile it replaced. Reject it up front instead.
+            if (!ConfigBackups.isJsonObject(content)) {
+                throw new FileException("Config profile is not valid JSON: " + source.getAbsolutePath());
+            }
+            if (target.exists()) {
+                if (!overwrite) {
+                    throw new FileException("Config profile already exists: " + targetName);
+                }
+                snapshotProfile(targetName, true);
+            }
+            AtomicFiles.write(target.toPath(), content);
+            writeProfileMeta(targetName, "");
         } catch (IOException exception) {
             throw new FileException("Failed to import config profile: " + source.getAbsolutePath(), exception);
         }
         ClientLogger.info("Imported config profile: " + source.getAbsolutePath() + " -> " + target.getAbsolutePath());
-        return profileName;
+        return targetName;
+    }
+
+    /**
+     * Rolls a profile back to a backup. The current file is backed up first, so a restore is itself
+     * undoable. Restoring the active profile reloads it without saving the in-memory state over it.
+     */
+    public static void restoreBackup(String name, ConfigBackups.Backup backup) throws Exception {
+        String profileName = sanitizeProfileName(name);
+        byte[] content = Files.readAllBytes(backup.getFile().toPath());
+        if (!ConfigBackups.isJsonObject(content)) {
+            throw new FileException("Config backup is not valid JSON: " + backup.getFile().getAbsolutePath());
+        }
+        if (profileName.equals(activeProfileName)) {
+            // The file on disk may lag the in-memory state by the autosave debounce; save it so the
+            // safety backup really is "what I had before restoring".
+            FPSMaster.configManager.saveConfig(profileName);
+        }
+        snapshotProfile(profileName, true);
+        writeBytes(getProfileFile(profileName), content);
+        if (profileName.equals(activeProfileName)) {
+            FPSMaster.configManager.loadConfig(profileName);
+        }
+        ClientLogger.info("Restored config profile " + profileName + " from " + backup.getFile().getName());
     }
 
     public static void exportActiveProfile(File target) throws FileException {
@@ -294,6 +369,9 @@ public final class ConfigProfileUtils {
             }
         }
 
+        if (!sourceName.equals(targetName)) {
+            ConfigBackups.forProfiles().rename(sourceName, targetName);
+        }
         writeProfileMeta(targetName, author);
         ClientLogger.info("Renamed config profile: " + sourceName + " -> " + targetName);
         return targetName;
@@ -410,11 +488,13 @@ public final class ConfigProfileUtils {
     }
 
     private static void writeString(File file, String content) throws FileException {
-        ensureParent(file);
-        try (FileOutputStream outputStream = new FileOutputStream(file);
-             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8))) {
-            writer.write(content);
-            writer.flush();
+        writeBytes(file, content.getBytes(StandardCharsets.UTF_8));
+    }
+
+    /** Temp file + atomic rename: a crash mid-save leaves the previous file, never a truncated one. */
+    static void writeBytes(File file, byte[] content) throws FileException {
+        try {
+            AtomicFiles.write(file.toPath(), content);
         } catch (IOException exception) {
             throw new FileException("Failed to save config file: " + file.getAbsolutePath(), exception);
         }

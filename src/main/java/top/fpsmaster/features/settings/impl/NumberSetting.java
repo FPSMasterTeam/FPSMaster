@@ -26,7 +26,12 @@ public class NumberSetting extends Setting<Number> {
     public void setValue(Number newValue) {
         double closestMultipleOfInc = Math.round(newValue.doubleValue() / inc.doubleValue()) * inc.doubleValue();
         closestMultipleOfInc = Math.round(closestMultipleOfInc * 100) / 100.0;
-        super.setValue(Math.max(min.doubleValue(), Math.min(max.doubleValue(), closestMultipleOfInc)));
+        double clamped = Math.max(min.doubleValue(), Math.min(max.doubleValue(), closestMultipleOfInc));
+        // The stored value may be an Integer default while the new one is a Double: compare numerically.
+        if (getValue() != null && getValue().doubleValue() == clamped) {
+            return;
+        }
+        super.setValue(clamped);
     }
 }
 

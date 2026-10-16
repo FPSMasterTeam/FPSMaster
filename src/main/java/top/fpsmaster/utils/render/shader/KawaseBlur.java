@@ -3,6 +3,7 @@ package top.fpsmaster.utils.render.shader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,12 +44,20 @@ public class KawaseBlur {
             framebuffer = new Framebuffer(1, 1, false);
         }
         framebufferList.add(framebuffer);
+        // Dual Kawase: level i is the display size >> i. Every level used to be full resolution, so
+        // each pass shaded the whole (on Retina, doubled) screen and the "half-size chain" was not.
         int i = 1;
         while (i <= iterations) {
-            Framebuffer fb = new Framebuffer(mc.displayWidth, mc.displayHeight, false);
+            Framebuffer fb = new Framebuffer(levelSize(mc.displayWidth, i), levelSize(mc.displayHeight, i), false);
+            // Levels are sampled up into larger targets; nearest filtering would show the blocks.
+            fb.setFramebufferFilter(GL11.GL_LINEAR);
             framebufferList.add(fb);
             i++;
         }
+    }
+
+    private static int levelSize(int full, int level) {
+        return Math.max(1, full >> level);
     }
 
     public static void renderBlur(int iterations, int offset) {
@@ -61,8 +70,8 @@ public class KawaseBlur {
         if (currentIterations != iterations
                 || framebufferList.isEmpty()
                 || (framebufferList.size() > 1
-                    && (framebufferList.get(1).framebufferWidth != mc.displayWidth
-                        || framebufferList.get(1).framebufferHeight != mc.displayHeight))) {
+                    && (framebufferList.get(1).framebufferWidth != levelSize(mc.displayWidth, 1)
+                        || framebufferList.get(1).framebufferHeight != levelSize(mc.displayHeight, 1)))) {
             initFramebuffers(iterations);
             currentIterations = iterations;
         }
@@ -112,7 +121,8 @@ public class KawaseBlur {
         GlStateManager.bindTexture(framebufferTexture);
         shader.setUniformf("offset", offset, offset);
         shader.setUniformi("inTexture", 0);
-        shader.setUniformf("halfpixel", 0.5f / mc.displayWidth, 0.5f / mc.displayHeight);
+        // Half a texel of the pass's target, as in the reference dual-filter implementation.
+        shader.setUniformf("halfpixel", 0.5f / framebuffer.framebufferWidth, 0.5f / framebuffer.framebufferHeight);
         ShaderUtil.drawQuads();
         shader.unload();
         framebuffer.unbindFramebuffer();

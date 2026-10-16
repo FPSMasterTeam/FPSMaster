@@ -1,5 +1,6 @@
 package top.fpsmaster.ui.kit;
 
+import net.minecraft.client.gui.GuiScreen;
 import top.fpsmaster.features.impl.interfaces.ClientSettings;
 import top.fpsmaster.features.settings.impl.BindKeys;
 import top.fpsmaster.utils.render.gui.ScaledGuiScreen;
@@ -32,6 +33,8 @@ public final class EdgeUi {
     public static void begin(ScaledGuiScreen screen) {
         float w = screen == null ? 0f : screen.guiWidth;
         float h = screen == null ? 0f : screen.guiHeight;
+        // Shift 是修饰键：Prism 的文本框用 isKeyDown(SHIFT) 决定方向键/Home/End 是否扩选。
+        fallback.setKeyDown(Keys.SHIFT, GuiScreen.isShiftKeyDown());
         current = new UiFrame(new EdgeHost(screen, fallback, w, h), theme());
         screenFrame = true;
     }
@@ -70,10 +73,17 @@ public final class EdgeUi {
     }
 
     public static void keyTyped(char typedChar, int keyCode) {
+        fallback.pressRawKey(keyCode);
+        // Ctrl+A/C/X/V（macOS 上 GuiScreen.isCtrlKeyDown 认的是 Cmd）是编辑快捷键：
+        // 只发虚拟键，不再把字母 type 进去——macOS 上 Cmd+V 的 typedChar 就是 'v'。
+        int shortcut = editingShortcut(keyCode);
+        if (shortcut != 0) {
+            fallback.pressKey(shortcut);
+            return;
+        }
         if (!Character.isISOControl(typedChar)) {
             fallback.type(String.valueOf(typedChar));
         }
-        fallback.pressRawKey(keyCode);
         switch (keyCode) {
             case org.lwjgl.input.Keyboard.KEY_BACK:
                 fallback.pressKey(Keys.BACKSPACE);
@@ -94,8 +104,32 @@ public final class EdgeUi {
             case org.lwjgl.input.Keyboard.KEY_DELETE:
                 fallback.pressKey(Keys.DELETE);
                 break;
+            case org.lwjgl.input.Keyboard.KEY_HOME:
+                fallback.pressKey(Keys.HOME);
+                break;
+            case org.lwjgl.input.Keyboard.KEY_END:
+                fallback.pressKey(Keys.END);
+                break;
             default:
                 break;
+        }
+    }
+
+    private static int editingShortcut(int keyCode) {
+        if (!GuiScreen.isCtrlKeyDown() || GuiScreen.isShiftKeyDown() || GuiScreen.isAltKeyDown()) {
+            return 0;
+        }
+        switch (keyCode) {
+            case org.lwjgl.input.Keyboard.KEY_A:
+                return Keys.SELECT_ALL;
+            case org.lwjgl.input.Keyboard.KEY_C:
+                return Keys.COPY;
+            case org.lwjgl.input.Keyboard.KEY_X:
+                return Keys.CUT;
+            case org.lwjgl.input.Keyboard.KEY_V:
+                return Keys.PASTE;
+            default:
+                return 0;
         }
     }
 

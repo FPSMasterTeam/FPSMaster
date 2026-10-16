@@ -156,7 +156,16 @@ public class EdgeTelemetryReporter {
         };
 
         if (blocking) {
-            request.run();
+            // Shutdown: the request has 15 s connect/read timeouts, and waiting for them on the
+            // client thread froze the closing window. Give it one second on a daemon thread.
+            Thread thread = new Thread(request, "FPSMaster-Telemetry-Offline");
+            thread.setDaemon(true);
+            thread.start();
+            try {
+                thread.join(1000L);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+            }
             return;
         }
         FPSMaster.async.runnable(request);

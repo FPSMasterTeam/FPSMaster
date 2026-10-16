@@ -64,6 +64,13 @@ public final class CosmeticManager {
     private final ElytraRenderer elytraRenderer = new ElytraRenderer();
     private final Map<String, ResourceLocation> textures = new HashMap<>();
     private final Set<String> loading = new HashSet<>();
+    /**
+     * Option id -> when its texture last failed to load. The renderers ask for a texture every frame,
+     * so without this a 404 or a malformed atlas was downloaded again on the next frame, forever.
+     * Guarded by {@link #textures}.
+     */
+    private final Map<String, Long> failedAt = new HashMap<>();
+    private static final long TEXTURE_RETRY_MS = 5L * 60_000L;
     /** Other players' items, resolved on demand. Deliberately outside {@link #allOptions()}: someone
      *  else's cosmetic is something to draw, never something in this account's wardrobe. */
     private final Map<String, CosmeticOption> remoteOptions = new ConcurrentHashMap<>();
@@ -108,7 +115,11 @@ public final class CosmeticManager {
             // The reloaded file may hold a different image under the same id, so the entry has to go
             // — and with it the GL texture, which dropping the map entry alone would strand.
             synchronized (textures) {
-                for (CosmeticOption option : customOptions) deleteTexture(textures.remove(option.id));
+                for (CosmeticOption option : customOptions) {
+                    deleteTexture(textures.remove(option.id));
+                    // The user may just have fixed the file: give it a fresh attempt.
+                    failedAt.remove(option.id);
+                }
             }
             customOptions = Collections.unmodifiableList(options);
             validateSelections();
@@ -413,6 +424,7 @@ public final class CosmeticManager {
             for (ResourceLocation location : textures.values()) deleteTexture(location);
             textures.clear();
             loading.clear();
+            failedAt.clear();
         }
     }
 
@@ -427,7 +439,10 @@ public final class CosmeticManager {
     private void loadTexture(CosmeticOption option) {
         if (option == null || option.assetKey == null) return;
         synchronized (textures) {
-            if (textures.containsKey(option.id) || !loading.add(option.id)) return;
+            if (textures.containsKey(option.id)) return;
+            Long failed = failedAt.get(option.id);
+            if (failed != null && System.currentTimeMillis() - failed < TEXTURE_RETRY_MS) return;
+            if (!loading.add(option.id)) return;
         }
         FPSMaster.async.runnable(() -> {
             try {
@@ -443,6 +458,7 @@ public final class CosmeticManager {
                         synchronized (textures) {
                             textures.put(option.id, location);
                             loading.remove(option.id);
+                            failedAt.remove(option.id);
                         }
                     } catch (Exception exception) {
                         fail(option, exception);
@@ -502,8 +518,10 @@ public final class CosmeticManager {
     private void fail(CosmeticOption option, Exception exception) {
         synchronized (textures) {
             loading.remove(option.id);
+            failedAt.put(option.id, System.currentTimeMillis());
         }
-        ClientLogger.warn("Failed to load cosmetic " + option.id + ": " + exception.getMessage());
+        ClientLogger.warn("Failed to load cosmetic " + option.id + " (next attempt in "
+                + (TEXTURE_RETRY_MS / 60_000L) + " min): " + exception.getMessage());
     }
 
     private CosmeticOption option(CosmeticItem item, String category) {

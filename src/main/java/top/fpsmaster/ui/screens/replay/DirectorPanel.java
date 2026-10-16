@@ -898,7 +898,7 @@ public final class DirectorPanel {
             String[] pathLabels = new String[paths.length];
             int pathIndex = 0;
             for (int i = 0; i < paths.length; i++) {
-                pathLabels[i] = FPSMaster.i18n.get("director.transition." + paths[i].name().toLowerCase());
+                pathLabels[i] = FPSMaster.i18n.get("director.transition." + paths[i].name().toLowerCase(java.util.Locale.ROOT));
                 if (selectedProp.path == paths[i]) {
                     pathIndex = i;
                 }

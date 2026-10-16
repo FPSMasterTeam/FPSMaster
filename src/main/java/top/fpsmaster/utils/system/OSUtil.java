@@ -7,23 +7,23 @@ public class OSUtil {
     public static boolean supportShader = true;
 
     public static boolean isMac() {
-        return System.getProperty("os.name").toLowerCase().contains("mac");
+        return System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("mac");
     }
 
     public static boolean isUnix() {
-        return System.getProperty("os.name").toLowerCase().contains("nix");
+        return System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("nix");
     }
 
     public static boolean isSolaris() {
-        return System.getProperty("os.name").toLowerCase().contains("sunos");
+        return System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("sunos");
     }
 
     public static boolean isLinux() {
-        return System.getProperty("os.name").toLowerCase().contains("linux");
+        return System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("linux");
     }
 
     public static boolean isWindows() {
-        return System.getProperty("os.name").toLowerCase().contains("windows");
+        return System.getProperty("os.name").toLowerCase(java.util.Locale.ROOT).contains("windows");
     }
 
     public static boolean isAndroid() {

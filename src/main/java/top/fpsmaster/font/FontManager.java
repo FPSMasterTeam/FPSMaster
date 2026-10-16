@@ -60,6 +60,8 @@ public class FontManager {
         s28 = createBaseRenderer(28);
         s36 = createBaseRenderer(36);
         s40 = createBaseRenderer(40);
+        // Prism 按字号缓存文本宽度和截断结果；换字体后旧宽度全部作废。
+        top.fpsmaster.prism.widget.TextFit.clearCache();
     }
 
     public UFontRenderer getFont(int size) {

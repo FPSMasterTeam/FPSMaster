@@ -110,8 +110,7 @@ public class FPSMasterApiClient {
                             ClientLogger.warn("Login failed: " + apiResponse.getMessage());
                             // 带上状态码，界面才能把「密码错」和「连不上」分流到不同文案；
                             // serverMessage 也要跟着走，否则界面无法判断这句话是不是后端原话。
-                            return ApiResponse.error(response.getStatusCode(),
-                                    apiResponse.getMessage(), null, apiResponse.hasServerMessage());
+                            return ApiResponse.failure(apiResponse);
                         }
 
                         return apiResponse;
@@ -702,12 +701,21 @@ public class FPSMasterApiClient {
 
     // ================== Utility Methods ================== //
 
+    /**
+     * 2xx 返回正文；非 2xx 时只要正文是后端的统一错误信封（带 {@code success}）也照样返回，
+     * 这样调用方经 {@link ApiResponse#fromJson} 拿得到 code 和本地化 message。以前这里一律
+     * 抛「HTTP error: 404」，后端给的错误码全丢了，调用方只能去匹配这句英文。
+     */
     private JsonObject parseResponse(HttpRequest.HttpResponseResult response) throws ApiException {
+        String body = response.getBody();
         if (!response.isSuccess()) {
+            JsonObject envelope = parseQuietly(body);
+            if (envelope != null && envelope.has("success")) {
+                return envelope;
+            }
             throw new ApiException(response.getStatusCode(), "HTTP error: " + response.getStatusCode());
         }
 
-        String body = response.getBody();
         if (body == null || body.isEmpty()) {
             throw new ApiException(-1, "Empty response body");
         }
@@ -719,10 +727,23 @@ public class FPSMasterApiClient {
         }
     }
 
+    /** Cloudflare 之类挡在前面时错误正文是 HTML，解析不了就当没有信封。 */
+    private static JsonObject parseQuietly(String body) {
+        if (body == null || body.isEmpty()) {
+            return null;
+        }
+        try {
+            return FPSMasterGson.getInstance().fromJson(body, JsonObject.class);
+        } catch (RuntimeException notJson) {
+            return null;
+        }
+    }
+
     private Map<String, String> getDefaultHeaders() {
         Map<String, String> headers = new HashMap<>();
         headers.put("User-Agent", FPSMasterConstants.USER_AGENT);
         headers.put("Accept", "application/json");
+        headers.put("Accept-Language", FPSMasterConstants.acceptLanguage());
         headers.put("Content-Type", "application/json");
         return headers;
     }

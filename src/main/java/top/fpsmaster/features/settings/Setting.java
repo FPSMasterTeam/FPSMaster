@@ -75,11 +75,22 @@ public class Setting<T> {
 
     public void setValue(T value) {
         T oldValue = this.value;
+        // Sliders call setValue every frame while held; an unchanged immutable value must not fire a
+        // change event (which schedules a config save). Mutable values (colors, lists) are often
+        // edited in place and re-set to notify, so they always go through.
+        if (isImmutableValue(oldValue) && oldValue.equals(value)) {
+            return;
+        }
         if (!fireValueChangeEvent(oldValue, value)) {
             return;
         }
         this.value = value;
         notifyChangeListeners(oldValue, value);
+    }
+
+    private static boolean isImmutableValue(Object value) {
+        return value instanceof Boolean || value instanceof String || value instanceof Integer
+                || value instanceof Long || value instanceof Double || value instanceof Float;
     }
 
     protected boolean fireValueChangeEvent(T oldValue, T newValue) {

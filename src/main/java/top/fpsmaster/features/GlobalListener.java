@@ -65,11 +65,37 @@ public class GlobalListener {
     public void onChatSend(EventSendChatMessage e) {
     }
 
+    /**
+     * Autosave is debounced: EventValueChange fires before the new value is stored (so saving inside
+     * the handler wrote the old value) and once per frame while a slider is dragged (so it was a full
+     * serialize + disk write every frame). The save runs from the tick once changes settle.
+     */
+    private static final long AUTOSAVE_DELAY_MS = 500L;
+    private long autosaveDueAt;
+
     @Subscribe
     public void onValueChange(EventValueChange e) {
         if (FPSMaster.configManager.isConfigLoaded() && !FPSMaster.configManager.isLoadingConfig()) {
+            autosaveDueAt = System.currentTimeMillis() + AUTOSAVE_DELAY_MS;
+        }
+    }
+
+    private void flushAutosave(long now) {
+        if (autosaveDueAt != 0L && now >= autosaveDueAt) {
+            autosaveDueAt = 0L;
             ConfigProfileUtils.saveActiveProfileQuietly();
         }
+    }
+
+    private void showConfigRecoveryNotice() {
+        String[] notice = FPSMaster.configManager.consumeRecoveryNotice();
+        if (notice == null) {
+            return;
+        }
+        Object[] args = java.util.Arrays.copyOfRange(notice, 1, notice.length, Object[].class);
+        NotificationManager.addNotification(FPSMaster.i18n.get("config.recovery.title"),
+                String.format(FPSMaster.i18n.get(notice[0]), args),
+                top.fpsmaster.prism.overlay.NotificationCenter.Type.WARNING, 15f);
     }
     @Subscribe
     public void onTick(EventTick e) {
@@ -101,6 +127,8 @@ public class GlobalListener {
         FPSMaster.INSTANCE.migrateGuiScaleForHiDpi();
         PendingScreen.tick();
         long now = System.currentTimeMillis();
+        flushAutosave(now);
+        showConfigRecoveryNotice();
         if (now - lastFlushAt < 1000L) {
             return;
         }

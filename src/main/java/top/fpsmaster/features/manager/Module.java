@@ -70,7 +70,7 @@ public class Module {
                             FPSMaster.i18n.get("notification.module.enable"),
                             String.format(
                                     FPSMaster.i18n.get("notification.module.enable.desc"),
-                                    FPSMaster.i18n.get(this.name.toLowerCase(Locale.getDefault()))
+                                    FPSMaster.i18n.get(this.name.toLowerCase(Locale.ROOT))
                             ),
                             NotificationCenter.Type.SUCCESS,
                             2f
@@ -84,7 +84,7 @@ public class Module {
                             FPSMaster.i18n.get("notification.module.disable"),
                             String.format(
                                     FPSMaster.i18n.get("notification.module.disable.desc"),
-                                    FPSMaster.i18n.get(this.name.toLowerCase(Locale.getDefault()))
+                                    FPSMaster.i18n.get(this.name.toLowerCase(Locale.ROOT))
                             ),
                             NotificationCenter.Type.INFO,
                             2f

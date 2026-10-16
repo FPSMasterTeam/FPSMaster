@@ -411,7 +411,7 @@ public class CommandManager {
     }
 
     private void sendModuleState(Module module) {
-        Utility.sendClientNotify(FPSMaster.i18n.get(module.name.toLowerCase()) + ": "
+        Utility.sendClientNotify(FPSMaster.i18n.get(module.name.toLowerCase(java.util.Locale.ROOT)) + ": "
                 + FPSMaster.i18n.get(module.isEnabled() ? "command.module.enabled" : "command.module.disabled"));
     }
 }

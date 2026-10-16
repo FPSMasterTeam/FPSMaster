@@ -82,6 +82,11 @@ public class ScaledGuiScreen extends GuiScreen {
             GL11.glPopMatrix();
             UiScale.end();
         }
+        // In a world the HUD pass draws notifications; out of one (main menu, config screens) nothing
+        // did, so results such as "config restored from backup" were never seen.
+        if (mc.theWorld == null) {
+            top.fpsmaster.ui.notification.NotificationManager.drawNotifications();
+        }
     }
 
     /**

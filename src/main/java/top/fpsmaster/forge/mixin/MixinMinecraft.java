@@ -366,9 +366,45 @@ public abstract class MixinMinecraft implements IMinecraft {
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/client/shader/Framebuffer;framebufferRender(II)V"))
     private void edge$presentFrame(net.minecraft.client.shader.Framebuffer framebuffer, int width, int height) {
+        if (edge$skipPresentAfterResize(width, height)) {
+            return;
+        }
         if (!top.fpsmaster.replay.director.DirectorExporter.presentExportScreen(framebuffer)) {
             framebuffer.framebufferRender(width, height);
         }
+    }
+
+    /** -1 unknown, 0 no, 1 yes; resolved on first use (no static initializer in a mixin). */
+    private int edge$mac = -1;
+    private int edge$presentW = -1;
+    private int edge$presentH = -1;
+    private int edge$presentSkip;
+
+    /**
+     * macOS mitigation, not a proven fix: hs_err logs after the panorama fix still crash in
+     * AppleMetalOpenGLRenderer GLRResourceList::addResource during this very blit to the default
+     * framebuffer, right after a window resize, while the GL-on-Metal layer is still swapping the
+     * drawable. Skipping the present for the first two frames after a size change keeps the client
+     * from drawing into it mid-reallocation; the cost is two stale frames per resize step.
+     */
+    private boolean edge$skipPresentAfterResize(int width, int height) {
+        if (edge$mac < 0) {
+            edge$mac = top.fpsmaster.utils.system.OSUtil.isMac() ? 1 : 0;
+        }
+        if (edge$mac == 0) {
+            return false;
+        }
+        if (width != edge$presentW || height != edge$presentH) {
+            boolean first = edge$presentW < 0;
+            edge$presentW = width;
+            edge$presentH = height;
+            edge$presentSkip = first ? 0 : 2;
+        }
+        if (edge$presentSkip > 0) {
+            edge$presentSkip--;
+            return true;
+        }
+        return false;
     }
 
     /** Fullscreen enter: the desktop DisplayMode is in points on macOS as well. */

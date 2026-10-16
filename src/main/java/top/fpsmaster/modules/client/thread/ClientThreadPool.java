@@ -29,10 +29,14 @@ public class ClientThreadPool {
         return executorService.submit(task);
     }
 
+    /**
+     * Gives running tasks a short moment at shutdown. The workers are daemons, so anything still
+     * waiting on a 15 s HTTP timeout is abandoned rather than holding the window open.
+     */
     public void close() {
         executorService.shutdown();
         try {
-            if (!executorService.awaitTermination(10, TimeUnit.SECONDS)) {
+            if (!executorService.awaitTermination(2, TimeUnit.SECONDS)) {
                 executorService.shutdownNow();
             }
         } catch (InterruptedException ex) {

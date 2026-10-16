@@ -110,13 +110,12 @@ dependencies {
         isTransitive = false
     }
 
-    shadowImpl("top.fpsmaster:prism:0.2.1")
+    shadowImpl("top.fpsmaster:prism:0.2.2")
 
     // 音乐能力：Cadence 数据客户端（网易云/QQ 搜索/直链/歌词/歌单/登录）。
-    // 由 JitPack 托管 (FPSMasterTeam/Cadence)，坐标即 com.github.<owner>:<repo>:<tag>；
-    // 源码里的包名仍是 top.fpsmaster.music.*。
+    // 0.1.2 还没有发到 JitPack（没有 tag），先从 mavenLocal 取（Cadence 仓库 publishToMavenLocal）。
     // gson 由 MC classpath 提供，故不传递依赖；Kotlin 运行时单独引入。
-    shadowImpl("com.github.FPSMasterTeam:Cadence:v0.1.1") {
+    shadowImpl("top.fpsmaster:music-api:0.1.2") {
         isTransitive = false
     }
     shadowImpl("org.jetbrains.kotlin:kotlin-stdlib:2.4.0") {
