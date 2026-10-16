@@ -289,6 +289,10 @@ public final class AccountManager {
     }
 
     private Account findOffline(String name) {
+        return findOffline(accounts, name);
+    }
+
+    private static Account findOffline(List<Account> accounts, String name) {
         for (Account account : accounts) {
             if (!account.isMicrosoft() && namesEqual(account.name, name)) {
                 return account;
@@ -298,6 +302,10 @@ public final class AccountManager {
     }
 
     private Account findMicrosoft(String uuid) {
+        return findMicrosoft(accounts, uuid);
+    }
+
+    private static Account findMicrosoft(List<Account> accounts, String uuid) {
         if (uuid == null) {
             return null;
         }
@@ -358,55 +366,94 @@ public final class AccountManager {
         return new File(FileUtils.dir, "accounts.json");
     }
 
-    /** Moves accounts.json out of the shareable game folder the first time this version runs. */
+    /**
+     * Moves accounts.json out of the shareable game folder the first time this version runs. Every
+     * game directory has its own legacy file but they all migrate into the one per-user file, so the
+     * legacy accounts are merged into whatever is already there, and the legacy file is deleted only
+     * after the merged list has been written.
+     */
     private void migrateLegacyFile() {
         File legacy = legacyFile();
-        File target = file();
         if (!legacy.isFile()) {
             return;
         }
+        List<Account> legacyAccounts = new ArrayList<Account>();
+        String legacySelected;
         try {
-            if (!target.exists()) {
-                AtomicFiles.write(target.toPath(), Files.readAllBytes(legacy.toPath()));
-            }
+            legacySelected = parse(read(legacy), legacyAccounts);
+        } catch (IOException | RuntimeException exception) {
+            ClientLogger.warn("Failed to read legacy accounts.json, leaving it in place: " + exception);
+            return;
+        }
+        merge(accounts, legacyAccounts);
+        if (selectedName == null || selectedName.isEmpty()) {
+            selectedName = legacySelected;
+        }
+        if (!save()) {
+            return;
+        }
+        try {
             Files.delete(legacy.toPath());
-            ClientLogger.info("Moved accounts.json out of the game folder to " + target.getAbsolutePath());
+            ClientLogger.info("Merged accounts.json from the game folder into " + file().getAbsolutePath());
         } catch (IOException exception) {
-            ClientLogger.warn("Failed to move accounts.json out of the game folder: " + exception);
+            ClientLogger.warn("Merged accounts.json but failed to delete the legacy copy: " + exception);
         }
     }
 
     private void load() {
-        migrateLegacyFile();
         File file = file();
-        if (!file.isFile()) {
-            return;
+        if (file.isFile()) {
+            try {
+                selectedName = parse(read(file), accounts);
+            } catch (IOException | RuntimeException exception) {
+                // Do not merge into (and overwrite) a target we could not read.
+                ClientLogger.warn("Failed to load accounts.json: " + exception);
+                return;
+            }
         }
-        try {
-            String json = new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
-            JsonElement root = new JsonParser().parse(json);
-            if (root == null || root.isJsonNull()) {
-                return;
+        migrateLegacyFile();
+    }
+
+    private static String read(File file) throws IOException {
+        return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+    }
+
+    /** Appends the accounts in {@code json} to {@code out}; returns the stored selection, if any. */
+    static String parse(String json, List<Account> out) {
+        JsonElement root = new JsonParser().parse(json);
+        if (root == null || root.isJsonNull()) {
+            return null;
+        }
+        if (root.isJsonArray()) {
+            readAccounts(root.getAsJsonArray(), out);
+            return null;
+        }
+        String selected = null;
+        if (root.isJsonObject()) {
+            JsonObject object = root.getAsJsonObject();
+            if (object.has("selected") && !object.get("selected").isJsonNull()) {
+                selected = object.get("selected").getAsString();
             }
-            if (root.isJsonArray()) {
-                readAccounts(root.getAsJsonArray());
-                return;
+            if (object.has("accounts") && object.get("accounts").isJsonArray()) {
+                readAccounts(object.getAsJsonArray("accounts"), out);
             }
-            if (root.isJsonObject()) {
-                JsonObject object = root.getAsJsonObject();
-                if (object.has("selected") && !object.get("selected").isJsonNull()) {
-                    selectedName = object.get("selected").getAsString();
-                }
-                if (object.has("accounts") && object.get("accounts").isJsonArray()) {
-                    readAccounts(object.getAsJsonArray("accounts"));
-                }
+        }
+        return selected;
+    }
+
+    /** Adds the {@code extra} accounts {@code into} lacks; Microsoft by uuid, offline by name. */
+    static void merge(List<Account> into, List<Account> extra) {
+        for (Account account : extra) {
+            Account existing = account.isMicrosoft()
+                    ? findMicrosoft(into, account.uuid)
+                    : findOffline(into, account.name);
+            if (existing == null) {
+                into.add(account);
             }
-        } catch (IOException | RuntimeException exception) {
-            ClientLogger.warn("Failed to load accounts.json: " + exception);
         }
     }
 
-    private void readAccounts(JsonArray array) {
+    private static void readAccounts(JsonArray array, List<Account> out) {
         for (JsonElement element : array) {
             if (element == null || !element.isJsonObject()) {
                 continue;
@@ -420,17 +467,17 @@ public final class AccountManager {
             }
             if (account.isMicrosoft()) {
                 account.uuid = MicrosoftAuth.dashedUuid(account.uuid);
-                accounts.add(account);
+                out.add(account);
             } else if (isValidUsername(account.name)) {
                 if (account.uuid == null || account.uuid.isEmpty()) {
                     account.uuid = offlineUuid(account.name);
                 }
-                accounts.add(account);
+                out.add(account);
             }
         }
     }
 
-    private void save() {
+    private boolean save() {
         try {
             JsonObject root = new JsonObject();
             if (selectedName != null) {
@@ -438,8 +485,10 @@ public final class AccountManager {
             }
             root.add("accounts", GSON.toJsonTree(accounts));
             AtomicFiles.write(file().toPath(), GSON.toJson(root).getBytes(StandardCharsets.UTF_8));
+            return true;
         } catch (IOException exception) {
             ClientLogger.warn("Failed to save accounts.json: " + exception);
+            return false;
         }
     }
 }
