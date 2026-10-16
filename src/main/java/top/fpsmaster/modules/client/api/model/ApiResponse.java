@@ -28,20 +28,23 @@ public class ApiResponse<T> {
      */
     private final boolean serverMessage;
 
+    /**
+     * 后端失败响应里稳定的 UPPER_SNAKE 错误码（如 {@code ITEM_ALREADY_OWNED}），没有时为 null。
+     * 逻辑判断只认它：message 会按 Accept-Language 本地化，匹配原文迟早对不上。
+     */
+    private final String errorCode;
+
     private ApiResponse(boolean success, String message, T data) {
-        this(success, message, data, NO_CODE, false);
+        this(success, message, data, NO_CODE, false, null);
     }
 
-    private ApiResponse(boolean success, String message, T data, int code) {
-        this(success, message, data, code, false);
-    }
-
-    private ApiResponse(boolean success, String message, T data, int code, boolean serverMessage) {
+    private ApiResponse(boolean success, String message, T data, int code, boolean serverMessage, String errorCode) {
         this.success = success;
         this.message = message;
         this.data = data;
         this.code = code;
         this.serverMessage = serverMessage;
+        this.errorCode = errorCode;
     }
 
     public static <T> ApiResponse<T> success(String message, T data) {
@@ -49,12 +52,17 @@ public class ApiResponse<T> {
     }
 
     public static <T> ApiResponse<T> error(int code, String message, String error) {
-        return new ApiResponse<>(false, message, null, code, false);
+        return new ApiResponse<>(false, message, null, code, false, null);
     }
 
     /** 转发一个后端原话时用这个重载，别让 {@link #hasServerMessage()} 在转手时丢掉。 */
     public static <T> ApiResponse<T> error(int code, String message, String error, boolean serverMessage) {
-        return new ApiResponse<>(false, message, null, code, serverMessage);
+        return new ApiResponse<>(false, message, null, code, serverMessage, null);
+    }
+
+    /** 转手一个失败响应：状态码、后端原话和错误码都原样带上。 */
+    public static <T> ApiResponse<T> failure(ApiResponse<?> source) {
+        return new ApiResponse<>(false, source.message, null, source.code, source.serverMessage, source.errorCode);
     }
 
     public static <T> ApiResponse<T> fromJson(JsonObject json, Class<T> dataClass) {
@@ -80,6 +88,9 @@ public class ApiResponse<T> {
         // 之类挡在前面时正文可能是一段带 message 的 JSON，只看 message 非空就会把它当成
         // 封禁原因贴到界面上。
         boolean serverMessage = !message.isEmpty() && json.has("success");
+        String errorCode = json.has("code") && json.get("code").isJsonPrimitive()
+                && json.get("code").getAsJsonPrimitive().isString()
+                ? json.get("code").getAsString() : null;
 
         T data = null;
         if (json.has("data") && !json.get("data").isJsonNull()) {
@@ -90,11 +101,11 @@ public class ApiResponse<T> {
             } catch (Exception e) {
                 // 这是「响应到了但 data 结构不对」，不是网络失败——以前它返回 NETWORK_ERROR，
                 // 界面会显示「无法连接服务器」，把排障方向指到网络上去。
-                return new ApiResponse<T>(false, message, null, statusCode, serverMessage);
+                return new ApiResponse<T>(false, message, null, statusCode, serverMessage, errorCode);
             }
         }
 
-        return new ApiResponse<>(success, message, data, statusCode, serverMessage);
+        return new ApiResponse<>(success, message, data, statusCode, serverMessage, errorCode);
     }
 
     public static ApiResponse<Void> fromJson(JsonObject json) {
@@ -121,6 +132,11 @@ public class ApiResponse<T> {
         return code;
     }
 
+    /** 后端给的错误码，没有（成功、网络失败、旧后端）时为 null。 */
+    public String getErrorCode() {
+        return errorCode;
+    }
+
     /** {@link #getMessage()} 是不是后端按契约给的原话；兜底路径造的技术文案不算。 */
     public boolean hasServerMessage() {
         return serverMessage;
@@ -132,6 +148,7 @@ public class ApiResponse<T> {
                 "success=" + success +
                 ", message='" + message + '\'' +
                 ", code=" + code +
+                ", errorCode=" + errorCode +
                 ", data=" + data +
                 '}';
     }

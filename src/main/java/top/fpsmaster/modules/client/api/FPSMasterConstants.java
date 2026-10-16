@@ -32,6 +32,11 @@ public final class FPSMasterConstants {
         return url.endsWith("/") ? url.substring(0, url.length() - 1) : url;
     }
 
+    /** 按游戏语言给后端的 Accept-Language：后端据此本地化失败响应的 message。 */
+    public static String acceptLanguage() {
+        return top.fpsmaster.features.impl.interfaces.ClientSettings.language.getValue() == 1 ? "zh-CN" : "en";
+    }
+
     /** Resolves a backend-relative path (an asset key, for example) against the configured base. */
     public static String resolve(String path) {
         if (path == null || path.isEmpty()) {

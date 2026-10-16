@@ -132,6 +132,11 @@ public final class SignInScreen extends ScaledGuiScreen {
      */
     private String banMessage(ApiResponse<?> response) {
         String reason = response.getMessage();
+        // 新后端带错误码，message 已按 Accept-Language 本地化（含封禁原因），直接显示。
+        if (response.hasServerMessage() && "ACCOUNT_BANNED".equals(response.getErrorCode())
+                && reason != null && !reason.isEmpty()) {
+            return reason;
+        }
         if (!response.hasServerMessage() || reason == null || reason.isEmpty()
                 || BACKEND_DEFAULT_BAN_REASON.equals(reason)) {
             return FPSMaster.i18n.get("signin.failed.banned");

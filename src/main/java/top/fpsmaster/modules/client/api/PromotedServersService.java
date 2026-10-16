@@ -101,6 +101,7 @@ public final class PromotedServersService {
             Map<String, String> headers = new HashMap<>();
             headers.put("User-Agent", FPSMasterConstants.USER_AGENT);
             headers.put("Accept", "application/json");
+            headers.put("Accept-Language", FPSMasterConstants.acceptLanguage());
             HttpRequest.HttpResponseResult response = HttpRequest.get(SERVERS_ENDPOINT, headers);
             if (!response.isSuccess() || response.getBody() == null || response.getBody().isEmpty()) {
                 ClientLogger.warn("Promoted servers request failed: HTTP " + response.getStatusCode());
