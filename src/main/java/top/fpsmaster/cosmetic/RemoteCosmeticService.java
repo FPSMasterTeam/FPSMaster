@@ -5,6 +5,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 import top.fpsmaster.FPSMaster;
 import top.fpsmaster.modules.client.api.AuthService;
 import top.fpsmaster.modules.client.api.FPSMasterApiClient;
+import top.fpsmaster.modules.client.api.model.ApiResponse;
 import top.fpsmaster.modules.client.api.model.CosmeticItem;
 import top.fpsmaster.modules.client.api.model.CosmeticLoadoutView;
 import top.fpsmaster.modules.client.api.model.ResolvedLoadoutView;
@@ -12,7 +13,7 @@ import top.fpsmaster.modules.logger.ClientLogger;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -20,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -28,8 +28,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Publishes this account's cosmetic loadout and resolves everyone else's, so two FPSMaster players on
  * the same server see each other's cosmetics.
  *
- * <p>Reads are a batch resolve keyed by Minecraft UUID, refreshed when the world is entered, when the
- * tab list changes and at most once a minute otherwise; an entry is trusted for five minutes and the
+ * <p>Reads are a batch resolve keyed by Minecraft UUID, scheduled by {@link ResolveScheduler}: every
+ * answer (including "this player has nothing") is trusted for five minutes, a pass runs at most once a
+ * second and asks only for players without a fresh answer, and failures back off exponentially. The
  * whole cache is dropped on world leave or logout, so a stale loadout never outlives the session that
  * produced it.
  *
@@ -39,10 +40,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * was and moves {@link #status()} to {@link Status#FAILED}, which the cosmetics screen shows.
  */
 public final class RemoteCosmeticService {
-    /** Batch ceiling the backend enforces; a larger tab list resolves over consecutive passes. */
-    private static final int MAX_BATCH = 200;
-    private static final long CACHE_TTL_MS = 5L * 60_000L;
-    private static final long REFRESH_INTERVAL_MS = 60_000L;
     private static final long PUSH_DEBOUNCE_MS = 500L;
 
     private static final RemoteCosmeticService INSTANCE = new RemoteCosmeticService();
@@ -58,12 +55,9 @@ public final class RemoteCosmeticService {
         UNAVAILABLE
     }
 
-    private final Map<UUID, Entry> cache = new ConcurrentHashMap<>();
-    private final AtomicBoolean resolveInFlight = new AtomicBoolean(false);
+    private final ResolveScheduler<RemoteLoadout> resolver = new ResolveScheduler<>();
     private final AtomicBoolean pushInFlight = new AtomicBoolean(false);
 
-    private final Set<UUID> lastOnline = new HashSet<>();
-    private volatile long lastFullRefreshAt;
     private volatile boolean hadWorld;
 
     private volatile long pushDueAt;
@@ -110,30 +104,21 @@ public final class RemoteCosmeticService {
 
     // ================== Reading other players ================== //
 
-    /** The cached loadout for a Minecraft UUID, or null when unknown or older than the TTL. */
+    /** The cached loadout for a Minecraft UUID, or null when unknown, expired or resolved to nothing. */
     public RemoteLoadout loadoutFor(UUID uuid) {
-        if (uuid == null) {
-            return null;
-        }
-        Entry entry = cache.get(uuid);
-        if (entry == null) {
-            return null;
-        }
-        if (System.currentTimeMillis() - entry.fetchedAt > CACHE_TTL_MS) {
-            cache.remove(uuid);
-            return null;
-        }
-        return entry.loadout;
+        return resolver.get(uuid, System.currentTimeMillis());
     }
 
-    /** Called once a second from the client tick. */
+    /**
+     * Called every client tick (20 Hz). Only the debounced push and the world-leave check run at that
+     * rate; resolving is throttled and batched by {@link ResolveScheduler}.
+     */
     public void onClientTick() {
         Minecraft minecraft = Minecraft.getMinecraft();
         boolean hasWorld = minecraft.theWorld != null && minecraft.getNetHandler() != null;
         if (hadWorld && !hasWorld) {
             clearRemote();
         }
-        boolean entered = hasWorld && !hadWorld;
         hadWorld = hasWorld;
 
         flushDuePush();
@@ -141,34 +126,17 @@ public final class RemoteCosmeticService {
         if (!hasWorld || !AuthService.getInstance().isLoggedIn()) {
             return;
         }
+        // Linking is what makes this player visible to others; retry it here so a failed attempt
+        // (network down at startup) recovers without a restart. linkIfNeeded paces itself.
+        MinecraftLinkService.getInstance().linkIfNeeded();
 
-        Set<UUID> online = onlinePlayers(minecraft);
         long now = System.currentTimeMillis();
-        boolean periodic = now - lastFullRefreshAt >= REFRESH_INTERVAL_MS;
-        boolean tabChanged = !online.equals(lastOnline);
-
-        Set<UUID> wanted;
-        if (entered || periodic) {
-            wanted = new LinkedHashSet<>(online);
-            lastFullRefreshAt = now;
-        } else if (tabChanged) {
-            wanted = new LinkedHashSet<>(online);
-            wanted.removeAll(lastOnline);
-        } else {
-            // Steady state still has to pick up entries that aged out, and the remainder of a tab
-            // list too large for one batch.
-            wanted = new LinkedHashSet<>();
-            for (UUID uuid : online) {
-                if (loadoutFor(uuid) == null) {
-                    wanted.add(uuid);
-                }
-            }
+        if (!resolver.passDue(now)) {
+            return;
         }
-
-        lastOnline.clear();
-        lastOnline.addAll(online);
-        if (!wanted.isEmpty()) {
-            resolve(wanted);
+        ResolveScheduler.Batch batch = resolver.nextBatch(onlinePlayers(minecraft), now);
+        if (batch != null) {
+            resolve(batch);
         }
     }
 
@@ -187,55 +155,65 @@ public final class RemoteCosmeticService {
         return online;
     }
 
-    private void resolve(Collection<UUID> uuids) {
-        if (!resolveInFlight.compareAndSet(false, true)) {
-            return;
-        }
-        List<String> batch = new ArrayList<String>(Math.min(uuids.size(), MAX_BATCH));
-        for (UUID uuid : uuids) {
-            if (batch.size() >= MAX_BATCH) {
-                break;
-            }
+    private void resolve(ResolveScheduler.Batch batch) {
+        List<String> uuids = new ArrayList<String>(batch.uuids.size());
+        for (UUID uuid : batch.uuids) {
             // UUID.toString() is already the canonical dashed lowercase form the endpoint requires;
             // it rejects anything else.
-            batch.add(uuid.toString());
+            uuids.add(uuid.toString());
         }
-        FPSMasterApiClient.getInstance().resolveLoadouts(batch).whenComplete((response, error) -> {
+        FPSMasterApiClient.getInstance().resolveLoadouts(uuids).whenComplete((response, error) -> {
+            long now = System.currentTimeMillis();
+            if (error != null || response == null || !response.isSuccess() || response.getData() == null) {
+                // A resolve failure degrades to "nobody else has cosmetics", never to a wrong loadout,
+                // so it does not touch this account's own sync status. It does back off: a backend
+                // without the endpoint (404) or one that is down must not be asked again next second.
+                long delay = resolver.onFailure(now);
+                ClientLogger.warn("Cosmetic resolve failed (" + describe(response, error) + "), retrying in "
+                        + (delay / 1000L) + "s");
+                return;
+            }
+            Map<UUID, RemoteLoadout> found = new HashMap<>();
             try {
-                if (error != null || response == null || !response.isSuccess() || response.getData() == null) {
-                    // A resolve failure degrades to "nobody else has cosmetics", never to a wrong
-                    // loadout, so it does not touch this account's own sync status. The next pass
-                    // retries, since nothing was cached for those players.
-                    return;
-                }
-                long now = System.currentTimeMillis();
                 for (ResolvedLoadoutView entry : response.getData()) {
                     if (entry == null || entry.getLoadout() == null) {
                         continue;
                     }
                     UUID uuid = parseUuid(entry.getMinecraftUuid());
                     if (uuid != null) {
-                        store(uuid, entry.getLoadout(), now);
+                        found.put(uuid, toLoadout(entry.getLoadout()));
                     }
                 }
-            } catch (Exception exception) {
+            } catch (RuntimeException exception) {
+                // A malformed entry poisons this answer only; caching what parsed so far as "nothing"
+                // would hide real loadouts for five minutes, so treat it like a failed request.
+                resolver.onFailure(now);
                 ClientLogger.warn("Failed to apply resolved cosmetic loadouts: " + exception.getMessage());
-            } finally {
-                resolveInFlight.set(false);
+                return;
             }
+            resolver.onSuccess(batch, found, now);
         });
     }
 
-    private void store(UUID uuid, CosmeticLoadoutView view, long now) {
+    private static String describe(ApiResponse<?> response, Throwable error) {
+        if (error != null) {
+            return error.getClass().getSimpleName();
+        }
+        if (response == null) {
+            return "no response";
+        }
+        String code = response.getErrorCode();
+        return "HTTP " + response.getCode() + (code == null ? "" : " " + code);
+    }
+
+    private RemoteLoadout toLoadout(CosmeticLoadoutView view) {
         CosmeticManager cosmetics = CosmeticManager.getInstance();
         String capeId = register(cosmetics, view.getCapeItem(), view.getCapeItemId());
         String backId = register(cosmetics, view.getBackItem(), view.getBackItemId());
         String backCategory = view.getBackItem() != null
                 ? view.getBackItem().getCategory().toLowerCase(Locale.ROOT) : "wings";
-        cache.put(uuid, new Entry(new RemoteLoadout(
-                capeId, backId, backCategory,
-                view.isBuiltinWingsEnabled(), view.getWingScale(), view.isCapeAnimationEnabled()
-        ), now));
+        return new RemoteLoadout(capeId, backId, backCategory,
+                view.isBuiltinWingsEnabled(), view.getWingScale(), view.isCapeAnimationEnabled());
     }
 
     private String register(CosmeticManager cosmetics, CosmeticItem item, String fallbackId) {
@@ -350,14 +328,14 @@ public final class RemoteCosmeticService {
                     }
                     // A backend without the endpoint answers 404: that is "unavailable", not "failed".
                     // Either way the local loadout keeps rendering exactly as it was chosen.
-                    String message = error != null ? error.getMessage()
-                            : response == null ? "" : response.getMessage();
-                    boolean missing = message != null && message.contains("404");
+                    boolean missing = error == null && response != null && response.getCode() == 404;
                     status = missing ? Status.UNAVAILABLE : Status.FAILED;
-                    // The backend's message is human-readable ("item 7 is not owned"), so it is worth
-                    // surfacing rather than replacing with a generic failure line.
-                    statusMessage = !missing && message != null && !message.isEmpty()
-                            ? message
+                    // The backend's message is localized via Accept-Language ("你还没有拥有该物品"), so
+                    // it is worth surfacing; anything else (network, parse) gets the generic line.
+                    String message = error != null ? error.getClass().getSimpleName()
+                            : response == null ? "no response" : describe(response, null);
+                    statusMessage = !missing && error == null && response != null && response.hasServerMessage()
+                            ? response.getMessage()
                             : FPSMaster.i18n.get(missing ? "cosmetics.sync.unavailable" : "cosmetics.sync.failed");
                     ClientLogger.warn("Cosmetic loadout sync failed: " + message);
                 });
@@ -375,14 +353,12 @@ public final class RemoteCosmeticService {
 
     /** World leave: other players' loadouts stop being true the moment we stop sharing a server. */
     public void clearRemote() {
-        cache.clear();
-        lastOnline.clear();
-        lastFullRefreshAt = 0L;
+        resolver.clearCache();
     }
 
     /** Logout: everything remote goes, including the sync status of an account we no longer hold. */
     public void onLogout() {
-        clearRemote();
+        resolver.reset();
         pushPending = false;
         pushDueAt = 0L;
         status = Status.IDLE;
@@ -407,16 +383,6 @@ public final class RemoteCosmeticService {
             Minecraft.getMinecraft().addScheduledTask(
                     () -> CosmeticManager.getInstance().applyAccountLoadout(view));
         });
-    }
-
-    private static final class Entry {
-        private final RemoteLoadout loadout;
-        private final long fetchedAt;
-
-        private Entry(RemoteLoadout loadout, long fetchedAt) {
-            this.loadout = loadout;
-            this.fetchedAt = fetchedAt;
-        }
     }
 
     /** A resolved loadout in the terms the renderers need: cosmetic option ids and a real scale. */
