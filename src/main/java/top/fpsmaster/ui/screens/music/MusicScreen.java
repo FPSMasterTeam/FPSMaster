@@ -19,7 +19,6 @@ import top.fpsmaster.music.QrLoginState;
 import top.fpsmaster.music.Track;
 import top.fpsmaster.prism.screen.MusicBridge;
 import top.fpsmaster.prism.screen.SharedMusic;
-import top.fpsmaster.prism.widget.Chrome;
 import top.fpsmaster.prism.widget.UiFrame;
 import top.fpsmaster.ui.kit.EdgeUi;
 import top.fpsmaster.utils.io.FileUtils;
@@ -149,31 +148,10 @@ public class MusicScreen extends ScaledGuiScreen {
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
-        UiFrame ui = EdgeUi.frame();
-        if (gui.draw(ui, bridge)) {
+        // No extra "open folder" button any more: Prism 0.2.2 puts the account chip in that spot,
+        // and the Local tab's "Import music" already opens the folder (importLocalMusic).
+        if (gui.draw(EdgeUi.frame(), bridge)) {
             mc.displayGuiScreen(parent);
-            return;
-        }
-        drawOpenFolderButton(ui);
-    }
-
-    private void drawOpenFolderButton(UiFrame ui) {
-        float gw = ui.host().width();
-        float gh = ui.host().height();
-        float pw = Math.min(480f, Math.max(320f, gw - 24f));
-        float ph = Math.min(290f, Math.max(200f, gh - 32f));
-        float px = (gw - pw) / 2f;
-        float py = (gh - ph) / 2f;
-        float size = 16f;
-        float closeX = px + pw - 7f - size;
-        float settingsX = closeX - 21f;
-        float folderX = settingsX - 21f;
-        float folderY = py + 7f;
-        String label = FPSMaster.i18n.get("music.local.openfolder");
-        float labelW = ui.font(12).measure(label) + 16f;
-        float buttonX = folderX - labelW + size;
-        if (Chrome.button(ui, buttonX, folderY, labelW, size, label, Chrome.ButtonStyle.GHOST)) {
-            openLocalMusicFolder();
         }
     }
 
