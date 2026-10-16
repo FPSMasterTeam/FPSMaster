@@ -152,8 +152,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: FPSMasterTeam/fpsmaster-prism
-          # TODO: Edge 依赖 prism 0.2.2，这里先指向 fix/prism-review 的提交；
-          #       Prism 合并到主分支后改成合并后的提交（或 0.2.2 的 tag）。
+          # Prism 0.2.2（fix/prism-review 已合入 main 的提交）。
           ref: e3b6e244f912828bd11d777683c47efd94c79121
           path: fpsmaster-prism
 
@@ -170,7 +169,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: FPSMasterTeam/Cadence
-          # TODO: 先指向 fix/cadence-review 的提交；Cadence 合并并打 0.1.2 tag 后改成合并后的提交。
+          # Cadence v0.1.2。
           ref: 9e60bab7834a73ed4ceead49ecec2d07af708b80
           path: cadence
 
