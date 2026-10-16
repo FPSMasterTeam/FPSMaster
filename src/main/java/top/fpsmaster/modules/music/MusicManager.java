@@ -6,6 +6,8 @@ import top.fpsmaster.event.EventDispatcher;
 import top.fpsmaster.modules.logger.ClientLogger;
 import top.fpsmaster.music.AudioQuality;
 import top.fpsmaster.music.Lyric;
+import top.fpsmaster.music.MusicApiException;
+import top.fpsmaster.music.MusicErrorKind;
 import top.fpsmaster.music.MusicLog;
 import top.fpsmaster.music.MusicLogger;
 import top.fpsmaster.music.MusicPlaylist;
@@ -29,8 +31,9 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * 音乐功能总控：桥接 Cadence（top.fpsmaster.music）数据库与 Edge 的 UI / 播放引擎。
  *
- * <p>所有联网操作（搜索/取直链/歌词/登录）都在 {@link FPSMaster#async} 线程池执行，结果通过
- * {@link Minecraft#addScheduledTask(Runnable)} 回到主线程，绝不阻塞渲染。
+ * <p>所有联网操作（搜索/取直链/歌词/登录）都在音乐专用的有界线程池 {@link #NET} 执行，结果通过
+ * {@link Minecraft#addScheduledTask(Runnable)} 回到主线程，绝不阻塞渲染。不用共享的
+ * {@link FPSMaster#async}：Cadence 单次请求最长约 55 秒，网络差时会把其他功能的任务一起堵住。
  */
 public class MusicManager {
 
@@ -57,6 +60,24 @@ public class MusicManager {
     }
 
     private static MusicManager INSTANCE;
+
+    /** 音乐请求专用：两个线程足够（列表 + 直链/歌词），守护线程不拖住退出。 */
+    private static final java.util.concurrent.ExecutorService NET = java.util.concurrent.Executors.newFixedThreadPool(2,
+            new java.util.concurrent.ThreadFactory() {
+                private final java.util.concurrent.atomic.AtomicInteger n = new java.util.concurrent.atomic.AtomicInteger();
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r, "FPSMaster-Music-Net-" + n.incrementAndGet());
+                    t.setDaemon(true);
+                    return t;
+                }
+            });
+
+    /** 是否已经创建过：关机时没用过音乐就不必为了关掉它而现场初始化 SMTC 和凭证。 */
+    public static boolean isInitialized() {
+        return INSTANCE != null;
+    }
 
     /** 全局唯一实例（懒加载）。界面与入口按钮通过它访问音乐能力。 */
     public static MusicManager get() {
@@ -235,6 +256,9 @@ public class MusicManager {
     }
 
     public String getStatus() {
+        if (status.isEmpty() && engine.isBuffering()) {
+            return FPSMaster.i18n.get("music.status.buffering");
+        }
         return status;
     }
 
@@ -265,8 +289,8 @@ public class MusicManager {
         final MusicSource s = source;
         runAsync(new Callable<List<Track>>() {
             @Override
-            public List<Track> call() {
-                return service.search(s, keyword, 30);
+            public List<Track> call() throws Exception {
+                return guardLogin(s, () -> service.search(s, keyword, 30));
             }
         }, cb);
     }
@@ -276,14 +300,12 @@ public class MusicManager {
         final MusicSource s = source;
         runAsync(new Callable<List<Track>>() {
             @Override
-            public List<Track> call() {
+            public List<Track> call() throws Exception {
                 if (s == MusicSource.QQ) {
                     return service.getQq().getToplist(26, 50);
                 }
-                if (neteaseLoggedIn) {
-                    return service.getNetease().getDailyRecommendSongs();
-                }
-                return new ArrayList<Track>();
+                requireNeteaseLogin();
+                return guardLogin(s, () -> service.getNetease().getDailyRecommendSongs());
             }
         }, cb);
     }
@@ -293,18 +315,22 @@ public class MusicManager {
         final MusicSource s = source;
         runAsync(new Callable<List<PlaylistItem>>() {
             @Override
-            public List<PlaylistItem> call() {
+            public List<PlaylistItem> call() throws Exception {
                 List<PlaylistItem> out = new ArrayList<PlaylistItem>();
                 if (s == MusicSource.QQ) {
                     for (MusicPlaylist p : service.getQq().getRecommendPlaylists(12)) {
                         out.add(new PlaylistItem(MusicSource.QQ, p.getId(), p.getName(), p.getCoverUrl(), p.getTrackCount()));
                     }
-                } else if (neteaseLoggedIn) {
+                } else {
+                    requireNeteaseLogin();
                     Long uid = service.getNetease().getLoginUid();
-                    if (uid != null) {
-                        for (PlaylistBrief p : service.getNetease().getUserPlaylists(uid, 30, 0)) {
-                            out.add(new PlaylistItem(MusicSource.NETEASE, p.getId(), p.getName(), p.getCoverUrl(), p.getTrackCount()));
-                        }
+                    if (uid == null) {
+                        // Cadence 0.1.2：cookie 失效时 getLoginUid 返回 null。
+                        expireLogin(MusicSource.NETEASE);
+                        throw new MusicApiException("netease cookie expired", null, MusicErrorKind.NOT_LOGGED_IN);
+                    }
+                    for (PlaylistBrief p : guardLogin(MusicSource.NETEASE, () -> service.getNetease().getUserPlaylists(uid, 30, 0))) {
+                        out.add(new PlaylistItem(MusicSource.NETEASE, p.getId(), p.getName(), p.getCoverUrl(), p.getTrackCount()));
                     }
                 }
                 return out;
@@ -316,11 +342,11 @@ public class MusicManager {
     public void loadPlaylistTracks(final PlaylistItem item, Cb<List<Track>> cb) {
         runAsync(new Callable<List<Track>>() {
             @Override
-            public List<Track> call() {
+            public List<Track> call() throws Exception {
                 if (item.source == MusicSource.QQ) {
-                    return service.getQq().getPlaylistTracks(item.id, 100);
+                    return guardLogin(MusicSource.QQ, () -> service.getQq().getPlaylistTracks(item.id, 100));
                 }
-                return service.getNetease().getPlaylistTracks(item.id, 1000);
+                return guardLogin(MusicSource.NETEASE, () -> service.getNetease().getPlaylistTracks(item.id, 1000));
             }
         }, cb);
     }
@@ -361,7 +387,7 @@ public class MusicManager {
             return;
         }
         // 请求 STANDARD（mp3）以保证 mp3spi 可解码
-        FPSMaster.async.execute(new Callable<Object>() {
+        NET.submit(new Callable<Object>() {
             @Override
             public Object call() {
                 try {
@@ -401,7 +427,7 @@ public class MusicManager {
     }
 
     private void loadLyric(final Track track) {
-        FPSMaster.async.execute(new Callable<Object>() {
+        NET.submit(new Callable<Object>() {
             @Override
             public Object call() {
                 try {
@@ -484,7 +510,7 @@ public class MusicManager {
         final MusicSource s = source;
         qrState = null;
         qrCode = null;
-        FPSMaster.async.execute(new Callable<Object>() {
+        NET.submit(new Callable<Object>() {
             @Override
             public Object call() {
                 try {
@@ -619,8 +645,42 @@ public class MusicManager {
 
     // ---- 内部 ----
 
+    private void requireNeteaseLogin() {
+        if (!neteaseLoggedIn) {
+            throw new MusicApiException("netease not logged in", null, MusicErrorKind.NOT_LOGGED_IN);
+        }
+    }
+
+    /** 平台说"未登录"时本地也切回未登录（并清掉存着的失效凭证），界面才会给出登录入口。 */
+    private <T> T guardLogin(MusicSource s, Callable<T> call) throws Exception {
+        try {
+            return call.call();
+        } catch (MusicApiException e) {
+            if (e.getKind() == MusicErrorKind.NOT_LOGGED_IN) {
+                expireLogin(s);
+            }
+            throw e;
+        }
+    }
+
+    private void expireLogin(MusicSource s) {
+        try {
+            if (s == MusicSource.NETEASE && neteaseLoggedIn) {
+                neteaseLoggedIn = false;
+                service.getNetease().clearLogin();
+                store.clearNetease();
+            } else if (s == MusicSource.QQ && qqLoggedIn) {
+                qqLoggedIn = false;
+                service.getQq().clearLogin();
+                store.clearQq();
+            }
+        } catch (RuntimeException e) {
+            ClientLogger.error("Music login reset failed: " + e.getMessage());
+        }
+    }
+
     private <T> void runAsync(final Callable<T> task, final Cb<T> cb) {
-        FPSMaster.async.execute(new Callable<Object>() {
+        NET.submit(new Callable<Object>() {
             @Override
             public Object call() {
                 try {

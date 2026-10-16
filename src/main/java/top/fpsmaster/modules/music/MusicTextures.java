@@ -59,6 +59,12 @@ public final class MusicTextures {
                 }
             };
     private static final Set<String> LOADING = new HashSet<>();
+    /**
+     * key -> 失败时间。界面每帧都会查封面，失败后不记一笔的话下一帧就重新排队下载同一个
+     * 404 / 被防盗链拦下的 URL，并且每次都打一条 error。
+     */
+    private static final Map<String, Long> FAILED = new HashMap<>();
+    private static final long RETRY_FAILED_MS = 5L * 60_000L;
 
     // 所有 AWT/ImageIO 图片解码放到单一线程串行执行：macOS(尤其 Rosetta) 下并发调用
     // AWT/CoreGraphics 原生代码会崩（objc_release）。单线程可最大限度规避。
@@ -86,21 +92,22 @@ public final class MusicTextures {
         final String key = "cover:" + url;
         ResourceLocation loc = READY.get(key);
         if (loc != null) return loc;
-        if (LOADING.contains(key) || LOADING.size() >= MAX_LOADING) return null;
+        if (recentlyFailed(key) || LOADING.contains(key) || LOADING.size() >= MAX_LOADING) return null;
         LOADING.add(key);
+        final String sized = sizedCoverUrl(url);
         NET_EXEC.execute(new Runnable() {
             @Override
             public void run() {
                 final byte[] bytes;
                 try {
-                    bytes = downloadBytes(url);
+                    bytes = downloadBytes(sized);
                 } catch (Throwable e) {
                     ClientLogger.error("Music cover download failed: " + e.getMessage());
-                    unmark(key);
+                    fail(key);
                     return;
                 }
                 if (bytes == null) {
-                    unmark(key);
+                    fail(key);
                     return;
                 }
                 // 拿到字节之后才回到串行线程解码
@@ -111,7 +118,7 @@ public final class MusicTextures {
                             upload(key, ImageIO.read(new ByteArrayInputStream(bytes)));
                         } catch (Throwable e) {
                             ClientLogger.error("Music cover decode failed: " + e.getMessage());
-                            unmark(key);
+                            fail(key);
                         }
                     }
                 });
@@ -179,6 +186,7 @@ public final class MusicTextures {
             ResourceLocation loc = READY.remove(k);
             deleteTexture(loc);
             LOADING.remove(k);
+            FAILED.remove(k);
         }
     }
 
@@ -194,6 +202,7 @@ public final class MusicTextures {
         }
         READY.clear();
         LOADING.clear();
+        FAILED.clear();
         IMG_EXEC.shutdownNow();
         NET_EXEC.shutdownNow();
     }
@@ -229,6 +238,35 @@ public final class MusicTextures {
         LOADING.remove(key);
     }
 
+    private static synchronized void fail(String key) {
+        LOADING.remove(key);
+        long now = System.currentTimeMillis();
+        if (FAILED.size() >= 256) {
+            FAILED.values().removeIf(at -> now - at >= RETRY_FAILED_MS);
+        }
+        FAILED.put(key, now);
+    }
+
+    private static boolean recentlyFailed(String key) {
+        Long at = FAILED.get(key);
+        if (at == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() - at >= RETRY_FAILED_MS) {
+            FAILED.remove(key);
+            return false;
+        }
+        return true;
+    }
+
+    /** 网易云图床支持按尺寸出图；封面最大也就显示一两百像素，没必要下载原图（常见 1000px+）。 */
+    private static String sizedCoverUrl(String url) {
+        if (url.contains(".music.126.net/") && url.indexOf('?') < 0) {
+            return url + "?param=300y300";
+        }
+        return url;
+    }
+
     private static void deleteTexture(ResourceLocation location) {
         if (location == null) {
             return;
@@ -241,7 +279,8 @@ public final class MusicTextures {
 
     private static void upload(final String key, final BufferedImage raw) {
         if (raw == null) {
-            unmark(key);
+            // ImageIO 认不出格式：同一份字节再试也一样。
+            fail(key);
             return;
         }
         final BufferedImage argb = toArgb(raw);

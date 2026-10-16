@@ -11,6 +11,8 @@ import top.fpsmaster.modules.music.MusicManager;
 import top.fpsmaster.modules.music.MusicTextures;
 import top.fpsmaster.music.Lyric;
 import top.fpsmaster.music.LyricLine;
+import top.fpsmaster.music.MusicApiException;
+import top.fpsmaster.music.MusicErrorKind;
 import top.fpsmaster.music.MusicSource;
 import top.fpsmaster.music.QrCode;
 import top.fpsmaster.music.QrLoginState;
@@ -41,6 +43,17 @@ public class MusicScreen extends ScaledGuiScreen {
     private volatile List<MusicManager.PlaylistItem> playlists = new ArrayList<MusicManager.PlaylistItem>();
     private volatile String listTitle = "";
     private volatile String loginStatus = "";
+    /*
+     * List states for Prism: an empty list alone cannot say "loading", "nothing found", "log in first"
+     * or "request failed". The request counters drop answers that arrive after a newer request (search
+     * typed while discover was still loading, for example). Written on the client thread only.
+     */
+    private MusicBridge.ListState tracksState = MusicBridge.ListState.READY;
+    private String tracksError = "";
+    private int tracksRequest;
+    private MusicBridge.ListState playlistsState = MusicBridge.ListState.READY;
+    private String playlistsError = "";
+    private int playlistsRequest;
 
     public MusicScreen() {
         this(null);
@@ -57,8 +70,80 @@ public class MusicScreen extends ScaledGuiScreen {
         }
         try {
             refreshLocalTracks(FileUtils.musicDirectory());
-        } catch (RuntimeException exception) {
-            ClientLogger.warn("Failed to scan local music folder: " + exception.getMessage());
+        } catch (IllegalStateException exception) {
+            ClientLogger.warn("Music folder is unavailable: " + exception.getMessage());
+        }
+    }
+
+    private MusicManager.Cb<List<Track>> tracksCallback() {
+        final int request = ++tracksRequest;
+        tracksState = MusicBridge.ListState.LOADING;
+        tracksError = "";
+        return (result, error) -> {
+            if (request != tracksRequest) return;
+            if (error != null) {
+                tracks = new ArrayList<Track>();
+                settle(error, true);
+                return;
+            }
+            tracks = result == null ? new ArrayList<Track>() : result;
+            tracksState = MusicBridge.ListState.READY;
+        };
+    }
+
+    private MusicManager.Cb<List<MusicManager.PlaylistItem>> playlistsCallback() {
+        final int request = ++playlistsRequest;
+        playlistsState = MusicBridge.ListState.LOADING;
+        playlistsError = "";
+        return (result, error) -> {
+            if (request != playlistsRequest) return;
+            if (error != null) {
+                playlists = new ArrayList<MusicManager.PlaylistItem>();
+                settle(error, false);
+                return;
+            }
+            playlists = result == null ? new ArrayList<MusicManager.PlaylistItem>() : result;
+            playlistsState = MusicBridge.ListState.READY;
+        };
+    }
+
+    private void settle(Throwable error, boolean trackList) {
+        boolean needLogin = error instanceof MusicApiException
+                && ((MusicApiException) error).getKind() == MusicErrorKind.NOT_LOGGED_IN;
+        MusicBridge.ListState state = needLogin ? MusicBridge.ListState.NEED_LOGIN : MusicBridge.ListState.ERROR;
+        String reason = needLogin ? "" : describe(error);
+        if (!needLogin) {
+            ClientLogger.warn("Music list request failed: " + error);
+        }
+        if (trackList) {
+            tracksState = state;
+            tracksError = reason;
+        } else {
+            playlistsState = state;
+            playlistsError = reason;
+        }
+    }
+
+    /** User-facing reason for a failed request, by Cadence's error kind rather than its English message. */
+    private static String describe(Throwable error) {
+        if (!(error instanceof MusicApiException)) {
+            return String.format(FPSMaster.i18n.get("music.error.unknown"), error.getClass().getSimpleName());
+        }
+        MusicApiException api = (MusicApiException) error;
+        switch (api.getKind()) {
+            case NETWORK:
+                return FPSMaster.i18n.get("music.error.network");
+            case TIMEOUT:
+                return FPSMaster.i18n.get("music.error.timeout");
+            case NOT_LOGGED_IN:
+                return FPSMaster.i18n.get("music.error.notloggedin");
+            case RISK_CONTROL:
+                return FPSMaster.i18n.get("music.error.risk");
+            case BAD_RESPONSE:
+                return FPSMaster.i18n.get("music.error.badresponse");
+            default:
+                Integer code = api.getPlatformCode();
+                return String.format(FPSMaster.i18n.get("music.error.api"), code == null ? "?" : String.valueOf(code));
         }
     }
 
@@ -115,8 +200,8 @@ public class MusicScreen extends ScaledGuiScreen {
         @Override public void setQq(boolean qq) { music.setSource(qq ? MusicSource.QQ : MusicSource.NETEASE); }
         @Override public boolean loggedIn() { return music.isLoggedIn(); }
         @Override public String status() { return music.getStatus(); }
-        @Override public String nowTitle() { Track track = music.getCurrent(); return track == null ? "未在播放" : track.getName(); }
-        @Override public String nowArtist() { Track track = music.getCurrent(); return track == null ? (qq() ? "QQ 音乐" : "网易云音乐") : track.getArtists(); }
+        @Override public String nowTitle() { Track track = music.getCurrent(); return track == null ? i18n("music.lyrics.idle") : track.getName(); }
+        @Override public String nowArtist() { Track track = music.getCurrent(); return track == null ? i18n(qq() ? "music.source.qq" : "music.source.netease") : track.getArtists(); }
         @Override public boolean playing() { return music.engine().isPlaying(); }
         @Override public boolean paused() { return music.engine().isPaused(); }
         @Override public long positionMs() { return music.engine().getPositionMs(); }
@@ -170,19 +255,23 @@ public class MusicScreen extends ScaledGuiScreen {
         }
 
         @Override public String listTitle() { return listTitle; }
+        @Override public ListState tracksState() { return tracksState; }
+        @Override public String tracksError() { return tracksError; }
+        @Override public ListState playlistsState() { return playlistsState; }
+        @Override public String playlistsError() { return playlistsError; }
+
         @Override public void search(final String query) {
-            listTitle = "搜索: " + query;
-            music.search(query, (result, error) -> tracks = result == null ? new ArrayList<Track>() : result);
+            listTitle = String.format(i18n("music.list.search"), query);
+            music.search(query, tracksCallback());
         }
 
         @Override public void loadDiscover() {
-            listTitle = qq() ? "QQ 热歌榜" : "每日推荐";
-            music.loadDiscover((result, error) -> tracks = result == null ? new ArrayList<Track>() : result);
+            listTitle = i18n(qq() ? "music.list.toplist" : "music.list.daily");
+            music.loadDiscover(tracksCallback());
         }
 
         @Override public void loadPlaylists() {
-            music.loadPlaylists((result, error) -> playlists = result == null
-                    ? new ArrayList<MusicManager.PlaylistItem>() : result);
+            music.loadPlaylists(playlistsCallback());
         }
 
         @Override public boolean playlists() { return !playlists.isEmpty(); }
@@ -193,7 +282,7 @@ public class MusicScreen extends ScaledGuiScreen {
             if (index < 0 || index >= snapshot.size()) return;
             MusicManager.PlaylistItem playlist = snapshot.get(index);
             listTitle = playlist.name;
-            music.loadPlaylistTracks(playlist, (result, error) -> tracks = result == null ? new ArrayList<Track>() : result);
+            music.loadPlaylistTracks(playlist, tracksCallback());
         }
 
         @Override
@@ -207,15 +296,15 @@ public class MusicScreen extends ScaledGuiScreen {
 
         @Override
         public void startLogin() {
-            loginStatus = "二维码生成中…";
+            loginStatus = i18n("music.login.status.generating");
             music.startQrLogin(new MusicManager.Cb<QrLoginState>() {
                 @Override
                 public void done(QrLoginState state, Throwable error) {
-                    if (error != null || state == QrLoginState.ERROR) loginStatus = "登录失败，请刷新重试";
-                    else if (state == QrLoginState.WAITING) loginStatus = "等待扫码…";
-                    else if (state == QrLoginState.SCANNED) loginStatus = "已扫码，请在手机确认";
-                    else if (state == QrLoginState.CONFIRMED) loginStatus = "登录成功";
-                    else if (state == QrLoginState.EXPIRED) loginStatus = "二维码已过期，请刷新";
+                    if (error != null || state == QrLoginState.ERROR) loginStatus = i18n("music.login.status.failed");
+                    else if (state == QrLoginState.WAITING) loginStatus = i18n("music.login.status.waiting");
+                    else if (state == QrLoginState.SCANNED) loginStatus = i18n("music.login.status.scanned");
+                    else if (state == QrLoginState.CONFIRMED) loginStatus = i18n("music.login.status.ok");
+                    else if (state == QrLoginState.EXPIRED) loginStatus = i18n("music.login.status.expired");
                 }
             });
         }
@@ -237,7 +326,7 @@ public class MusicScreen extends ScaledGuiScreen {
         @Override
         public void submitQqCookie(String musicId, String musicKey) {
             music.qqCookieLogin(musicId, musicKey, (result, error) ->
-                    loginStatus = Boolean.TRUE.equals(result) ? "登录成功" : "Cookie 登录失败");
+                    loginStatus = i18n(Boolean.TRUE.equals(result) ? "music.login.status.ok" : "music.login.status.cookiefailed"));
         }
 
         @Override
@@ -290,13 +379,17 @@ public class MusicScreen extends ScaledGuiScreen {
         refreshLocalTracks(folder);
     }
 
-    private void refreshLocalTracks(File folder) {
-        File[] files = folder.listFiles();
-        if (files == null) {
-            localTracks = new ArrayList<Track>();
-            return;
-        }
-        localTracks = toLocalTracks(files);
+    /**
+     * Scans the music folder off the client thread. One listing serves both the audio files and the
+     * cover lookup: the old version listed the folder again for every song (O(n²) on the render
+     * thread, a visible hitch with a few hundred files).
+     */
+    private void refreshLocalTracks(final File folder) {
+        FPSMaster.async.runnable(() -> {
+            File[] files = folder.listFiles();
+            final List<Track> scanned = files == null ? new ArrayList<Track>() : toLocalTracks(files);
+            mc.addScheduledTask(() -> localTracks = scanned);
+        });
     }
 
     private static String format(long millis) {
@@ -305,36 +398,31 @@ public class MusicScreen extends ScaledGuiScreen {
     }
 
     private static List<Track> toLocalTracks(File[] files) {
+        java.util.Map<String, File> byLowerName = new java.util.HashMap<String, File>();
+        for (File file : files) {
+            if (file.isFile()) byLowerName.put(file.getName().toLowerCase(java.util.Locale.ROOT), file);
+        }
+        String localArtist = FPSMaster.i18n.get("music.local.title");
         List<Track> result = new ArrayList<Track>();
         for (File file : files) {
             if (!file.isFile() || !isLocalAudio(file.getName())) continue;
             String name = file.getName();
             int dot = name.lastIndexOf('.');
             if (dot > 0) name = name.substring(0, dot);
-            File cover = localCover(file);
+            File cover = localCover(name.toLowerCase(java.util.Locale.ROOT), byLowerName);
             result.add(new Track(MusicSource.NETEASE, file.toURI().toString(), null, name,
-                    "本地音乐", "", 0L, cover == null ? null : cover.toURI().toString(), false));
+                    localArtist, "", 0L, cover == null ? null : cover.toURI().toString(), false));
         }
         return result;
     }
 
-    private static File localCover(File audio) {
-        File directory = audio.getParentFile();
-        File[] files = directory == null ? null : directory.listFiles();
-        if (files == null) return null;
-        String audioName = audio.getName();
-        int dot = audioName.lastIndexOf('.');
-        String base = (dot > 0 ? audioName.substring(0, dot) : audioName).toLowerCase(java.util.Locale.ROOT);
+    private static File localCover(String base, java.util.Map<String, File> byLowerName) {
         String[] names = {base, "cover", "folder"};
         String[] extensions = {"png", "jpg", "jpeg"};
         for (String name : names) {
             for (String extension : extensions) {
-                String expected = name + "." + extension;
-                for (File file : files) {
-                    if (file.isFile() && file.getName().toLowerCase(java.util.Locale.ROOT).equals(expected)) {
-                        return file;
-                    }
-                }
+                File file = byLowerName.get(name + "." + extension);
+                if (file != null) return file;
             }
         }
         return null;

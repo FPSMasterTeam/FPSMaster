@@ -25,6 +25,10 @@ import java.net.URL;
  *
  * <p>解码与播放在后台线程进行，绝不阻塞渲染线程；曲目自然播完时通过
  * {@link Minecraft#addScheduledTask(Runnable)} 在主线程回调 {@code onEnded}。
+ *
+ * <p>每次播放是一个独立的 {@link Session}：线程只认自己的会话，只有当前会话能改进度、时长和音量控件。
+ * 以前所有播放共用一个 {@code stopped} 标志，旧线程卡在慢速下载里时，新曲目把标志改回 false，
+ * 旧线程醒来就接着播，两首歌叠在一起；停止也不再在主线程 join，而是断开旧连接让阻塞的读立即失败。
  */
 public class AudioEngine {
 
@@ -32,22 +36,41 @@ public class AudioEngine {
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
                     + "Chrome/123.0.0.0 Safari/537.36";
 
-    private volatile Thread playThread;
-    private volatile boolean stopped = true;
+    /** One playback: its thread, connection and controls. Cancelled sessions only clean up after themselves. */
+    private static final class Session {
+        volatile boolean cancelled;
+        /** Still downloading: nothing audible yet. */
+        volatile boolean buffering;
+        volatile HttpURLConnection connection;
+        volatile long pendingSeekMs = -1;
+        volatile FloatControl gainControl;
+        Thread thread;
+
+        void cancel() {
+            cancelled = true;
+            HttpURLConnection conn = connection;
+            if (conn != null) {
+                // Socket reads ignore interrupts; disconnecting makes a read blocked on a slow CDN
+                // fail now instead of after the 20 s read timeout.
+                conn.disconnect();
+            }
+            Thread t = thread;
+            if (t != null) {
+                t.interrupt();
+            }
+        }
+    }
+
+    private volatile Session current;
     private volatile boolean paused = false;
 
     private volatile long positionMs = 0;
     private volatile long durationMs = 0;
-    private volatile long pendingSeekMs = -1;
     private volatile float volume = 0.7f; // 0..1
-    private volatile FloatControl gainControl;
 
-    private volatile File currentTemp;
-    private final Object lock = new Object();
-
-    /** 是否正在播放（含暂停态时也算“有曲目”）。 */
+    /** 是否有曲目（含暂停与缓冲中）。 */
     public boolean isActive() {
-        return !stopped;
+        return current != null;
     }
 
     public boolean isPaused() {
@@ -55,7 +78,14 @@ public class AudioEngine {
     }
 
     public boolean isPlaying() {
-        return !stopped && !paused;
+        Session session = current;
+        return session != null && !session.buffering && !paused;
+    }
+
+    /** 正在下载、还没开始出声。 */
+    public boolean isBuffering() {
+        Session session = current;
+        return session != null && session.buffering;
     }
 
     public long getPositionMs() {
@@ -79,27 +109,26 @@ public class AudioEngine {
      * @param onEnded     曲目自然播完时在主线程回调；可为 null。
      */
     public void play(final String url, final String referer, long knownDurationMs, final Runnable onEnded) {
-        stop();
-        synchronized (lock) {
-            stopped = false;
-            paused = false;
-            positionMs = 0;
-            durationMs = knownDurationMs;
-            pendingSeekMs = -1;
-        }
-        final Thread t = new Thread(new Runnable() {
+        final Session session = begin(knownDurationMs);
+        session.buffering = true;
+        start(session, new Runnable() {
             @Override
             public void run() {
                 File temp = null;
                 try {
-                    temp = downloadToTemp(url, referer);
-                    synchronized (lock) {
-                        currentTemp = temp;
+                    temp = downloadToTemp(session, url, referer);
+                    if (temp == null) {
+                        return;
                     }
-                    playLoop(temp, onEnded);
+                    session.buffering = false;
+                    playLoop(session, temp, onEnded);
                 } catch (Throwable e) {
-                    ClientLogger.error("Music playback failed: " + e.getMessage());
+                    if (!session.cancelled) {
+                        ClientLogger.error("Music playback failed: " + e.getMessage());
+                        finish(session);
+                    }
                 } finally {
+                    session.buffering = false;
                     if (temp != null) {
                         //noinspection ResultOfMethodCallIgnored
                         temp.delete();
@@ -107,44 +136,59 @@ public class AudioEngine {
                 }
             }
         }, "FPSMaster-Music-Audio");
-        t.setDaemon(true);
-        synchronized (lock) {
-            playThread = t;
-        }
-        t.start();
     }
 
     public void playFile(final File file, long knownDurationMs, final Runnable onEnded) {
-        stop();
-        synchronized (lock) {
-            stopped = false;
-            paused = false;
-            positionMs = 0;
-            durationMs = knownDurationMs;
-            pendingSeekMs = -1;
-        }
-        final Thread t = new Thread(new Runnable() {
+        final Session session = begin(knownDurationMs);
+        start(session, new Runnable() {
             @Override
             public void run() {
                 try {
-                    playLoop(file, onEnded);
+                    playLoop(session, file, onEnded);
                 } catch (Throwable e) {
-                    ClientLogger.error("Local music playback failed: " + e.getMessage());
+                    if (!session.cancelled) {
+                        ClientLogger.error("Local music playback failed: " + e.getMessage());
+                        finish(session);
+                    }
                 }
             }
         }, "FPSMaster-Music-Local");
+    }
+
+    private Session begin(long knownDurationMs) {
+        stop();
+        Session session = new Session();
+        paused = false;
+        positionMs = 0;
+        durationMs = knownDurationMs;
+        current = session;
+        return session;
+    }
+
+    private void start(Session session, Runnable body, String name) {
+        Thread t = new Thread(body, name);
         t.setDaemon(true);
-        synchronized (lock) {
-            playThread = t;
-        }
+        session.thread = t;
         t.start();
     }
 
-    private void playLoop(File file, Runnable onEnded) throws Exception {
+    /** The session ended on its own (finished or failed): it is no longer the current one. */
+    private void finish(Session session) {
+        if (current == session) {
+            current = null;
+            paused = false;
+        }
+    }
+
+    private boolean live(Session session) {
+        return !session.cancelled && current == session;
+    }
+
+    private void playLoop(Session session, File file, Runnable onEnded) throws Exception {
         long startMs = 0;
         boolean endedNaturally = false;
 
-        while (!stopped) {
+        while (live(session)) {
             AudioInputStream fileIn = null;
             AudioInputStream din = null;
             SourceDataLine line = null;
@@ -165,7 +209,7 @@ public class AudioEngine {
                 line = (SourceDataLine) AudioSystem.getLine(info);
                 line.open(decoded);
                 line.start();
-                applyGain(line);
+                applyGain(session, line);
 
                 double bytesPerMs = decoded.getFrameRate() * decoded.getFrameSize() / 1000.0;
                 int frameSize = Math.max(1, decoded.getFrameSize());
@@ -179,17 +223,17 @@ public class AudioEngine {
                     // not others, and why seeking again "fixed" it.
                     long skipBytes = (long) (startMs * bytesPerMs);
                     skipBytes -= skipBytes % frameSize;
-                    skipDecoded(din, skipBytes);
+                    skipDecoded(session, din, skipBytes);
                 }
                 long posBytes = 0;
                 byte[] buf = new byte[4096];
                 // Bytes left over from the previous read that do not yet complete a frame.
                 int carry = 0;
 
-                while (!stopped) {
-                    long seek = pendingSeekMs;
+                while (live(session)) {
+                    long seek = session.pendingSeekMs;
                     if (seek >= 0) {
-                        pendingSeekMs = -1;
+                        session.pendingSeekMs = -1;
                         startMs = seek;
                         seekBreak = true;
                         // Discard whatever is still queued in the line before tearing it down. The
@@ -217,18 +261,22 @@ public class AudioEngine {
                     if (writable > 0) {
                         line.write(buf, 0, writable);
                         posBytes += writable;
-                        positionMs = startMs + (long) (posBytes / bytesPerMs);
+                        if (current == session) {
+                            positionMs = startMs + (long) (posBytes / bytesPerMs);
+                        }
                     }
                     carry = available - writable;
                     if (carry > 0) {
                         System.arraycopy(buf, writable, buf, 0, carry);
                     }
                 }
+            } catch (InterruptedException cancelledWhilePaused) {
+                return;
             } finally {
                 closeQuietly(line, din, fileIn);
             }
 
-            if (stopped) {
+            if (!live(session)) {
                 return;
             }
             if (seekBreak) {
@@ -239,20 +287,20 @@ public class AudioEngine {
             }
         }
 
-        if (endedNaturally && !stopped && onEnded != null) {
-            stopped = true;
+        if (endedNaturally && live(session)) {
+            finish(session);
             Minecraft mc = Minecraft.getMinecraft();
-            if (mc != null) {
+            if (onEnded != null && mc != null) {
                 mc.addScheduledTask(onEnded);
             }
         }
     }
 
     /** 逐块读丢弃到目标字节数（mp3spi 的 skip 不可靠，故用读丢弃）。 */
-    private void skipDecoded(AudioInputStream din, long bytes) throws Exception {
+    private void skipDecoded(Session session, AudioInputStream din, long bytes) throws Exception {
         byte[] junk = new byte[4096];
         long remaining = bytes;
-        while (remaining > 0 && !stopped) {
+        while (remaining > 0 && live(session)) {
             int toRead = (int) Math.min(junk.length, remaining);
             int n = din.read(junk, 0, toRead);
             if (n < 0) break;
@@ -260,17 +308,18 @@ public class AudioEngine {
         }
     }
 
-    private void applyGain(SourceDataLine line) {
+    private void applyGain(Session session, SourceDataLine line) {
         try {
             if (line.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
                 FloatControl ctl = (FloatControl) line.getControl(FloatControl.Type.MASTER_GAIN);
-                gainControl = ctl;
+                session.gainControl = ctl;
                 setGainDb(ctl, volume);
             } else {
-                gainControl = null;
+                session.gainControl = null;
             }
-        } catch (Exception ignored) {
-            gainControl = null;
+        } catch (Exception unsupported) {
+            // Some mixers advertise MASTER_GAIN and then refuse it; playback still works at line level.
+            session.gainControl = null;
         }
     }
 
@@ -293,11 +342,13 @@ public class AudioEngine {
         if (vol < 0) vol = 0;
         if (vol > 1) vol = 1;
         this.volume = vol;
-        FloatControl ctl = gainControl;
+        Session session = current;
+        FloatControl ctl = session == null ? null : session.gainControl;
         if (ctl != null) {
             try {
                 setGainDb(ctl, vol);
-            } catch (Exception ignored) {
+            } catch (Exception lineClosed) {
+                // The line closed between the read and the call; the next line picks the volume up.
             }
         }
     }
@@ -316,36 +367,39 @@ public class AudioEngine {
 
     /** 跳转到指定毫秒。 */
     public void seek(long ms) {
+        Session session = current;
+        if (session == null) {
+            return;
+        }
         if (ms < 0) ms = 0;
         if (durationMs > 0 && ms > durationMs) ms = durationMs;
         positionMs = ms;
-        pendingSeekMs = ms;
+        session.pendingSeekMs = ms;
         paused = false;
     }
 
-    /** 停止并释放当前曲目。 */
+    /**
+     * 停止当前曲目。不等待旧线程：它在断开的连接或下一次循环检查时自己退出并清理，
+     * 主线程不会再因此卡住。
+     */
     public void stop() {
-        Thread t;
-        synchronized (lock) {
-            stopped = true;
-            paused = false;
-            t = playThread;
-            playThread = null;
-        }
-        if (t != null) {
-            t.interrupt();
-            try {
-                t.join(500);
-            } catch (InterruptedException ignored) {
-                Thread.currentThread().interrupt();
-            }
+        Session session = current;
+        current = null;
+        paused = false;
+        if (session != null) {
+            session.cancel();
         }
         positionMs = 0;
-        gainControl = null;
     }
 
-    private File downloadToTemp(String url, String referer) throws Exception {
+    /** 下载到临时文件；会话被取消时返回 null。 */
+    private File downloadToTemp(Session session, String url, String referer) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+        session.connection = conn;
+        if (session.cancelled) {
+            conn.disconnect();
+            return null;
+        }
         conn.setInstanceFollowRedirects(true);
         conn.setConnectTimeout(10_000);
         conn.setReadTimeout(20_000);
@@ -363,13 +417,30 @@ public class AudioEngine {
             byte[] buf = new byte[16384];
             int n;
             while ((n = in.read(buf)) != -1) {
-                if (stopped) break;
+                if (session.cancelled) {
+                    break;
+                }
                 out.write(buf, 0, n);
             }
+        } catch (java.io.IOException failure) {
+            closeQuietly(out);
+            out = null;
+            //noinspection ResultOfMethodCallIgnored
+            temp.delete();
+            if (session.cancelled) {
+                return null;
+            }
+            throw failure;
         } finally {
             closeQuietly(in);
             closeQuietly(out);
             conn.disconnect();
+            session.connection = null;
+        }
+        if (session.cancelled) {
+            //noinspection ResultOfMethodCallIgnored
+            temp.delete();
+            return null;
         }
         return temp;
     }
@@ -380,7 +451,8 @@ public class AudioEngine {
                 line.stop();
                 line.flush();
                 line.close();
-            } catch (Exception ignored) {
+            } catch (Exception alreadyClosed) {
+                // Teardown of a line the mixer already dropped; nothing left to release.
             }
         }
         closeQuietly(din);
@@ -391,7 +463,8 @@ public class AudioEngine {
         if (c != null) {
             try {
                 c.close();
-            } catch (Exception ignored) {
+            } catch (Exception alreadyClosed) {
+                // Closing is best effort during teardown.
             }
         }
     }
