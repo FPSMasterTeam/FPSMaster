@@ -25,6 +25,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.opengl.GLContext;
 import top.fpsmaster.features.impl.interfaces.MiniMap;
+import top.fpsmaster.modules.logger.ClientLogger;
 import top.fpsmaster.forge.api.IMinecraft;
 import top.fpsmaster.ui.minimap.animation.MinimapAnimation;
 import top.fpsmaster.ui.minimap.interfaces.Interface;
@@ -38,7 +39,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static top.fpsmaster.utils.core.Utility.mc;
 
@@ -69,11 +71,18 @@ public class Minimap {
     public MapLoader loader;
     public MinimapChunk[][] currentBlocks;
     public MinimapChunk[][] loadingBlocks;
-    public static boolean frameIsUpdating;
-    public static boolean frameUpdateNeeded;
-    public static int bufferSizeToUpdate;
-    public static float frameUpdatePartialTicks;
-    public static boolean updatePause;
+    /*
+     * Shared between the MapLoader thread and the render thread, hence volatile; the map texture's
+     * ByteBuffer itself is only touched under BUFFER_LOCK (put/flip on either thread, upload on the
+     * render thread) — unsynchronized, a put on one thread moved the position under the other's
+     * upload and threw or uploaded garbage.
+     */
+    public static volatile boolean frameIsUpdating;
+    public static volatile boolean frameUpdateNeeded;
+    public static volatile int bufferSizeToUpdate;
+    public static volatile float frameUpdatePartialTicks;
+    public static volatile boolean updatePause;
+    private static final Object BUFFER_LOCK = new Object();
     private Integer previousTransparentBlock;
     private int underRed;
     private int underGreen;
@@ -83,8 +92,13 @@ public class Minimap {
     public float postBrightness;
     private int blockY;
     private int blockColor;
-    public static HashMap<String, Integer> textureColours;
-    public static HashMap<Integer, Integer> blockColours;
+    public static Map<String, Integer> textureColours;
+    /**
+     * Keyed by the state instance itself (block states are canonical singletons). It used to be
+     * {@code state.toString().hashCode()}: a fresh property string per block column on the loader
+     * thread, and hash collisions that gave two blocks one colour.
+     */
+    public static Map<IBlockState, Integer> blockColours;
     public static boolean clearBlockColours;
     boolean isglowing;
     public int[] lastBlockY;
@@ -134,12 +148,14 @@ public class Minimap {
         this.lastBlockY = new int[16];
         this.drawYState = 0;
         this.screen = i;
-        new Thread(this.loader).start();
+        Thread loaderThread = new Thread(this.loader, "FPSMaster-Minimap-Loader");
+        // Daemon: it polls arch$getRunning(), but must never be what keeps a closing JVM alive.
+        loaderThread.setDaemon(true);
+        loaderThread.start();
     }
 
     public static int loadBlockColourFromTexture(final IBlockState state, final Block b, final BlockPos pos, final boolean convert) {
-        final int stateId = state.toString().hashCode();
-        Integer c = Minimap.blockColours.get(stateId);
+        Integer c = Minimap.blockColours.get(state);
         int red = 0;
         int green = 0;
         int blue = 0;
@@ -202,16 +218,18 @@ public class Minimap {
                     return loadBlockColourFromTexture(state, b, pos, false);
                 }
                 c = b.getMapColor(state).colorValue;
-                Minimap.textureColours.put(name, c);
-                System.out.println("Block file not found: " + b.getLocalizedName());
+                if (name != null) {
+                    Minimap.textureColours.put(name, c);
+                }
+                ClientLogger.debug("Minimap: block texture not found for " + b.getLocalizedName());
             } catch (Exception e2) {
                 c = b.getMapColor(state).colorValue;
                 if (name != null) {
                     Minimap.textureColours.put(name, c);
                 }
-                System.out.println("Block " + b.getLocalizedName() + " has no texture, using material colour.");
+                ClientLogger.debug("Minimap: " + b.getLocalizedName() + " has no texture, using material colour");
             }
-            Minimap.blockColours.put(stateId, c);
+            Minimap.blockColours.put(state, c);
         }
         final int grassColor = b.colorMultiplier(Minecraft.getMinecraft().theWorld, pos);
         if (grassColor != 16777215) {
@@ -607,9 +625,11 @@ public class Minimap {
                 currentState = (byte) ((currentState != 1) ? 1 : 0);
             }
             this.drawYState = (byte) ((this.drawYState != 1) ? 1 : 0);
-            final ByteBuffer buffer = Minimap.mapTexture.getBuffer(bufferSize);
-            buffer.put(this.bytes);
-            buffer.flip();
+            synchronized (BUFFER_LOCK) {
+                final ByteBuffer buffer = Minimap.mapTexture.getBuffer(bufferSize);
+                buffer.put(this.bytes);
+                buffer.flip();
+            }
         }
     }
 
@@ -696,12 +716,13 @@ public class Minimap {
         final boolean zooming = (int) Minimap.zoom != Minimap.zoom;
         final ByteBuffer buffer = Minimap.mapTexture.getBuffer(bufferSize);
         if (mapX != Minimap.mapUpdateX || mapZ != Minimap.mapUpdateZ || zooming || !retryIfError) {
-            if (!Minimap.frameIsUpdating) {
-                Minimap.frameIsUpdating = true;
+            if (tryBeginFrameUpdate()) {
                 this.updateMapFrame(bufferSize, partial);
                 Minimap.frameIsUpdating = false;
-                buffer.put(this.bytes);
-                buffer.flip();
+                synchronized (BUFFER_LOCK) {
+                    buffer.put(this.bytes);
+                    buffer.flip();
+                }
                 Minimap.bufferSizeToUpdate = -1;
                 Minimap.frameUpdateNeeded = false;
             } else {
@@ -714,13 +735,15 @@ public class Minimap {
         GL11.glEnable(3553);
         RenderHelper.disableStandardItemLighting();
         try {
-            bindTextureBuffer(buffer, bufferSize, bufferSize, Minimap.mapTexture.getGlTextureId());
+            synchronized (BUFFER_LOCK) {
+                bindTextureBuffer(buffer, bufferSize, bufferSize, Minimap.mapTexture.getGlTextureId());
+            }
         } catch (Exception e) {
             if (retryIfError) {
-                System.out.println("Error when binding texture buffer. Retrying...");
+                ClientLogger.warn("Minimap texture upload failed, retrying: " + e);
                 this.renderFrameToFBO(bufferSize, viewW, sizeFix, partial, false);
             } else {
-                System.out.println("Error after retrying... :( Please report to Xaero96 on MinecraftForum of PlanetMinecraft!");
+                ClientLogger.warn("Minimap texture upload failed again: " + e);
             }
         }
 
@@ -823,6 +846,15 @@ public class Minimap {
                 GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, image);
     }
 
+    /** Test-and-set for {@link #frameIsUpdating}: both threads may try to rebuild the frame. */
+    private static synchronized boolean tryBeginFrameUpdate() {
+        if (frameIsUpdating) {
+            return false;
+        }
+        frameIsUpdating = true;
+        return true;
+    }
+
     public static boolean shouldRenderEntity(final Entity e) {
         return !e.isSneaking() && !e.isInvisible();
     }
@@ -846,8 +878,8 @@ public class Minimap {
         Minimap.bufferSizeToUpdate = -1;
         Minimap.frameUpdatePartialTicks = 1.0f;
         Minimap.updatePause = false;
-        Minimap.textureColours = new HashMap<>();
-        Minimap.blockColours = new HashMap<>();
+        Minimap.textureColours = new ConcurrentHashMap<>();
+        Minimap.blockColours = new ConcurrentHashMap<>();
         Minimap.clearBlockColours = false;
         Minimap.toResetImage = true;
         Minimap.zoom = 1.0;
@@ -944,22 +976,23 @@ public class Minimap {
                             Minimap.loadedItems = loadingItems;
                             Minimap.loadedEntities = loadingEntities;
                         }
-                        if (!Minimap.frameIsUpdating && Minimap.frameUpdateNeeded) {
+                        if (Minimap.frameUpdateNeeded && tryBeginFrameUpdate()) {
                             Minimap.frameUpdateNeeded = false;
-                            Minimap.frameIsUpdating = true;
                             Minimap.bufferSizeToUpdate = Minimap.this.getFBOBufferSize();
                             Minimap.this.updateMapFrame(Minimap.bufferSizeToUpdate, Minimap.frameUpdatePartialTicks);
                             Minimap.frameIsUpdating = false;
                         }
                         if (!Minimap.updatePause && Minimap.bufferSizeToUpdate != -1) {
-                            final ByteBuffer buffer = Minimap.mapTexture.getBuffer(Minimap.bufferSizeToUpdate);
-                            buffer.put(Minimap.this.bytes);
-                            buffer.flip();
+                            synchronized (BUFFER_LOCK) {
+                                final ByteBuffer buffer = Minimap.mapTexture.getBuffer(Minimap.bufferSizeToUpdate);
+                                buffer.put(Minimap.this.bytes);
+                                buffer.flip();
+                            }
                             Minimap.bufferSizeToUpdate = -1;
                         }
                     }
                 } catch (Exception e2) {
-                    e2.printStackTrace();
+                    ClientLogger.warn("Minimap loader pass failed: " + e2);
                     Minimap.frameIsUpdating = false;
                 }
                 final int passed = (int) (System.currentTimeMillis() - before);
@@ -970,7 +1003,8 @@ public class Minimap {
                         Thread.sleep(1L);
                     }
                 } catch (InterruptedException e3) {
-                    e3.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    return;
                 }
             }
         }
