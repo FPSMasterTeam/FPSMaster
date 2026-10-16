@@ -251,7 +251,11 @@ public final class SignInScreen extends ScaledGuiScreen {
 
         @Override
         public boolean canOpenWebsite() {
-            return Desktop.isDesktopSupported();
+            // Called every frame. Desktop.isDesktopSupported() initializes the AWT toolkit, which on
+            // macOS spins up AppKit/CoreAudio-adjacent machinery next to LWJGL's own; two of four
+            // macOS hs_err logs crashed shortly after AWT threads appeared. Only a headless JRE truly
+            // cannot browse, and that check does not touch the toolkit; the click handles the rest.
+            return !java.awt.GraphicsEnvironment.isHeadless();
         }
 
         @Override
