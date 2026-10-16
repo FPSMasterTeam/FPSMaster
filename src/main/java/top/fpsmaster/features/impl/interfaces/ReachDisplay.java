@@ -28,7 +28,9 @@ public class ReachDisplay extends InterfaceModule {
         if (entity != null && mc.theWorld != null) {
             if (mc.objectMouseOver == null || mc.objectMouseOver.entityHit == null)
                 return;
-            reach = Double.parseDouble(String.format("%.2f", distance));
+            // Rounded numerically: String.format uses the default locale, "3,45" on de/fr/ru/tr systems,
+            // which parseDouble rejects.
+            reach = Math.round(distance * 100.0) / 100.0;
         }
     }
 }

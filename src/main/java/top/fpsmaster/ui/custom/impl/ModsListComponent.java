@@ -56,7 +56,7 @@ public class ModsListComponent extends Component {
 
         Map<Module, Float> widths = new HashMap<>();
         for (Module m : FPSMaster.moduleManager.modules) {
-            String label = modlist.english.getValue() ? m.name : FPSMaster.i18n.get(m.name.toLowerCase());
+            String label = modlist.english.getValue() ? m.name : FPSMaster.i18n.get(m.name.toLowerCase(java.util.Locale.ROOT));
             widths.put(m, getStringWidth(18, label));
         }
         List<Module> sortedVisible = FPSMaster.moduleManager.modules.stream()
@@ -117,7 +117,7 @@ public class ModsListComponent extends Component {
         for (Module module : displayList) {
             float p = animated ? Math.max(progress.getOrDefault(module, 1f), 0.01f) : 1f;
 
-            String name = modlist.english.getValue() ? module.name : FPSMaster.i18n.get(module.name.toLowerCase());
+            String name = modlist.english.getValue() ? module.name : FPSMaster.i18n.get(module.name.toLowerCase(java.util.Locale.ROOT));
             float textWidth = getStringWidth(18, name);
             maxWidth = Math.max(maxWidth, textWidth + 5);
 

@@ -118,8 +118,8 @@ public final class HudEditorScreen extends ScaledGuiScreen {
         }
 
         private String label(Component component) {
-            String translated = FPSMaster.i18n.get(component.mod.name.toLowerCase());
-            return translated.equals(component.mod.name.toLowerCase()) ? component.mod.name : translated;
+            String translated = FPSMaster.i18n.get(component.mod.name.toLowerCase(java.util.Locale.ROOT));
+            return translated.equals(component.mod.name.toLowerCase(java.util.Locale.ROOT)) ? component.mod.name : translated;
         }
 
         private Viewport viewport(float hudWidth, float hudHeight) {
