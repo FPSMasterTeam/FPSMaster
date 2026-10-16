@@ -152,12 +152,31 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: FPSMasterTeam/fpsmaster-prism
-          ref: 1a3b61b2d75b9be6bed583ad08b52fb0016e8b83
+          # TODO: Edge 依赖 prism 0.2.2，这里先指向 fix/prism-review 的提交；
+          #       Prism 合并到主分支后改成合并后的提交（或 0.2.2 的 tag）。
+          ref: e3b6e244f912828bd11d777683c47efd94c79121
           path: fpsmaster-prism
 
       - name: Install Prism UI
         if: steps.decision.outputs.should_build == 'true'
         working-directory: fpsmaster-prism
+        run: |
+          chmod +x ./gradlew
+          ./gradlew publishToMavenLocal
+
+      # Cadence (top.fpsmaster:music-api) 0.1.2 没有发布到 JitPack，和 Prism 一样从源码装进 mavenLocal。
+      - name: Check out Cadence
+        if: steps.decision.outputs.should_build == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: FPSMasterTeam/Cadence
+          # TODO: 先指向 fix/cadence-review 的提交；Cadence 合并并打 0.1.2 tag 后改成合并后的提交。
+          ref: 9e60bab7834a73ed4ceead49ecec2d07af708b80
+          path: cadence
+
+      - name: Install Cadence
+        if: steps.decision.outputs.should_build == 'true'
+        working-directory: cadence
         run: |
           chmod +x ./gradlew
           ./gradlew publishToMavenLocal

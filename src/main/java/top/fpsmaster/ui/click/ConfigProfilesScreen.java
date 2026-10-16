@@ -71,87 +71,87 @@ public class ConfigProfilesScreen extends ScaledGuiScreen {
         @Override public boolean isDefault(String name) { return ConfigProfileUtils.CURRENT_CONFIG.equals(name); }
 
         @Override
-        public String load(String name) {
+        public Result load(String name) {
             try {
                 ConfigProfileUtils.loadProfile(name);
-                return String.format(i18n("configprofiles.status.loaded"), name);
+                return Result.ok(String.format(i18n("configprofiles.status.loaded"), name));
             } catch (Exception e) {
                 return failure("load", "configprofiles.status.load_failed", e);
             }
         }
 
         @Override
-        public String delete(String name) {
+        public Result delete(String name) {
             try {
                 ConfigProfileUtils.deleteProfile(name);
                 if (name.equals(activeName())) ConfigProfileUtils.loadProfileWithoutSavingCurrent(ConfigProfileUtils.CURRENT_CONFIG);
-                return String.format(i18n("configprofiles.status.deleted"), name);
+                return Result.ok(String.format(i18n("configprofiles.status.deleted"), name));
             } catch (Exception e) {
                 return failure("delete", "configprofiles.status.delete_failed", e);
             }
         }
 
         @Override
-        public String rename(String from, String to) {
+        public Result rename(String from, String to) {
             try {
                 String renamed = ConfigProfileUtils.renameProfile(from, to, "");
                 if (from.equals(activeName())) ConfigProfileUtils.setActiveProfileName(renamed);
-                return String.format(i18n("configprofiles.status.renamed"), renamed);
+                return Result.ok(String.format(i18n("configprofiles.status.renamed"), renamed));
             } catch (FileException e) {
                 return failure("rename", "configprofiles.status.rename_failed", e);
             }
         }
 
         @Override
-        public String create(String name) {
+        public Result create(String name) {
             try {
                 String created = ConfigProfileUtils.saveCurrentAs(name);
-                return String.format(i18n("configprofiles.status.renamed"), created);
+                return Result.ok(String.format(i18n("configprofiles.status.renamed"), created));
             } catch (FileException e) {
                 return failure("create", "configprofiles.status.rename_failed", e);
             }
         }
 
         @Override
-        public String exportActive() {
+        public Result exportActive() {
             FileDialog dialog = new FileDialog((Frame) null, i18n("configprofiles.filedialog.export"), FileDialog.SAVE);
             dialog.setDirectory(ConfigProfileUtils.getProfileDir().getAbsolutePath());
             dialog.setFile(activeName() + ".json");
             dialog.setVisible(true);
-            if (dialog.getFile() == null) return "";
+            if (dialog.getFile() == null) return Result.ok("");
             File target = new File(dialog.getDirectory(), dialog.getFile());
             if (!target.getName().toLowerCase(Locale.ROOT).endsWith(".json")) {
                 target = new File(target.getParentFile(), target.getName() + ".json");
             }
             try {
                 ConfigProfileUtils.exportActiveProfile(target);
-                return String.format(i18n("configprofiles.status.exported"), target.getName());
+                return Result.ok(String.format(i18n("configprofiles.status.exported"), target.getName()));
             } catch (FileException e) {
                 return failure("export", "configprofiles.status.export_failed", e);
             }
         }
 
         @Override
-        public String importFile() {
+        public Result importFile() {
             FileDialog dialog = new FileDialog((Frame) null, i18n("configprofiles.filedialog.import"), FileDialog.LOAD);
             dialog.setDirectory(ConfigProfileUtils.getProfileDir().getAbsolutePath());
             dialog.setFilenameFilter((dir, name) -> name.toLowerCase(Locale.ROOT).endsWith(".json"));
             dialog.setVisible(true);
-            if (dialog.getFile() == null) return "";
+            if (dialog.getFile() == null) return Result.ok("");
             try {
                 String name = ConfigProfileUtils.importProfile(new File(dialog.getDirectory(), dialog.getFile()));
                 ConfigProfileUtils.loadProfile(name);
-                return String.format(i18n("configprofiles.status.imported"), name);
+                return Result.ok(String.format(i18n("configprofiles.status.imported"), name));
             } catch (Exception e) {
                 return failure("import", "configprofiles.status.import_failed", e);
             }
         }
 
         @Override
-        public String resetAllOff() {
+        public Result resetAllOff() {
             try {
                 ConfigProfileUtils.resetActiveProfileToDefaults();
-                return String.format(i18n("configprofiles.status.alloff"), activeName());
+                return Result.ok(String.format(i18n("configprofiles.status.alloff"), activeName()));
             } catch (FileException e) {
                 return failure("reset", "configprofiles.status.alloff_failed", e);
             }
@@ -165,9 +165,9 @@ public class ConfigProfilesScreen extends ScaledGuiScreen {
             }
         }
 
-        private String failure(String action, String key, Exception error) {
+        private Result failure(String action, String key, Exception error) {
             ClientLogger.error("Failed to " + action + " config profile: " + error.getMessage());
-            return i18n(key);
+            return Result.failed(i18n(key));
         }
     }
 }

@@ -1,5 +1,6 @@
 package top.fpsmaster.ui.kit;
 
+import net.minecraft.client.gui.GuiScreen;
 import top.fpsmaster.utils.render.gui.ScaledGuiScreen;
 import top.fpsmaster.prism.input.FrameInput;
 import top.fpsmaster.prism.input.Input;
@@ -116,10 +117,11 @@ final class EdgeInput implements Input {
     }
 
     public String clipboard() {
-        return fallback.clipboard();
+        String text = GuiScreen.getClipboardString();
+        return text == null ? "" : text;
     }
 
     public void setClipboard(String text) {
-        fallback.setClipboard(text);
+        GuiScreen.setClipboardString(text == null ? "" : text);
     }
 }
