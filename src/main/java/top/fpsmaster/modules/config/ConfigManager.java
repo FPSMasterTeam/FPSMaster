@@ -37,6 +37,7 @@ public class ConfigManager {
     private boolean configLoaded;
 
     public Configure configure = new Configure();
+    private volatile String[] recoveryNotice;
 
     public void saveConfigQuietly(String name) {
         if (loadingConfig) {
@@ -189,23 +190,26 @@ public class ConfigManager {
         try {
             File configFile = ConfigProfileUtils.getProfileFile(name);
             ClientLogger.info("Loading config: " + configFile.getAbsolutePath());
+            boolean existed = configFile.isFile() && configFile.length() > 0L;
             String jsonStr = ConfigProfileUtils.readConfigFile(name);
             if (jsonStr.trim().isEmpty()) {
-                ClientLogger.warn("Config file is empty, creating default config: " + configFile.getAbsolutePath());
-                resetConfigToDefaults(name);
+                if (existed) {
+                    recoverCorruptConfig(name, configFile, "empty");
+                } else {
+                    ClientLogger.info("No config yet, creating default config: " + configFile.getAbsolutePath());
+                    resetConfigToDefaults(name);
+                }
                 return;
             }
             JsonObject json;
             try {
                 json = gson.fromJson(jsonStr, JsonObject.class);
             } catch (JsonSyntaxException exception) {
-                ClientLogger.warn("Config file is invalid JSON, resetting: " + name + ".json");
-                resetConfigToDefaults(name);
+                recoverCorruptConfig(name, configFile, "invalid JSON: " + exception.getMessage());
                 return;
             }
             if (json == null) {
-                ClientLogger.warn("Config file is empty or invalid JSON, resetting: " + name + ".json");
-                resetConfigToDefaults(name);
+                recoverCorruptConfig(name, configFile, "not a JSON object");
                 return;
             }
 
@@ -418,31 +422,95 @@ public class ConfigManager {
             }
 
             Shortcut.shortcuts.clear();
-            JsonArray shortcutsJson = Optional.ofNullable(json.getAsJsonArray("shortcuts")).orElse(new JsonArray());
+            JsonElement shortcutsElement = json.get("shortcuts");
+            JsonArray shortcutsJson = shortcutsElement != null && shortcutsElement.isJsonArray()
+                    ? shortcutsElement.getAsJsonArray() : new JsonArray();
             for (JsonElement element : shortcutsJson) {
-                if (element.isJsonObject()) {
-                    JsonObject shortcutJson = element.getAsJsonObject();
-                    ArrayList<Shortcut.Action> actions = new ArrayList<>();
-                    JsonArray actionsJson = shortcutJson.getAsJsonArray("actions");
-                    for (JsonElement actionElement : actionsJson) {
-                        if (actionElement.isJsonObject()) {
-                            JsonObject actionJson = actionElement.getAsJsonObject();
-                            String context = actionJson.has("context")
-                                    ? actionJson.get("context").getAsString()
-                                    : actionJson.has("Context") ? actionJson.get("Context").getAsString() : "";
-                            actions.add(new Shortcut.Action(Shortcut.Action.Type.valueOf(actionJson.get("type").getAsString()), context));
-                        }
+                // One malformed or downgraded entry (unknown action type, missing name/key) used to
+                // throw out of loadConfig and skip the rest of client initialization with it.
+                try {
+                    Shortcut shortcut = parseShortcut(element);
+                    if (shortcut != null) {
+                        Shortcut.shortcuts.add(shortcut);
                     }
-                    Shortcut.shortcuts.add(new Shortcut(shortcutJson.get("name").getAsString(),
-                            shortcutJson.get("key").getAsInt(),
-                            actions
-                    ));
+                } catch (RuntimeException exception) {
+                    ClientLogger.warn("Skipping malformed shortcut in config " + name + ": " + exception);
                 }
             }
         } finally {
             loadingConfig = false;
             configLoaded = true;
         }
+    }
+
+    private static Shortcut parseShortcut(JsonElement element) {
+        if (element == null || !element.isJsonObject()) {
+            return null;
+        }
+        JsonObject shortcutJson = element.getAsJsonObject();
+        ArrayList<Shortcut.Action> actions = new ArrayList<>();
+        JsonElement actionsElement = shortcutJson.get("actions");
+        if (actionsElement != null && actionsElement.isJsonArray()) {
+            for (JsonElement actionElement : actionsElement.getAsJsonArray()) {
+                if (!actionElement.isJsonObject()) {
+                    continue;
+                }
+                JsonObject actionJson = actionElement.getAsJsonObject();
+                String context = actionJson.has("context")
+                        ? actionJson.get("context").getAsString()
+                        : actionJson.has("Context") ? actionJson.get("Context").getAsString() : "";
+                try {
+                    actions.add(new Shortcut.Action(Shortcut.Action.Type.valueOf(actionJson.get("type").getAsString()), context));
+                } catch (IllegalArgumentException unknownType) {
+                    ClientLogger.warn("Skipping shortcut action of unknown type: " + actionJson.get("type"));
+                }
+            }
+        }
+        return new Shortcut(shortcutJson.get("name").getAsString(), shortcutJson.get("key").getAsInt(), actions);
+    }
+
+    /**
+     * A config that exists but cannot be read is never silently replaced by defaults: the damaged file
+     * is kept as {@code <name>.json.corrupt-<time>} for inspection, the newest valid backup is restored
+     * if there is one, and the player is told which of the two happened (see {@link #consumeRecoveryNotice()}).
+     */
+    private void recoverCorruptConfig(String name, File configFile, String reason) throws Exception {
+        ClientLogger.warn("Config " + configFile.getAbsolutePath() + " is unreadable (" + reason + ")");
+        File quarantined = new File(configFile.getParentFile(),
+                configFile.getName() + ".corrupt-" + System.currentTimeMillis());
+        try {
+            Files.move(configFile.toPath(), quarantined.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            ClientLogger.warn("Kept the unreadable config as " + quarantined.getName());
+        } catch (IOException exception) {
+            ClientLogger.warn("Could not keep the unreadable config aside: " + exception.getMessage());
+            quarantined = null;
+        }
+        ConfigBackups.Backup backup = ConfigBackups.forProfiles().newestValid(ConfigProfileUtils.sanitizeProfileName(name));
+        if (backup != null) {
+            try {
+                ConfigProfileUtils.writeBytes(configFile, Files.readAllBytes(backup.getFile().toPath()));
+                ClientLogger.warn("Restored config " + name + " from backup " + backup.getFile().getName());
+                recoveryNotice = new String[]{"config.recovery.restored", name,
+                        new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ROOT).format(new Date(backup.getCreatedAt()))};
+                loadConfig(name);
+                return;
+            } catch (IOException | FileException exception) {
+                ClientLogger.error("Restoring config backup failed: " + exception.getMessage());
+            }
+        }
+        recoveryNotice = new String[]{"config.recovery.reset", name,
+                quarantined == null ? configFile.getName() : quarantined.getName()};
+        resetConfigToDefaults(name);
+    }
+
+    /**
+     * The recovery that happened during the last load, as {@code {i18nKey, args...}}, once. The load
+     * runs before i18n is initialized, so the text is resolved by whoever shows it.
+     */
+    public String[] consumeRecoveryNotice() {
+        String[] notice = recoveryNotice;
+        recoveryNotice = null;
+        return notice;
     }
 
     private JsonObject migrateConfigIfNeeded(String name, JsonObject json) throws FileException {

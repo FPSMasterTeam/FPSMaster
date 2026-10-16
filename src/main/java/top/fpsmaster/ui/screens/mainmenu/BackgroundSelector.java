@@ -16,6 +16,7 @@ import top.fpsmaster.prism.widget.Chrome;
 import top.fpsmaster.prism.widget.UiFrame;
 import top.fpsmaster.ui.kit.EdgeUi;
 import top.fpsmaster.utils.io.FileUtils;
+import top.fpsmaster.utils.system.FileDialogs;
 import top.fpsmaster.utils.render.draw.Images;
 import top.fpsmaster.utils.render.draw.Rects;
 import top.fpsmaster.utils.render.gui.Backgrounds;
@@ -24,8 +25,6 @@ import top.fpsmaster.utils.system.FolderOpen;
 
 import javax.imageio.ImageIO;
 import java.awt.Color;
-import java.awt.FileDialog;
-import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -123,20 +122,18 @@ public class BackgroundSelector extends ScaledGuiScreen {
 
         @Override
         public void pickCustom() {
-            FileDialog dialog = new FileDialog((Frame) null, i18n("backgroundselector.filedialog.title"), FileDialog.LOAD);
-            dialog.setFilenameFilter((dir, name) -> {
-                String lower = name.toLowerCase();
+            // Off the render thread: see FileDialogs. The copy runs back on the client thread.
+            FileDialogs.open(i18n("backgroundselector.filedialog.title"), false, null, null, (dir, name) -> {
+                String lower = name.toLowerCase(java.util.Locale.ROOT);
                 return lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg");
+            }, chosen -> {
+                try {
+                    Files.copy(chosen.toPath(), FileUtils.background.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                    select("custom");
+                } catch (IOException e) {
+                    ClientLogger.error("Failed to import custom background: " + e.getMessage());
+                }
             });
-            dialog.setVisible(true);
-            if (dialog.getFile() == null) return;
-            try {
-                Files.copy(new File(dialog.getDirectory(), dialog.getFile()).toPath(),
-                        FileUtils.background.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                select("custom");
-            } catch (IOException e) {
-                ClientLogger.error("Failed to import custom background: " + e.getMessage());
-            }
         }
 
         @Override
