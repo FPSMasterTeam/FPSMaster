@@ -104,7 +104,6 @@ public class MoreParticles extends Module {
                 Minecraft.getMinecraft().effectRenderer.emitParticleAtEntity(event.target, EnumParticleTypes.FLAME);
             } else if (special.getValue() == 3) {
                 if (mc.objectMouseOver.hitVec != null && event.target.hurtResistantTime <= 10) {
-                    System.out.println();
                     if (mc.theWorld != null) {
                         mc.theWorld.playSound(
                                 mc.objectMouseOver.hitVec.xCoord,

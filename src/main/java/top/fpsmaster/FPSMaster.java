@@ -46,24 +46,27 @@ public class FPSMaster {
     public static Language i18n = new Language();
     public static ClientThreadPool async = new ClientThreadPool(Math.max(2, Runtime.getRuntime().availableProcessors() / 2));
     public static EdgeTelemetryReporter telemetryReporter = new EdgeTelemetryReporter();
-    public static boolean development = false;
+    /**
+     * Probed once: the main menu asks every frame, and in a release build each probe threw and caught
+     * a ClassNotFoundException (hundreds of stack-trace allocations a second).
+     */
+    public static final boolean development = detectDevelopment();
     public static boolean defaultConfigExistedBeforeLoad = false;
 
-    private static void checkDevelopment() {
+    private static boolean detectDevelopment() {
         try {
             Class.forName("net.fabricmc.devlaunchinjector.Main");
-            development = true;
-        } catch (Throwable ignored) {
+            return true;
+        } catch (ClassNotFoundException | LinkageError notDev) {
+            return false;
         }
     }
 
     public static boolean isDevelopment() {
-        checkDevelopment();
         return development;
     }
 
     public static String getClientTitle() {
-        checkDevelopment();
         return CLIENT_NAME + " " + EDITION + " (" + GitInfo.getBranch() + " - " + GitInfo.getCommitIdAbbrev() + ")" + (development ? " - dev" : "");
     }
 
@@ -172,13 +175,29 @@ public class FPSMaster {
             initializeFonts();
             initializeModules();
             initializeComponents();
-            initializeConfigures();
-            CosmeticManager.getInstance().initialize();
-            initializeCommands();
-            initializeLang();
-            checkOptifine();
         } catch (Exception e) {
+            // Everything after this needs the data directory and the module list.
             ExceptionHandler.handle(e);
+            return;
+        }
+        // Independent steps, each in its own try: one bad config entry used to throw out of the
+        // shared try and skip cosmetics, commands and i18n for the whole session.
+        initStep("config", this::initializeConfigures);
+        initStep("cosmetics", () -> CosmeticManager.getInstance().initialize());
+        initStep("commands", this::initializeCommands);
+        initStep("i18n", this::initializeLang);
+        checkOptifine();
+    }
+
+    private interface InitStep {
+        void run() throws Exception;
+    }
+
+    private static void initStep(String name, InitStep step) {
+        try {
+            step.run();
+        } catch (Exception e) {
+            ExceptionHandler.handle(e, "Initialization step '" + name + "' failed");
         }
     }
 
@@ -186,32 +205,35 @@ public class FPSMaster {
     public void shutdown() {
         // Before anything else: an unfinished stream is an unreadable file.
         top.fpsmaster.replay.ReplayRecorder.instance().stop();
-        PlayTimeStatistics.flush();
-        // A debounced scale change is still pending if the game is closed straight after dragging
-        // the slider; give it a bounded moment rather than losing it.
-        top.fpsmaster.cosmetic.RemoteCosmeticService.getInstance().flushBlocking(1500L);
-        // Release SMTC native session before tearing down async/audio
-        try {
-            top.fpsmaster.modules.music.MusicManager.get().shutdownSmtc();
-        } catch (Throwable t) {
-            ClientLogger.warn("SMTC shutdown skipped: " + t.getMessage());
-        }
-        // The playback thread holds a javax.sound line and a temp file, and stop() joins it. It has
-        // to happen before async.close(), which is where the rest of the client's workers go.
-        try {
-            top.fpsmaster.modules.music.MusicManager.get().engine().stop();
-        } catch (Throwable t) {
-            ClientLogger.warn("Audio engine stop skipped: " + t.getMessage());
-        }
-        releaseGraphics();
-        telemetryReporter.shutdown();
-        async.close();
+        // Then the config: everything below may block on the network, and a player who gives up
+        // waiting and kills the process must not lose this session's settings.
         try {
             ClientLogger.info("Saving configs");
             configManager.saveConfig(ConfigProfileUtils.getActiveProfileName());
         } catch (FileException e) {
             ExceptionHandler.handleFileException(e, "Failed to save default config during shutdown");
         }
+        PlayTimeStatistics.flush();
+        // A debounced scale change is still pending if the game is closed straight after dragging
+        // the slider; give it a bounded moment rather than losing it.
+        top.fpsmaster.cosmetic.RemoteCosmeticService.getInstance().flushBlocking(1500L);
+        // Music was never opened: nothing to stop, and get() would create the SMTC session and
+        // load credentials just to tear them down again.
+        if (top.fpsmaster.modules.music.MusicManager.isInitialized()) {
+            try {
+                top.fpsmaster.modules.music.MusicManager.get().shutdownSmtc();
+            } catch (Throwable t) {
+                ClientLogger.warn("SMTC shutdown skipped: " + t.getMessage());
+            }
+            try {
+                top.fpsmaster.modules.music.MusicManager.get().engine().stop();
+            } catch (Throwable t) {
+                ClientLogger.warn("Audio engine stop skipped: " + t.getMessage());
+            }
+        }
+        releaseGraphics();
+        telemetryReporter.shutdown();
+        async.close();
     }
 
     /**
