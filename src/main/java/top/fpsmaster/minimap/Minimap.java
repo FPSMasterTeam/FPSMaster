@@ -824,6 +824,18 @@ public class Minimap {
     }
 
     /**
+     * The loader thread stops sweeping once the world is gone, so the lists it last published would
+     * keep entities (and through them the old WorldClient) alive until the next world is joined.
+     */
+    public static void releaseWorldState() {
+        loadedPlayers = new ArrayList<>();
+        loadedLiving = new ArrayList<>();
+        loadedHostile = new ArrayList<>();
+        loadedItems = new ArrayList<>();
+        loadedEntities = new ArrayList<>();
+    }
+
+    /**
      * Last storage size uploaded into {@link #mapTexture}.
      *
      * <p>{@code glTexImage2D} reallocates the whole level. Calling it every HUD frame (512² RGB ≈
